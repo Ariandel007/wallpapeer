@@ -1,8 +1,10 @@
-package pe.edu.upc.wallpapeer;
+package pe.edu.upc.wallpapeer.views;
+
+import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.os.Bundle;
+import pe.edu.upc.wallpapeer.R;
 
 public class RegistrarActivity extends AppCompatActivity {
 
