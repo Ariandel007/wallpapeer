@@ -2,7 +2,13 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="pe.edu.upc.wallpapeer">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <application
         android:allowBackup="true"
@@ -10,7 +16,25 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Wallpapeer">
+        android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
+        <activity
+            android:name=".views.JoinLienzoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.JoinProjectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.CreateProjectActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ProjectListActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".views.ChangePasswordActivity"
+            android:exported="false" />
         <activity
             android:name=".views.RegistrarActivity"
             android:exported="false" />

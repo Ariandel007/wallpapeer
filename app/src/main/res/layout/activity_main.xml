@@ -35,25 +35,31 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvInicioSesion" />
 
-        <EditText
-            android:id="@+id/etPassword"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="32dp"
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            android:layout_width="357dp"
+            android:layout_height="60dp"
             android:layout_marginTop="28dp"
-            android:layout_marginEnd="32dp"
-            android:background="@drawable/user_pass_box"
-            android:ems="10"
             android:gravity="center"
-            android:hint="Contraseña"
-            android:inputType="textPassword"
-            android:minHeight="48dp"
-            android:textColorHint="#767BBF"
-            android:text="@={loginViewModel.password}"
+            app:endIconMode="password_toggle"
+            app:hintEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etUsuario" />
+            app:layout_constraintTop_toBottomOf="@+id/etUsuario">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPassword2"
+                android:layout_width="329dp"
+                android:layout_height="48dp"
+                android:background="@drawable/user_pass_box"
+                android:gravity="center"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:text="@={loginViewModel.password}"
+                android:textColor="#767BBF"
+                android:textColorHint="#767BBF"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tvLogo"
@@ -76,11 +82,11 @@
             android:layout_marginTop="60dp"
             android:layout_marginEnd="100dp"
             android:background="@drawable/button_rounded"
+            android:onClick="@{()->loginViewModel.onLoginClick()}"
             android:text="Ingresar"
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="18sp"
-            android:onClick="@{()->loginViewModel.onLoginClick()}"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvPregunta" />
@@ -89,26 +95,26 @@
             android:id="@+id/tvRegistrar"
             android:layout_width="65dp"
             android:layout_height="20dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="44dp"
             android:layout_marginEnd="72dp"
-
+            android:onClick="@{loginViewModel.irRegistrar}"
             android:text="Regístrate"
             android:textColor="#767BBF"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.269"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toEndOf="@+id/tvPregunta"
-            app:layout_constraintTop_toBottomOf="@+id/etPassword" />
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
         <TextView
             android:id="@+id/tvPregunta"
             android:layout_width="152dp"
             android:layout_height="20dp"
-            android:layout_marginStart="96dp"
-            android:layout_marginTop="48dp"
+            android:layout_marginStart="92dp"
+            android:layout_marginTop="44dp"
             android:text="¿Aun no tienes cuenta?"
             android:textColor="#767BBF"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/etPassword" />
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
 
         <TextView
             android:id="@+id/tvInicioSesion"

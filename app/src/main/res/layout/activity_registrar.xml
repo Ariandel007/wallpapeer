@@ -1,9 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".views.RegistrarActivity">
+    xmlns:tools="http://schemas.android.com/tools">
+    <data>
+        <variable
+            name="loginViewModel"
+            type="pe.edu.upc.wallpapeer.viewmodels.LoginViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
 
-</android.support.constraint.ConstraintLayout>
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F0EFF2"
+        tools:context=".views.RegistrarActivity">
+        <TextView
+            android:id="@+id/tvTituloRegistrar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="76dp"
+            android:text="Registrar"
+            android:textColor="@color/purple_500"
+            android:textSize="42sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tvIndicaciones"
+            android:layout_width="228dp"
+            android:layout_height="45dp"
+            android:layout_marginTop="32dp"
+            android:text="Por favor, ingresa tus datos para completar tu registro."
+            android:textColor="@color/purple_500"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvTituloRegistrar" />
+
+        <EditText
+            android:id="@+id/etUsuarioReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="48dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/user_pass_box"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Usuario"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            android:textColorHint="#767BBF"
+            android:text="@={loginViewModel.username}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tvIndicaciones" />
+
+        <EditText
+            android:id="@+id/etEmailReg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginEnd="32dp"
+            android:background="@drawable/user_pass_box"
+            android:ems="10"
+            android:gravity="center"
+            android:hint="Email"
+            android:inputType="textPersonName"
+            android:minHeight="48dp"
+            android:textColorHint="#767BBF"
+            android:text="@={loginViewModel.email}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textInputLayout" />
+
+        <Button
+            android:id="@+id/btnRegistrar"
+            android:layout_width="171dp"
+            android:layout_height="50dp"
+            android:layout_marginStart="100dp"
+            android:layout_marginTop="88dp"
+            android:layout_marginEnd="100dp"
+            android:background="@drawable/button_rounded"
+            android:text="Registrar"
+            android:textAllCaps="false"
+            android:textColor="@color/white"
+            android:textSize="18sp"
+            android:onClick="@{()->loginViewModel.onRegisterClick()}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.525"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etEmailReg" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/textInputLayout"
+            android:layout_width="357dp"
+            android:layout_height="60dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center"
+            app:endIconMode="password_toggle"
+            app:hintEnabled="false"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/etUsuarioReg">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etPasswordReg"
+                android:layout_width="329dp"
+                android:layout_height="48dp"
+                android:background="@drawable/user_pass_box"
+                android:gravity="center"
+                android:hint="Contraseña"
+                android:inputType="textPassword"
+                android:textColor="#767BBF"
+                android:textColorHint="#767BBF"
+                android:text="@={loginViewModel.password}"
+                tools:ignore="TouchTargetSizeCheck" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
