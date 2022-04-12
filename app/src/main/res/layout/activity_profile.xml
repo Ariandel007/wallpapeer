@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <data>
+        <variable
+            name="loginViewModel"
+            type="pe.edu.upc.wallpapeer.viewmodels.LoginViewModel" />
+    </data>
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F0EFF2"
+        tools:context=".views.ProfileActivity">
+
+        <TextView
+            android:id="@+id/tvBienvenido"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="28dp"
+            android:textColor="#767BBF"
+            android:text="Bienvenido, "
+            android:textSize="18dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.06" />
+
+        <TextView
+            android:id="@+id/tvUsername"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="44dp"
+            android:text="@={loginViewModel.username}"
+            android:textColor="#767BBF"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/tvBienvenido"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilboxProfile1"
+            android:layout_width="305dp"
+            android:layout_height="195dp"
+            android:background="@drawable/menu_box"
+            android:onClick="@{loginViewModel.irMisProyectos}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.231">
+
+            <TextView
+                android:id="@+id/tilTextView1"
+                android:layout_width="118dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="20dp"
+                android:text="Ver Proyectos"
+                android:textColor="#767BBF"
+                android:textSize="18dp" />
+
+            <ImageView
+                android:id="@+id/tilImageView1"
+                android:layout_width="265dp"
+                android:layout_height="137dp"
+                android:layout_marginStart="20dp"
+                android:src="@drawable/project_image" />
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilboxProfile2"
+            android:layout_width="298dp"
+            android:layout_height="84dp"
+            android:layout_marginTop="60dp"
+            android:background="@drawable/menu_box"
+            android:onClick="@{loginViewModel.irCrearProyecto}"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilboxProfile1">
+
+            <TextView
+                android:id="@+id/tilTvCrearProyecto"
+                android:layout_width="247dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:drawableLeft="@drawable/ic_create_project"
+                android:gravity="center"
+                android:text="Crear Proyecto"
+                android:textAlignment="center"
+                android:textColor="#767BBF"
+                android:textSize="18dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/tilbox3"
+            android:layout_width="298dp"
+            android:layout_height="84dp"
+            android:background="@drawable/menu_box"
+            android:onClick="@{loginViewModel.irUnirseProyecto}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tilboxProfile2"
+            app:layout_constraintVertical_bias="0.315">
+
+            <TextView
+                android:id="@+id/tilTvUnirmeProyecto"
+                android:layout_width="247dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:drawableLeft="@drawable/ic_unirme_project"
+                android:gravity="center"
+                android:text="Unirme a Proyecto"
+                android:textAlignment="center"
+                android:textColor="#767BBF"
+                android:textSize="18dp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/tvTextoCambiarContrasena"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="212dp"
+            android:text="Cambiar Contraseña"
+            android:textColor="#767BBF"
+            android:textSize="18dp"
+            android:onClick="@{loginViewModel.irCambioContrasena}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.977" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
