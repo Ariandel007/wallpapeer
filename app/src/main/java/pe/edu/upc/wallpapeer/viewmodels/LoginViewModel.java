@@ -21,6 +21,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
+import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.model.User;
 import pe.edu.upc.wallpapeer.views.ChangePasswordActivity;
 import pe.edu.upc.wallpapeer.views.CreateProjectActivity;
@@ -206,6 +207,8 @@ public class LoginViewModel extends ViewModel implements Serializable {
     public void irUnirseProyectoComoLienzo(View view){
         Intent intent = new Intent(context, JoinLienzoActivity.class);
         intent.putExtra("USER", user);
+        intent.putExtra(Constants.IS_OFFLINE, false);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 }
