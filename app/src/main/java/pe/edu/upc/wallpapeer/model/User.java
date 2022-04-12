@@ -1,10 +1,13 @@
 package pe.edu.upc.wallpapeer.model;
 
 import android.text.TextUtils;
+import android.util.Patterns;
 
 import androidx.annotation.Nullable;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String username;
     private String password;
     private String email;
@@ -41,6 +44,12 @@ public class User {
     }
     public boolean isValidPassword(){
         if(this.password != null && this.password.length() >=6){
+            return true;
+        }
+        return false;
+    }
+    public boolean isValidEmail(){
+        if (this.email != null && !TextUtils.isEmpty(email)){
             return true;
         }
         return false;
