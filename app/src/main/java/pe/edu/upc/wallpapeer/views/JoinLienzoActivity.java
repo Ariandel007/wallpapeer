@@ -35,7 +35,6 @@ import pe.edu.upc.wallpapeer.viewmodels.factory.LoginViewModelFactory;
 public class JoinLienzoActivity extends AppCompatActivity {
 
 //    private View chatBox;
-    private EditText newMessage;
 //    private MessageListAdapter adapter;
     private String addressee;
     private String startDate;
@@ -49,7 +48,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_lienzo);
 
-        initChatPage();
+        initConnection();
 
 //        User user = (User)getIntent().getSerializableExtra("USER");
 //
@@ -145,7 +144,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
         }
     }
 
-    private void initChatPage() {
+    private void initConnection() {
 //        messengerLayout = findViewById(R.id.messengerLayout);
 //        chatBox = findViewById(R.id.layout_chatbox);
         loadingScreen = findViewById(R.id.loadingScreen);
