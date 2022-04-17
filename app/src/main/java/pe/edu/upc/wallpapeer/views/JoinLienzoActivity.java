@@ -1,5 +1,6 @@
 package pe.edu.upc.wallpapeer.views;
 
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,13 +17,19 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
@@ -42,11 +49,27 @@ public class JoinLienzoActivity extends AppCompatActivity {
     private JoinLienzoViewModel model;
     private ConstraintLayout loadingScreen;
 //    private ConstraintLayout messengerLayout;
+    Button btnDecodes;
+
+    private String targetDeviceName = "";
+
+    private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
+            result -> {
+                if(result.getContents() == null) {
+                    Toast.makeText(JoinLienzoActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
+                } else {
+                    targetDeviceName = result.getContents();
+                    Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    connectionToDevice();
+                }
+            });
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_lienzo);
+
+        btnDecodes = findViewById(R.id.btnScanQr);
 
         initConnection();
 
@@ -57,10 +80,9 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //
 //        activityJoinLienzoBinding.setLoginViewModel(loginViewModel);
 
-        final AlertDialog.Builder adb = new AlertDialog.Builder(JoinLienzoActivity.this);
-        final Boolean[] dialogActive = {Boolean.FALSE};
-        final AlertDialog[] dialogs = {null};
-
+//        final AlertDialog.Builder adb = new AlertDialog.Builder(JoinLienzoActivity.this);
+//        final Boolean[] dialogActive = {Boolean.FALSE};
+//        final AlertDialog[] dialogs = {null};
         if (isOffline) {
 //            chatBox.setVisibility(View.GONE);
             model.setAddressee(addressee);
@@ -72,6 +94,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //            });
         } else {
             loadingScreen.setVisibility(View.VISIBLE);
+            btnDecodes.setVisibility(View.VISIBLE);
 //            messengerLayout.setVisibility(View.GONE);
 //            Objects.requireNonNull(getSupportActionBar()).hide();
 
@@ -85,9 +108,9 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         Objects.requireNonNull(getSupportActionBar()).show();
                         addressee = model.getAddressee();
                         getSupportActionBar().setTitle(addressee);
-                        if (dialogActive[0]) {
-                            dialogs[0].dismiss();
-                        }
+//                        if (dialogActive[0]) {
+//                            dialogs[0].dismiss();
+//                        }
 //                        model.getMessageList().observe(ChatActivity.this, new Observer<List<MessageEntity>>() {
 //                            @Override
 //                            public void onChanged(@Nullable List<MessageEntity> messageEntities) {
@@ -105,29 +128,45 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     Log.d("", peers.toString());
                     if (peers.size() == 0)
                         return;
-                    CharSequence[] items = new CharSequence[peers.size()];
-                    int i = 0;
-                    for (WifiP2pDevice wifiP2pDevice : peers) {
-                        items[i] = wifiP2pDevice.deviceName;
-                        i++;
+                    if(targetDeviceName.equals("")) {
+                        return;
                     }
-                    adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface d, int n) {
-                            model.connectToPeer(peers.get(n));
-                            d.cancel();
-                        }
 
-                    });
-                    adb.setNegativeButton("Cancelar", null);
-                    adb.setTitle("¿Cual de estos es el dispositivo que deseas conectar?");
-                    if (!dialogActive[0]) {
-                        dialogs[0] = adb.show();
-                        dialogActive[0] = true;
-                    } else {
-                        dialogs[0].dismiss();
-                        dialogs[0] = adb.show();
+                    List<WifiP2pDevice> peersFindedWithTargetDeviceName = new ArrayList<>();
+                    for (WifiP2pDevice peer :peers) {
+                        if(peer.deviceName.contains(targetDeviceName)) {
+                            peersFindedWithTargetDeviceName.add(peer);
+                        }
                     }
+                    if(peersFindedWithTargetDeviceName.size() == 0) {
+                        return;
+                    }
+                    WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
+
+                    model.connectToPeer(peerFindedInQR);
+//                    CharSequence[] items = new CharSequence[peers.size()];
+//                    int i = 0;
+//                    for (WifiP2pDevice wifiP2pDevice : peers) {
+//                        items[i] = wifiP2pDevice.deviceName;
+//                        i++;
+//                    }
+//                    adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
+//                        @Override
+//                        public void onClick(DialogInterface d, int n) {
+//                            model.connectToPeer(peers.get(n));
+//                            d.cancel();
+//                        }
+//
+//                    });
+//                    adb.setNegativeButton("Cancelar", null);
+//                    adb.setTitle("¿Cual de estos es el dispositivo que deseas conectar?");
+//                    if (!dialogActive[0]) {
+//                        dialogs[0] = adb.show();
+//                        dialogActive[0] = true;
+//                    } else {
+//                        dialogs[0].dismiss();
+//                        dialogs[0] = adb.show();
+//                    }
                 }
             });
 
@@ -136,12 +175,13 @@ public class JoinLienzoActivity extends AppCompatActivity {
                 public void onChanged(@Nullable Boolean aBoolean) {
                     // Acción de cierre de chat
                     if (aBoolean == null || aBoolean) {
-                        Toast.makeText(JoinLienzoActivity.this, "Uno de los dispositivos abandonó el chat.", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(JoinLienzoActivity.this, "Uno de los dispositivos abandonó el grupo.", Toast.LENGTH_SHORT).show();
                         finish();
                     }
                 }
             });
         }
+
     }
 
     private void initConnection() {
@@ -149,15 +189,16 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //        chatBox = findViewById(R.id.layout_chatbox);
         loadingScreen = findViewById(R.id.loadingScreen);
         loadingScreen.setVisibility(View.GONE);
-        findViewById(R.id.stopSearch).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (!isOffline) {
-                    model.closeChat();
-                }
-                finish();
-            }
-        });
+        //CANCELAR BUSQUEDA Y CERRAR SOCKET
+//        findViewById(R.id.stopSearch).setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View view) {
+//                if (!isOffline) {
+//                    model.closeChat();
+//                }
+//                finish();
+//            }
+//        });
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
         model = ViewModelProviders.of(this).get(JoinLienzoViewModel.class);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
@@ -178,6 +219,43 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //        messages.setLayoutManager(new LinearLayoutManager(this, 1, true));
 //        adapter = new MessageListAdapter(new ArrayList<MessageEntity>());
 //        messages.setAdapter(adapter);
+
+        btnDecodes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ScanOptions options = new ScanOptions();
+                options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+                options.setPrompt("Escanea el QR");
+                options.setCameraId(0);  // Use a specific camera of the device
+                options.setBeepEnabled(false);
+                options.setBarcodeImageEnabled(true);
+                options.setOrientationLocked(false);
+
+                barcodeLauncher.launch(options);
+            }
+        });
+    }
+
+    public void connectionToDevice() {
+        List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
+        wifiP2pDevices.size();
+        if(targetDeviceName.equals("")) {
+            return;
+        }
+
+        List<WifiP2pDevice> peersFindedWithTargetDeviceName = new ArrayList<>();
+        for (WifiP2pDevice peer :wifiP2pDevices) {
+            if(peer.deviceName.contains(targetDeviceName)) {
+                peersFindedWithTargetDeviceName.add(peer);
+            }
+        }
+        if(peersFindedWithTargetDeviceName.size() == 0) {
+            return;
+        }
+        WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
+
+        model.connectToPeer(peerFindedInQR);
+        targetDeviceName = "";
     }
 
     @Override
