@@ -63,14 +63,15 @@
 
         <TextView
             android:id="@+id/tvLogo"
-            android:layout_width="305dp"
-            android:layout_height="77dp"
-            android:layout_marginTop="59dp"
+            android:layout_width="349dp"
+            android:layout_height="83dp"
+            android:layout_marginTop="68dp"
             android:text="@string/app_name"
             android:textAlignment="center"
             android:textColor="#767BBF"
             android:textSize="60sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -93,7 +94,7 @@
 
         <TextView
             android:id="@+id/tvRegistrar"
-            android:layout_width="65dp"
+            android:layout_width="91dp"
             android:layout_height="20dp"
             android:layout_marginTop="44dp"
             android:layout_marginEnd="72dp"
@@ -107,9 +108,9 @@
 
         <TextView
             android:id="@+id/tvPregunta"
-            android:layout_width="152dp"
+            android:layout_width="173dp"
             android:layout_height="20dp"
-            android:layout_marginStart="92dp"
+            android:layout_marginStart="56dp"
             android:layout_marginTop="44dp"
             android:text="¿Aun no tienes cuenta?"
             android:textColor="#767BBF"
@@ -118,8 +119,8 @@
 
         <TextView
             android:id="@+id/tvInicioSesion"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="244dp"
+            android:layout_height="41dp"
             android:layout_marginTop="64dp"
             android:text="Inicio de sesión"
             android:textAlignment="center"
