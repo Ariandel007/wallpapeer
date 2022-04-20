@@ -29,15 +29,10 @@ import com.journeyapps.barcodescanner.ScanOptions;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
-import pe.edu.upc.wallpapeer.databinding.ActivityJoinLienzoBinding;
-import pe.edu.upc.wallpapeer.model.User;
 import pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel;
-import pe.edu.upc.wallpapeer.viewmodels.LoginViewModel;
-import pe.edu.upc.wallpapeer.viewmodels.factory.LoginViewModelFactory;
 
 public class JoinLienzoActivity extends AppCompatActivity {
 
@@ -48,6 +43,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
     private boolean isOffline;
     private JoinLienzoViewModel model;
     private ConstraintLayout loadingScreen;
+    private ConstraintLayout pinchScreen;
 //    private ConstraintLayout messengerLayout;
     Button btnDecodes;
 
@@ -103,7 +99,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-                        loadingScreen.setVisibility(View.GONE);
+//                        loadingScreen.setVisibility(View.GONE);
 //                        messengerLayout.setVisibility(View.VISIBLE);
                         Objects.requireNonNull(getSupportActionBar()).show();
                         addressee = model.getAddressee();
@@ -189,6 +185,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //        chatBox = findViewById(R.id.layout_chatbox);
         loadingScreen = findViewById(R.id.loadingScreen);
         loadingScreen.setVisibility(View.GONE);
+        pinchScreen = findViewById(R.id.PinchScreen);
+        pinchScreen.setVisibility(View.GONE);
         //CANCELAR BUSQUEDA Y CERRAR SOCKET
 //        findViewById(R.id.stopSearch).setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -232,6 +230,18 @@ public class JoinLienzoActivity extends AppCompatActivity {
                 options.setOrientationLocked(false);
 
                 barcodeLauncher.launch(options);
+            }
+        });
+
+        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                // Acción de comexion iniciada
+                if (aBoolean) {
+                    Toast.makeText(JoinLienzoActivity.this, "Conexion realizada.", Toast.LENGTH_SHORT).show();
+                    loadingScreen.setVisibility(View.GONE);
+                    pinchScreen.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
