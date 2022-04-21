@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pe.edu.upc.wallpapeer.Constants;
+import pe.edu.upc.wallpapeer.views.JoinPaletaActivity;
 import pe.edu.upc.wallpapeer.views.LastProjectActivity;
 import pe.edu.upc.wallpapeer.model.User;
 import pe.edu.upc.wallpapeer.utils.ApiError;
@@ -220,6 +221,14 @@ public class LoginViewModel extends ViewModel implements Serializable {
 
     public void abrirUltimoProyecto(View view){
         Intent intent = new Intent(context, LastProjectActivity.class);
+        intent.putExtra("USER", user);
+        intent.putExtra(Constants.IS_OFFLINE, false);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    public void irUnirseProyectoComoPaleta(View view){
+        Intent intent = new Intent(context, JoinPaletaActivity.class);
         intent.putExtra("USER", user);
         intent.putExtra(Constants.IS_OFFLINE, false);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
