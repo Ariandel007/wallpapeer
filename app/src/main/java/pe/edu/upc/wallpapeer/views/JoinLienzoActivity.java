@@ -248,7 +248,11 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
-        wifiP2pDevices.size();
+        if(wifiP2pDevices == null) {
+            Log.e("NULO", "wifiP2pDevices es nulo");
+            return;
+        }
+
         if(targetDeviceName.equals("")) {
             return;
         }
