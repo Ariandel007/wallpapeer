@@ -49,6 +49,8 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 
     private MutableLiveData<Boolean> chatClosed;
 
+    private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
+
     private boolean isConnected = false;
 //
 
@@ -183,6 +185,7 @@ public class JoinLienzoViewModel extends AndroidViewModel {
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
+                onSucessConnection.setValue(true);
                 Log.d("", "connection success");
             }
 
@@ -238,6 +241,14 @@ public class JoinLienzoViewModel extends AndroidViewModel {
         }
         if(isConnected)
             chatClosed.postValue(true);
+    }
+
+    public MutableLiveData<Boolean> getOnSucessConnection() {
+        return onSucessConnection;
+    }
+
+    public void setOnSucessConnection(MutableLiveData<Boolean> onSucessConnection) {
+        this.onSucessConnection = onSucessConnection;
     }
 
 //    public void deleteChat() {

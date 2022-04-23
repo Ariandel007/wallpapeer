@@ -2,7 +2,6 @@ package pe.edu.upc.wallpapeer.viewmodels;
 
 import android.content.Context;
 import android.content.Intent;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -22,7 +21,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pe.edu.upc.wallpapeer.Constants;
+import pe.edu.upc.wallpapeer.views.JoinPaletaActivity;
+import pe.edu.upc.wallpapeer.views.LastProjectActivity;
 import pe.edu.upc.wallpapeer.model.User;
+import pe.edu.upc.wallpapeer.utils.ApiError;
 import pe.edu.upc.wallpapeer.views.ChangePasswordActivity;
 import pe.edu.upc.wallpapeer.views.CreateProjectActivity;
 import pe.edu.upc.wallpapeer.views.JoinLienzoActivity;
@@ -39,8 +41,11 @@ public class LoginViewModel extends ViewModel implements Serializable {
     public MutableLiveData<String> password = new MutableLiveData<>();
     public MutableLiveData<String> email = new MutableLiveData<>();
 
+    public MutableLiveData<String> password_re = new MutableLiveData<>();
+
     private User user;
     private Context context;
+
 
     public LoginViewModel (User user, Context context){
         this.user = user;
@@ -131,7 +136,7 @@ public class LoginViewModel extends ViewModel implements Serializable {
 
                         @Override
                         public void onError(ANError anError) {
-                            Toast.makeText(context, "Error: "+anError.getErrorDetail(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "Error: EL usuario esta repetido o tiene un error", Toast.LENGTH_SHORT).show();
                         }
                     });
         } else{
@@ -147,38 +152,40 @@ public class LoginViewModel extends ViewModel implements Serializable {
         user.setPassword(password.getValue());
 
         if(user.isValidPassword()){
+            if (password_re.getValue().equals(password.getValue())) {
+                Map<String, String> datos = new HashMap<>();
+                datos.put("username", username.getValue());
+                datos.put("password", password.getValue());
+                JSONObject jsondata = new JSONObject(datos);
+                String bearerToken = "Bearer " + token;
+                AndroidNetworking.put("https://infinite-tundra-77261.herokuapp.com/api/user/user/" + username.getValue()).addHeaders("Authorization", bearerToken)
+                        .addJSONObjectBody(jsondata)
+                        .setPriority(Priority.MEDIUM)
+                        .build()
+                        .getAsJSONObject(new JSONObjectRequestListener() {
+                            @Override
+                            public void onResponse(JSONObject response) {
+                                try {
+                                    String username = response.getString("username");
+                                    Toast.makeText(context, "El usuario " + username + " ha modificado su contraseña", Toast.LENGTH_SHORT).show();
 
-            Map<String, String> datos = new HashMap<>();
-            datos.put("username", username.getValue());
-            datos.put("password", password.getValue());
-            JSONObject jsondata = new JSONObject(datos);
-            String bearerToken = "Bearer "+token;
-            AndroidNetworking.put("https://infinite-tundra-77261.herokuapp.com/api/user/user/"+username.getValue()).addHeaders("Authorization", bearerToken)
-                    .addJSONObjectBody(jsondata)
-                    .setPriority(Priority.MEDIUM)
-                    .build()
-                    .getAsJSONObject(new JSONObjectRequestListener() {
-                        @Override
-                        public void onResponse(JSONObject response) {
-                            try {
-                                String username = response.getString("username");
-                                Toast.makeText(context, "El usuario "+username+" ha modificado su contraseña", Toast.LENGTH_SHORT).show();
+                                    Intent intent = new Intent(context, ProfileActivity.class);
+                                    intent.putExtra("USER", user);
+                                    context.startActivity(intent);
 
-                                Intent intent = new Intent(context, ProfileActivity.class);
-                                intent.putExtra("USER", user);
-                                context.startActivity(intent);
-
-                            } catch (JSONException e) {
-                                Toast.makeText(context, "Error: "+e.getMessage(), Toast.LENGTH_SHORT).show();
+                                } catch (JSONException e) {
+                                    Toast.makeText(context, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
                             }
-                        }
 
-                        @Override
-                        public void onError(ANError anError) {
-                            Toast.makeText(context, "Error: "+anError.getErrorDetail(), Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
+                            @Override
+                            public void onError(ANError anError) {
+                                Toast.makeText(context, "Error: " + anError.getErrorDetail(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
+            }else{
+                Toast.makeText(context, "Las contraseñas ingresadas no son iguales", Toast.LENGTH_SHORT).show();
+            }
         }else{
             Toast.makeText(context, "Existen campos vacios", Toast.LENGTH_SHORT).show();
         }
@@ -206,6 +213,22 @@ public class LoginViewModel extends ViewModel implements Serializable {
 
     public void irUnirseProyectoComoLienzo(View view){
         Intent intent = new Intent(context, JoinLienzoActivity.class);
+        intent.putExtra("USER", user);
+        intent.putExtra(Constants.IS_OFFLINE, false);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    public void abrirUltimoProyecto(View view){
+        Intent intent = new Intent(context, LastProjectActivity.class);
+        intent.putExtra("USER", user);
+        intent.putExtra(Constants.IS_OFFLINE, false);
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        context.startActivity(intent);
+    }
+
+    public void irUnirseProyectoComoPaleta(View view){
+        Intent intent = new Intent(context, JoinPaletaActivity.class);
         intent.putExtra("USER", user);
         intent.putExtra(Constants.IS_OFFLINE, false);
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
