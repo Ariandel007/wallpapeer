@@ -19,6 +19,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AppCompat.DayNight.NoActionBar">
         <activity
+            android:name=".views.JoinPaletaActivity"
+            android:exported="false" />
+        <activity
             android:name=".views.LastProjectActivity"
             android:exported="false" />
         <activity

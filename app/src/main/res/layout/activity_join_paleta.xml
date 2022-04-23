@@ -8,9 +8,9 @@
             type="pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/mainScreenJoinLienzo"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent">
+        android:id="@+id/mainScreenJoinPaleta"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingScreen"
@@ -67,19 +67,31 @@
 
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/PinchScreen"
+            android:id="@+id/loadingPallete"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="visible">
 
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="344dp"
+                android:layout_height="324dp"
+                android:tint="#8363AC"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.492"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textLoadingPaleta"
+                app:layout_constraintVertical_bias="0.241"
+                app:srcCompat="@drawable/ic_looks" />
+
             <TextView
-                android:id="@+id/textViewPinch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:id="@+id/textLoadingPaleta"
+                android:layout_width="281dp"
+                android:layout_height="29dp"
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
-                android:layout_marginBottom="216dp"
-                android:text="Esperando pinch"
+                android:text="Uniendose al proyecto como paleta"
                 android:textColor="#767BBF"
                 android:textSize="18sp"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -87,31 +99,8 @@
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/imageView2" />
-
-            <TextView
-                android:id="@+id/textView"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="56dp"
-                android:text="Uniendose a Proyecto como Lienzo"
-                android:textColor="#767BBF"
-                android:textSize="23sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.49"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-
-            <ImageView
-                android:id="@+id/imageView2"
-                android:layout_width="228dp"
-                android:layout_height="267dp"
-                android:layout_marginTop="56dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.497"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView"
-                app:srcCompat="@drawable/pinch_icon" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.155" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
