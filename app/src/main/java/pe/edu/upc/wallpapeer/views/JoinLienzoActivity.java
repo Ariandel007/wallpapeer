@@ -107,7 +107,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //                        addressee = model.getAddressee();
 //                        getSupportActionBar().setTitle(addressee);
 
-                        model.sendMessage("TEST MESSAGE");
+//                        model.sendMessage("TEST MESSAGE");
 
                         //                        model.getMessageList().observe(ChatActivity.this, new Observer<List<MessageEntity>>() {
 //                            @Override
