@@ -41,7 +41,7 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 //    private MessageRepository repository;
 
 
-    private MutableLiveData<Boolean> chatIsReady;
+    private MutableLiveData<Boolean> socketIsReady;
 
 //    private LiveData<List<MessageEntity>> messageList;
 
@@ -49,7 +49,7 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 
     private MutableLiveData<Boolean> chatClosed;
 
-    private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
+//    private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
 
     private boolean isConnected = false;
 //
@@ -69,13 +69,19 @@ public class JoinLienzoViewModel extends AndroidViewModel {
                 Log.d("new connection", info.toString());
                 final InetAddress address = info.groupOwnerAddress;
                 if (info.isGroupOwner) {
-                    Server server = new Server(JoinLienzoViewModel.this, chatIsReady);
+                    Server server = new Server(JoinLienzoViewModel.this, socketIsReady);
                     server.start();
                     messenger = server;
+                    if(messenger != null) {
+                        socketIsReady.setValue(true);
+                    }
                 } else {
-                    Client client = new Client(address.getHostAddress(), JoinLienzoViewModel.this, chatIsReady);
+                    Client client = new Client(address.getHostAddress(), JoinLienzoViewModel.this, socketIsReady);
                     client.start();
                     messenger = client;
+                    if(messenger != null) {
+                        socketIsReady.setValue(true);
+                    }
                 }
                 Toast.makeText(application, "Se ha establecido la conexión con el dispositivo", Toast.LENGTH_SHORT).show();
             }
@@ -103,7 +109,7 @@ public class JoinLienzoViewModel extends AndroidViewModel {
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_THIS_DEVICE_CHANGED_ACTION);
         connections = new WIFIDirectConnections();
 //        repository = MessageRepository.getInstance();
-        chatIsReady = new MutableLiveData<>();
+        socketIsReady = new MutableLiveData<>(false);
 //        messageList = new MutableLiveData<>();
         peerList = new MutableLiveData<>();
         chatClosed = new MutableLiveData<>();
@@ -119,8 +125,8 @@ public class JoinLienzoViewModel extends AndroidViewModel {
         return addressee;
     }
 
-    public MutableLiveData<Boolean> chatIsReady() {
-        return chatIsReady;
+    public MutableLiveData<Boolean> socketIsReady() {
+        return socketIsReady;
     }
 
 //    public LiveData<List<MessageEntity>> getMessageList() {
@@ -185,7 +191,7 @@ public class JoinLienzoViewModel extends AndroidViewModel {
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
-                onSucessConnection.setValue(true);
+//                onSucessConnection.setValue(true);
                 Log.d("", "connection success");
             }
 
@@ -243,13 +249,13 @@ public class JoinLienzoViewModel extends AndroidViewModel {
             chatClosed.postValue(true);
     }
 
-    public MutableLiveData<Boolean> getOnSucessConnection() {
-        return onSucessConnection;
-    }
+//    public MutableLiveData<Boolean> getOnSucessConnection() {
+//        return onSucessConnection;
+//    }
 
-    public void setOnSucessConnection(MutableLiveData<Boolean> onSucessConnection) {
-        this.onSucessConnection = onSucessConnection;
-    }
+//    public void setOnSucessConnection(MutableLiveData<Boolean> onSucessConnection) {
+//        this.onSucessConnection = onSucessConnection;
+//    }
 
 //    public void deleteChat() {
 //        repository.deleteAllFrom(addressee);

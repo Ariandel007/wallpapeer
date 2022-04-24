@@ -95,19 +95,21 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //            Objects.requireNonNull(getSupportActionBar()).hide();
 
             model.startSearch();
-            model.chatIsReady().observe(this, new Observer<Boolean>() {
+            model.socketIsReady().observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-//                        loadingScreen.setVisibility(View.GONE);
-//                        messengerLayout.setVisibility(View.VISIBLE);
-                        Objects.requireNonNull(getSupportActionBar()).show();
-                        addressee = model.getAddressee();
-                        getSupportActionBar().setTitle(addressee);
-//                        if (dialogActive[0]) {
-//                            dialogs[0].dismiss();
-//                        }
-//                        model.getMessageList().observe(ChatActivity.this, new Observer<List<MessageEntity>>() {
+                        Toast.makeText(JoinLienzoActivity.this, "Conexion realizada con dispositivo!!", Toast.LENGTH_SHORT).show();
+                        loadingScreen.setVisibility(View.GONE);
+                        pinchScreen.setVisibility(View.VISIBLE);
+
+//                        Objects.requireNonNull(getSupportActionBar()).show();
+//                        addressee = model.getAddressee();
+//                        getSupportActionBar().setTitle(addressee);
+
+//                        model.sendMessage("TEST MESSAGE");
+
+                        //                        model.getMessageList().observe(ChatActivity.this, new Observer<List<MessageEntity>>() {
 //                            @Override
 //                            public void onChanged(@Nullable List<MessageEntity> messageEntities) {
 //                                adapter.updateData(messageEntities);
@@ -140,12 +142,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
 
                     model.connectToPeer(peerFindedInQR);
-//                    CharSequence[] items = new CharSequence[peers.size()];
-//                    int i = 0;
-//                    for (WifiP2pDevice wifiP2pDevice : peers) {
-//                        items[i] = wifiP2pDevice.deviceName;
-//                        i++;
-//                    }
 //                    adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
 //                        @Override
 //                        public void onClick(DialogInterface d, int n) {
@@ -156,13 +152,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //                    });
 //                    adb.setNegativeButton("Cancelar", null);
 //                    adb.setTitle("¿Cual de estos es el dispositivo que deseas conectar?");
-//                    if (!dialogActive[0]) {
-//                        dialogs[0] = adb.show();
-//                        dialogActive[0] = true;
-//                    } else {
-//                        dialogs[0].dismiss();
-//                        dialogs[0] = adb.show();
-//                    }
                 }
             });
 
@@ -233,27 +222,30 @@ public class JoinLienzoActivity extends AppCompatActivity {
             }
         });
 
-        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean aBoolean) {
-                // Acción de comexion iniciada
-                if (aBoolean) {
-                    Toast.makeText(JoinLienzoActivity.this, "Conexion realizada.", Toast.LENGTH_SHORT).show();
-                    loadingScreen.setVisibility(View.GONE);
-                    pinchScreen.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+//        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
+//            @Override
+//            public void onChanged(@Nullable Boolean aBoolean) {
+//                // Acción de comexion iniciada
+//                if (aBoolean) {
+//                    Toast.makeText(JoinLienzoActivity.this, "Conexion realizada con dispositivo!!", Toast.LENGTH_SHORT).show();
+//                    loadingScreen.setVisibility(View.GONE);
+//                    pinchScreen.setVisibility(View.VISIBLE);
+////                    model.sendMessage("TEST MSG");
+//                }
+//            }
+//        });
     }
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
         if(wifiP2pDevices == null) {
             Log.e("NULO", "wifiP2pDevices es nulo");
+            Toast.makeText(JoinLienzoActivity.this, "La lista de pares esta vacia", Toast.LENGTH_LONG).show();
             return;
         }
 
         if(targetDeviceName.equals("")) {
+            Toast.makeText(JoinLienzoActivity.this, "No se leyo a ningun dispòsitivo", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -264,6 +256,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
             }
         }
         if(peersFindedWithTargetDeviceName.size() == 0) {
+            Toast.makeText(JoinLienzoActivity.this, "No se leyo a ningun dispòsitivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
             return;
         }
         WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);

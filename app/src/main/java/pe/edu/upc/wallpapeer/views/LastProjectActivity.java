@@ -56,13 +56,13 @@ public class LastProjectActivity extends AppCompatActivity {
         } else {
 
             model.startSearch();
-            model.chatIsReady().observe(this, new Observer<Boolean>() {
+            model.socketIsReady().observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-                        Objects.requireNonNull(getSupportActionBar()).show();
-                        addressee = model.getAddressee();
-                        getSupportActionBar().setTitle(addressee);
+//                        Objects.requireNonNull(getSupportActionBar()).show();
+//                        addressee = model.getAddressee();
+//                        getSupportActionBar().setTitle(addressee);
                     }
                 }
             });
