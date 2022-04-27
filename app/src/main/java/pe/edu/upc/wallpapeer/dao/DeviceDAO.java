@@ -9,14 +9,13 @@ import androidx.room.Transaction;
 import java.util.List;
 
 import pe.edu.upc.wallpapeer.entities.Device;
-import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 
 @Dao
 public interface DeviceDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertPalette(Device device);
+    void insert(Device device);
 
     @Transaction
     @Query("SELECT * FROM Device")

@@ -4,12 +4,11 @@ import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 
-import pe.edu.upc.wallpapeer.entities.Canva;
+import pe.edu.upc.wallpapeer.entities.Text;
 
 @Dao
-public interface CanvaDAO {
+public interface TextDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(Canva canva);
-
+    void insert(Text text);
 }

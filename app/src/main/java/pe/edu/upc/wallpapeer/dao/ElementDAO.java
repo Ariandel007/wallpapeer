@@ -11,5 +11,5 @@ import pe.edu.upc.wallpapeer.entities.Element;
 public interface ElementDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertProject(Element element);
+    void insert(Element element);
 }

@@ -16,7 +16,7 @@ import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 public interface PaletteDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insertPalette(Palette palette);
+    void insert(Palette palette);
 
 
 
