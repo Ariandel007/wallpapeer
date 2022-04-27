@@ -17,6 +17,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
-        //AppDatabase.getInstance(context);
+        AppDatabase.getInstance(context);
     }
 }
