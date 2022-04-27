@@ -25,6 +25,7 @@ import pe.edu.upc.wallpapeer.entities.Image;
 import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.entities.Text;
+import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 
 @Database(entities = {Palette.class,
                         Canva.class,
@@ -34,7 +35,8 @@ import pe.edu.upc.wallpapeer.entities.Text;
                         Element.class,
                         Text.class,
                         Image.class,
-                        Filter.class}, version = 1)
+                        Filter.class,
+                        }, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract PaletteDAO paletteDAO();

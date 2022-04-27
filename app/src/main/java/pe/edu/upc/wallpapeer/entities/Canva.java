@@ -1,5 +1,6 @@
 package pe.edu.upc.wallpapeer.entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -7,6 +8,7 @@ import androidx.room.PrimaryKey;
 @Entity(tableName = "canva")
 public class Canva {
     @PrimaryKey
+    @NonNull
     public String id;
 
     @ColumnInfo(name = "is_main")

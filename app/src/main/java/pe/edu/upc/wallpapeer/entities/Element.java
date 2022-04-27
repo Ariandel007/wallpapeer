@@ -1,15 +1,29 @@
 package pe.edu.upc.wallpapeer.entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
+import androidx.room.TypeConverters;
 
 import java.util.Date;
 
-@Entity(tableName = "element")
+import pe.edu.upc.wallpapeer.converters.DateConverter;
+
+@Entity(tableName = "element",
+        foreignKeys =
+        @ForeignKey(
+                entity = Project.class,
+                parentColumns = "id",
+                childColumns = "id_project",
+                onUpdate = ForeignKey.CASCADE,
+                onDelete = ForeignKey.CASCADE
+        ))
 public class Element {
 
     @PrimaryKey
+    @NonNull
     public String id;
 
     @ColumnInfo(name = "type_element")
@@ -37,6 +51,7 @@ public class Element {
     public float rotation;
 
     @ColumnInfo(name = "date_creation")
+    @TypeConverters(DateConverter.class)
     public Date dateCreation;
 
     public String id_project;
