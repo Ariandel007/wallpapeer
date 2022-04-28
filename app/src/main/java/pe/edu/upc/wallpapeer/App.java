@@ -3,6 +3,8 @@ package pe.edu.upc.wallpapeer;
 import android.app.Application;
 import android.content.Context;
 
+import pe.edu.upc.wallpapeer.utils.AppDatabase;
+
 public class App extends Application {
 
     private static Context context;
@@ -15,5 +17,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         context = getApplicationContext();
+        AppDatabase.getInstance(context);
     }
 }
