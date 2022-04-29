@@ -1,7 +1,6 @@
 package pe.edu.upc.wallpapeer.views;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.Observer;
 
 import android.content.Context;
 import android.content.Intent;
@@ -13,16 +12,13 @@ import android.widget.EditText;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.observers.DisposableCompletableObserver;
 import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.App;
 import pe.edu.upc.wallpapeer.R;
 
-import pe.edu.upc.wallpapeer.dao.ProjectDAO;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 
@@ -61,17 +57,22 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
                 Float anchoM = Float.parseFloat(etAncho.getText().toString());
                 proyecto = new Project(idM, nameM, dateM, altoM, anchoM);
                 Context context = this;
+
                 AppDatabase.getInstance(this).projectDAO().insert(proyecto).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(() -> {Log.e("nunca dudé", "a");
-                                        AppDatabase.getInstance(this).projectDAO().getAll().subscribeOn(Schedulers.io())
-                                        .observeOn(AndroidSchedulers.mainThread())
-                                        .subscribe((projects)-> {
-                                            Log.e("Proyectos", String.valueOf(projects.size()));
-                                        } );
+                        .subscribe(() -> {
+                            //Ejemplo de como llamar un getAll
+                            Log.e("nunca dudé", "a");
+                            AppDatabase.getInstance(context).projectDAO().getAll().subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe((projects)-> {
+                                Log.e("Proyectos", String.valueOf(projects.size()));
+                            } );
 
-                                        },
-                                throwable -> Log.e("TAG", "AAAAAAAAAAAAAAAAAAAAAA", throwable));
+                            }, throwable -> {
+                                Log.e("TAG", "AAAAAAAAAAAAAAAAAAAAAA", throwable);
+                            }
+                        );
 
 
 
