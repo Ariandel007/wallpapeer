@@ -46,7 +46,7 @@ public class CanvasView  extends View {
 
         int i = 0;
         for(Circle circle : getCircleList()){
-            canvas.drawCircle(circle.getX(),circle.getY(),100, paintList.get(i));
+            canvas.drawCircle(circle.getX(),circle.getY(),30, paintList.get(i));
         }
         //mPaint.setColor(Color.BLUE);
         /*for(Circle model : circleList) {
