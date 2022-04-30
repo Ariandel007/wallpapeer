@@ -24,11 +24,11 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
-import pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel;
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class CanvasActivity extends AppCompatActivity {
 
-    private JoinLienzoViewModel model;
+    private ConnectionPeerToPeerViewModel model;
     FloatingActionButton btnQr;
     ImageView imgQr;
     private String userDeviceName;
@@ -44,7 +44,7 @@ public class CanvasActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_canvas);
 
-        model = ViewModelProviders.of(this).get(JoinLienzoViewModel.class);
+        model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
 
         btnQr = findViewById(R.id.btn_qr);
         imgQr = findViewById(R.id.img_qr);
@@ -75,6 +75,16 @@ public class CanvasActivity extends AppCompatActivity {
                     }
                 }
             });
+
+            model.getInicioLaBusquedaDePares().observe(this, new Observer<Boolean>() {
+                @Override
+                public void onChanged(@Nullable Boolean aBoolean) {
+                    if (aBoolean != null && aBoolean) {
+                        Toast.makeText(CanvasActivity.this, "Se incio la busqueda de pares.", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
             model.getPeerList().observe(this, new Observer<List<WifiP2pDevice>>() {
                 @Override
                 public void onChanged(@Nullable final List<WifiP2pDevice> peers) {

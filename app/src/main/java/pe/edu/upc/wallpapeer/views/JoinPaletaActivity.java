@@ -19,18 +19,17 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
-import pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel;
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class JoinPaletaActivity extends AppCompatActivity {
 
     private String addressee;
     private String startDate;
     private boolean isOffline;
-    private JoinLienzoViewModel model;
+    private ConnectionPeerToPeerViewModel model;
     private ConstraintLayout loadingScreen;
     private ConstraintLayout loadingPallete;
 
@@ -137,7 +136,7 @@ public class JoinPaletaActivity extends AppCompatActivity {
 //            }
 //        });
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
-        model = ViewModelProviders.of(this).get(JoinLienzoViewModel.class);
+        model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
         startDate = getIntent().getStringExtra(Constants.DATE);
 
