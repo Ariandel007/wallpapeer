@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.databinding.Bindable;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
@@ -27,8 +30,9 @@ import pe.edu.upc.wallpapeer.connections.Client;
 import pe.edu.upc.wallpapeer.connections.IMessenger;
 import pe.edu.upc.wallpapeer.connections.Server;
 import pe.edu.upc.wallpapeer.connections.WIFIDirectConnections;
+import pe.edu.upc.wallpapeer.model.figures.Circle;
 
-public class JoinLienzoViewModel extends AndroidViewModel {
+public class JoinLienzoViewModel extends AndroidViewModel implements Observable{
     //NECESARIO PARA WIFIDIRECT
     private WifiP2pManager wifiP2pManager;
     private WifiP2pManager.Channel channel;
@@ -53,6 +57,10 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 
     private boolean isConnected = false;
 //
+    public final ObservableInt backgroundFill = new ObservableInt();
+    @Bindable
+    private MutableLiveData<List<Circle>> circleList;
+
 
     public JoinLienzoViewModel(@NonNull final Application application) {
         super(application);
@@ -113,6 +121,8 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 //        messageList = new MutableLiveData<>();
         peerList = new MutableLiveData<>();
         chatClosed = new MutableLiveData<>();
+        circleList = new MutableLiveData<>();
+
         registerReceiver();
     }
 
@@ -260,5 +270,27 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 //    public void deleteChat() {
 //        repository.deleteAllFrom(addressee);
 //    }
+
+    public ObservableInt getBackgroundFill() {
+        return backgroundFill;
+    }
+
+    public MutableLiveData<List<Circle>> getCircleList() {
+        return circleList;
+    }
+
+    public void setCircleList(MutableLiveData<List<Circle>> circleList) {
+        this.circleList = circleList;
+    }
+
+    @Override
+    public void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
+
+    }
+
+    @Override
+    public void removeOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
+
+    }
 
 }

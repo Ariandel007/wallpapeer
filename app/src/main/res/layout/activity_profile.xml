@@ -135,21 +135,5 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.977" />
 
-        <Button
-            android:id="@+id/btn_open_last_pyr"
-            android:layout_width="185dp"
-            android:layout_height="47dp"
-            android:background="#651FFF"
-            android:backgroundTint="#651FFF"
-            android:text="Abrir Ultimo Proyecto"
-            android:onClick="@{loginViewModel.abrirUltimoProyecto}"
-            android:textColor="#FFFFFF"
-            app:layout_constraintBottom_toTopOf="@+id/tilbox3"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.497"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tilboxProfile2"
-            app:layout_constraintVertical_bias="1.0" />
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
