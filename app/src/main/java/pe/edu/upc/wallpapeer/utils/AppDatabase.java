@@ -36,7 +36,7 @@ import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
                         Text.class,
                         Image.class,
                         Filter.class,
-                        }, version = 2)
+                        }, version = 6)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract PaletteDAO paletteDAO();
@@ -56,7 +56,9 @@ public abstract class AppDatabase extends RoomDatabase {
 
         if(INSTANCE == null) {
             INSTANCE = Room.databaseBuilder(context,
-                    AppDatabase.class, "localDB").build();
+                    AppDatabase.class, "localDB")
+                    .fallbackToDestructiveMigration()
+                    .build();
         }
 
         return INSTANCE;

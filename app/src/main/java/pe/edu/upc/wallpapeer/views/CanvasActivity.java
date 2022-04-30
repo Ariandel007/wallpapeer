@@ -64,6 +64,13 @@ public class CanvasActivity extends AppCompatActivity {
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
         startDate = getIntent().getStringExtra(Constants.DATE);
 
+        //EJEMPLO PARA OBTENER INTENTS
+//        Bundle extras = getIntent().getExtras();
+//        if (extras != null) {
+//            String projetcId = extras.getString("project_id");
+//            String deviceId = extras.getString("device_id");
+//            //The key argument here must match that used in the other activity
+//        }
 
         userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
         if (userDeviceName == null)
