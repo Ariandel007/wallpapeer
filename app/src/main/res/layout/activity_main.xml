@@ -20,7 +20,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="32dp"
-            android:layout_marginTop="84dp"
+            android:layout_marginTop="44dp"
             android:layout_marginEnd="32dp"
             android:background="@drawable/user_pass_box"
             android:ems="10"
@@ -28,17 +28,17 @@
             android:hint="Usuario"
             android:inputType="textPersonName"
             android:minHeight="48dp"
-            android:textColorHint="#767BBF"
             android:text="@={loginViewModel.username}"
+            android:textColorHint="#767BBF"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvInicioSesion" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
-            android:layout_width="357dp"
-            android:layout_height="60dp"
+            android:layout_width="368dp"
+            android:layout_height="59dp"
             android:layout_marginTop="28dp"
             android:gravity="center"
             app:endIconMode="password_toggle"
@@ -49,7 +49,7 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/etPassword2"
-                android:layout_width="329dp"
+                android:layout_width="347dp"
                 android:layout_height="48dp"
                 android:background="@drawable/user_pass_box"
                 android:gravity="center"
@@ -65,13 +65,12 @@
             android:id="@+id/tvLogo"
             android:layout_width="349dp"
             android:layout_height="83dp"
-            android:layout_marginTop="68dp"
+            android:layout_marginTop="24dp"
             android:text="@string/app_name"
             android:textAlignment="center"
             android:textColor="#767BBF"
             android:textSize="60sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -80,7 +79,7 @@
             android:layout_width="171dp"
             android:layout_height="50dp"
             android:layout_marginStart="100dp"
-            android:layout_marginTop="60dp"
+            android:layout_marginTop="24dp"
             android:layout_marginEnd="100dp"
             android:background="@drawable/button_rounded"
             android:onClick="@{()->loginViewModel.onLoginClick()}"
@@ -88,9 +87,11 @@
             android:textAllCaps="false"
             android:textColor="@color/white"
             android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvPregunta" />
+            app:layout_constraintTop_toBottomOf="@+id/tvPregunta"
+            app:layout_constraintVertical_bias="0.054" />
 
         <TextView
             android:id="@+id/tvRegistrar"
@@ -121,13 +122,13 @@
             android:id="@+id/tvInicioSesion"
             android:layout_width="244dp"
             android:layout_height="41dp"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="28dp"
             android:text="Inicio de sesión"
             android:textAlignment="center"
             android:textColor="#767BBF"
             android:textSize="30sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.504"
+            app:layout_constraintHorizontal_bias="0.497"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvLogo" />
 
