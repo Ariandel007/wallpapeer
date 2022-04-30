@@ -25,6 +25,7 @@ import java.util.List;
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
+import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 
 public class CanvasActivity extends AppCompatActivity {
 
@@ -33,10 +34,12 @@ public class CanvasActivity extends AppCompatActivity {
     ImageView imgQr;
     private String userDeviceName;
     private ConstraintLayout constraintLayout;
+    ConstraintLayout constraintLayoutLoadingSearchPeers;
     private boolean imgQrShowed = false;
     private String addressee;
     private boolean isOffline;
     private String startDate;
+    private CanvasView canvasView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,9 +51,15 @@ public class CanvasActivity extends AppCompatActivity {
 
         btnQr = findViewById(R.id.btn_qr);
         imgQr = findViewById(R.id.img_qr);
+        canvasView = findViewById(R.id.canvas);
         constraintLayout = findViewById(R.id.popup_qr);
         constraintLayout.setVisibility(View.GONE);
-
+        constraintLayoutLoadingSearchPeers  = findViewById(R.id.search_peer_connections_canvas);
+        //
+        constraintLayoutLoadingSearchPeers.setVisibility(View.VISIBLE);
+        btnQr.setVisibility(View.GONE);
+        canvasView.setVisibility(View.GONE);
+        //
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
         startDate = getIntent().getStringExtra(Constants.DATE);
@@ -80,7 +89,10 @@ public class CanvasActivity extends AppCompatActivity {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-                        Toast.makeText(CanvasActivity.this, "Se incio la busqueda de pares.", Toast.LENGTH_SHORT).show();
+//                        Toast.makeText(CanvasActivity.this, "Se incio la busqueda de pares.", Toast.LENGTH_SHORT).show();
+                        constraintLayoutLoadingSearchPeers.setVisibility(View.GONE);
+                        btnQr.setVisibility(View.VISIBLE);
+                        canvasView.setVisibility(View.VISIBLE);
                     }
                 }
             });
