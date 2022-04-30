@@ -3,7 +3,6 @@ package pe.edu.upc.wallpapeer.views;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.databinding.DataBindingUtil;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
@@ -13,7 +12,6 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -27,7 +25,6 @@ import java.util.List;
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
 import pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel;
-import pe.edu.upc.wallpapeer.viewmodels.MainCanvasViewModel;
 
 public class CanvasActivity extends AppCompatActivity {
 
