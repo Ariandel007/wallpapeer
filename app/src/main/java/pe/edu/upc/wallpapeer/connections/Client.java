@@ -11,16 +11,16 @@ import java.util.Calendar;
 import java.util.Date;
 
 import pe.edu.upc.wallpapeer.LocalDevice;
-import pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel;
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class Client extends IMessenger {
     private Socket socket;
     private String peerName;
     private String host;
-    private JoinLienzoViewModel model;
+    private ConnectionPeerToPeerViewModel model;
     private MutableLiveData<Boolean> isConnected;
 
-    public Client(String host, JoinLienzoViewModel model, MutableLiveData<Boolean> isConnected) {
+    public Client(String host, ConnectionPeerToPeerViewModel model, MutableLiveData<Boolean> isConnected) {
         this.host = host;
         this.isConnected = isConnected;
         this.model = model;

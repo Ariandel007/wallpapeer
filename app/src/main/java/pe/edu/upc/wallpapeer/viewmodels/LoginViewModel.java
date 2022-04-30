@@ -90,7 +90,11 @@ public class LoginViewModel extends ViewModel implements Serializable {
 
                         @Override
                         public void onError(ANError anError) {
-                            Toast.makeText(context, "Error: "+anError.getErrorDetail(), Toast.LENGTH_SHORT).show();
+                            if(anError.getErrorCode() == 500) {
+                                Toast.makeText(context, "Error: "+anError.getErrorDetail(), Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(context, "Credenciales Invalidas", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     });
 

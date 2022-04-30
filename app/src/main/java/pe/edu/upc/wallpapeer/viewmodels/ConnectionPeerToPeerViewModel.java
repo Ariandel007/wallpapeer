@@ -16,6 +16,9 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
+import androidx.databinding.Bindable;
+import androidx.databinding.Observable;
+import androidx.databinding.ObservableInt;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.MutableLiveData;
 
@@ -27,8 +30,9 @@ import pe.edu.upc.wallpapeer.connections.Client;
 import pe.edu.upc.wallpapeer.connections.IMessenger;
 import pe.edu.upc.wallpapeer.connections.Server;
 import pe.edu.upc.wallpapeer.connections.WIFIDirectConnections;
+import pe.edu.upc.wallpapeer.model.figures.Circle;
 
-public class JoinLienzoViewModel extends AndroidViewModel {
+public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements Observable{
     //NECESARIO PARA WIFIDIRECT
     private WifiP2pManager wifiP2pManager;
     private WifiP2pManager.Channel channel;
@@ -38,8 +42,10 @@ public class JoinLienzoViewModel extends AndroidViewModel {
     private WIFIDirectConnections connections;
     private IMessenger messenger;
     private String addressee;
+
 //    private MessageRepository repository;
 
+    private MutableLiveData<Boolean> inicioLaBusquedaDePares;
 
     private MutableLiveData<Boolean> socketIsReady;
 
@@ -53,8 +59,12 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 
     private boolean isConnected = false;
 //
+    public final ObservableInt backgroundFill = new ObservableInt();
+    @Bindable
+    private MutableLiveData<List<Circle>> circleList;
 
-    public JoinLienzoViewModel(@NonNull final Application application) {
+
+    public ConnectionPeerToPeerViewModel(@NonNull final Application application) {
         super(application);
         app = application;
         wifiP2pManager = (WifiP2pManager) app.getApplicationContext().getSystemService(Context.WIFI_P2P_SERVICE);
@@ -69,14 +79,14 @@ public class JoinLienzoViewModel extends AndroidViewModel {
                 Log.d("new connection", info.toString());
                 final InetAddress address = info.groupOwnerAddress;
                 if (info.isGroupOwner) {
-                    Server server = new Server(JoinLienzoViewModel.this, socketIsReady);
+                    Server server = new Server(ConnectionPeerToPeerViewModel.this, socketIsReady);
                     server.start();
                     messenger = server;
                     if(messenger != null) {
                         socketIsReady.setValue(true);
                     }
                 } else {
-                    Client client = new Client(address.getHostAddress(), JoinLienzoViewModel.this, socketIsReady);
+                    Client client = new Client(address.getHostAddress(), ConnectionPeerToPeerViewModel.this, socketIsReady);
                     client.start();
                     messenger = client;
                     if(messenger != null) {
@@ -110,9 +120,12 @@ public class JoinLienzoViewModel extends AndroidViewModel {
         connections = new WIFIDirectConnections();
 //        repository = MessageRepository.getInstance();
         socketIsReady = new MutableLiveData<>(false);
+        inicioLaBusquedaDePares = new MutableLiveData<>(false);
 //        messageList = new MutableLiveData<>();
         peerList = new MutableLiveData<>();
         chatClosed = new MutableLiveData<>();
+        circleList = new MutableLiveData<>();
+
         registerReceiver();
     }
 
@@ -166,6 +179,7 @@ public class JoinLienzoViewModel extends AndroidViewModel {
             @Override
             public void onSuccess() {
                 Log.d("", "success peer discovery");
+                inicioLaBusquedaDePares.setValue(true);
             }
 
             @Override
@@ -261,4 +275,29 @@ public class JoinLienzoViewModel extends AndroidViewModel {
 //        repository.deleteAllFrom(addressee);
 //    }
 
+    public ObservableInt getBackgroundFill() {
+        return backgroundFill;
+    }
+
+    public MutableLiveData<List<Circle>> getCircleList() {
+        return circleList;
+    }
+
+    public void setCircleList(MutableLiveData<List<Circle>> circleList) {
+        this.circleList = circleList;
+    }
+
+    @Override
+    public void addOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
+
+    }
+
+    @Override
+    public void removeOnPropertyChangedCallback(Observable.OnPropertyChangedCallback callback) {
+
+    }
+
+    public MutableLiveData<Boolean> getInicioLaBusquedaDePares() {
+        return inicioLaBusquedaDePares;
+    }
 }
