@@ -83,7 +83,7 @@ public class ProjectListActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     if (adapter.getSelected() != null) {
                         Project projectSelected = adapter.getSelected();
-                        AppDatabase.getInstance(context).deviceDAO().getDeviceByDeviceName(userDeviceName)
+                        AppDatabase.getInstance(context).deviceDAO().getDeviceByDeviceNameAndProject(userDeviceName, projectSelected.getId())
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                         (device) -> {
                             AppDatabase.getInstance(context).canvaDAO().getCanvaByIdDevice(device.getId())
