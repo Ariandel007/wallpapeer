@@ -18,9 +18,10 @@ public interface ProjectDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     public Completable insert(Project project);
 
-    @Query("SELECT * FROM project")
+    @Query("SELECT * FROM project ORDER BY date_creation DESC")
     Single<List<Project>> getAll();
 
     @Query("SELECT * FROM project WHERE id = :id")
     Single<Project> getProject(String id);
+
 }

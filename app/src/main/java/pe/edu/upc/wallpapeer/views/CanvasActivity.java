@@ -86,6 +86,7 @@ public class CanvasActivity extends AppCompatActivity {
 
             if(extras.getString("project_load").equals("loaded_project")) {
                 //Hacer cosas adicionales para cuando cargue un proyecto
+                loadExistingProject(contextCanvas);
             } else {
                 //Hacer cosas cuando se cree un proyecto
                 loadNewProject(contextCanvas);
@@ -212,6 +213,44 @@ public class CanvasActivity extends AppCompatActivity {
                         initializaPeerSearch();
                         // Se inicializa observable del proyecto
                         startElementObservable(contextCanvas);
+                    },
+                    throwable -> {
+                        Log.e("ERROR - GET PRY", throwable.getMessage());
+                    });
+        }, throwable -> {
+            Log.e("ERROR - GET PRY", throwable.getMessage());
+        });
+    }
+
+    @SuppressLint("CheckResult")
+    public void loadExistingProject(Context contextCanvas) {
+        AppDatabase.getInstance(contextCanvas).projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe((Project project) -> {
+            Log.e("Proyecto Traido", project.toString());
+            AppDatabase.getInstance(contextCanvas).canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe((canva)-> {
+                        AppDatabase.getInstance(contextCanvas).elementDAO().getAllByProject(projetcId)
+                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                        elements -> {
+                            elementList = elements;
+                            canvasView.setElementListCanvas(elements);
+                            //
+//                            canvasView.setElementListCanvas(elementList);
+                            canvasView.setCanvasContext(contextCanvas);
+                            canvasView.setCurrentProjectEntity(project);
+                            canvasView.setCurrentCanvaEntity(canva);
+                            Toast.makeText(CanvasActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
+                            //Se inicia la busqueda de pares
+                            initializaPeerSearch();
+                            // Se inicializa observable del proyecto
+                            startElementObservable(contextCanvas);
+                            //Se pinta
+                            canvasView.triggerOnDraw();
+
+                        }, throwable -> {
+                            Log.e("Error", "Error consulta");
+                        }
+                        );
                     },
                     throwable -> {
                         Log.e("ERROR - GET PRY", throwable.getMessage());

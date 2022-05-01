@@ -19,4 +19,7 @@ public interface CanvaDAO {
     @Query("SELECT * FROM canva WHERE id = :id")
     Single<Canva> getCanva(String id);
 
+    @Query("SELECT * FROM canva WHERE id_device = :idDevice")
+    Single<Canva> getCanvaByIdDevice(String idDevice);
+
 }

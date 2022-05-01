@@ -9,6 +9,7 @@ import androidx.room.Transaction;
 import java.util.List;
 
 import io.reactivex.Completable;
+import io.reactivex.Single;
 import pe.edu.upc.wallpapeer.entities.Device;
 import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 
@@ -18,8 +19,14 @@ public interface DeviceDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     Completable insert(Device device);
 
+//    @Transaction
+//    @Query("SELECT * FROM Device")
+//    public List<PaletteDevice> getPalettesDevices();
     @Transaction
     @Query("SELECT * FROM Device")
-    public List<PaletteDevice> getPalettesDevices();
+    Single<List<Device>> getDevices();
+
+    @Query("SELECT * FROM Device WHERE device_name = :deviceName LIMIT 1")
+    Single<Device> getDeviceByDeviceName(String deviceName);
 
 }
