@@ -26,7 +26,7 @@ public interface DeviceDAO {
     @Query("SELECT * FROM Device")
     Single<List<Device>> getDevices();
 
-    @Query("SELECT * FROM Device WHERE device_name = :deviceName LIMIT 1")
-    Single<Device> getDeviceByDeviceName(String deviceName);
+    @Query("SELECT * FROM Device WHERE device_name = :deviceName AND id_project =:idProject LIMIT 1")
+    Single<Device> getDeviceByDeviceNameAndProject(String deviceName, String idProject);
 
 }
