@@ -8,6 +8,7 @@ import androidx.room.Transaction;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import pe.edu.upc.wallpapeer.entities.Device;
 import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 
@@ -15,7 +16,7 @@ import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 public interface DeviceDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(Device device);
+    Completable insert(Device device);
 
     @Transaction
     @Query("SELECT * FROM Device")
