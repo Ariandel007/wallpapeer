@@ -47,6 +47,14 @@ public class Client extends IMessenger {
                 String messageText = (String) inputStream.readObject();
                 if (messageText != null) {
                     if (isAddresseeSet) {
+                        //EJEMPLO, Tomar con pinzas uwu
+//                        String obtenerEvent = messageText.substring(7,14);
+//                        switch (obtenerEvent) {
+//                            case CodeEvent.PINCH_EVENT:
+//                                //haz cosas
+//                                break;
+//                        }
+
                         // Si llega un nuevo mensaje, lo guardaremos directamente en la base de datos.
                         // Es el objeto de esta base de datos el que es activado por la actividad correspondiente al objeto leído
                         // Ya no tenemos que enviar a Active
