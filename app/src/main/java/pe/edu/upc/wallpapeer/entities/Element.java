@@ -54,6 +54,110 @@ public class Element {
     @TypeConverters(DateConverter.class)
     public Date dateCreation;
 
+    @ColumnInfo(name = "id_project")
     public String id_project;
 
+    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project) {
+        this.id = id;
+        this.typeElement = typeElement;
+        this.widthElement = widthElement;
+        this.heightElement = heightElement;
+        this.posxElement = posxElement;
+        this.posyElement = posyElement;
+        this.zIndex = zIndex;
+        this.opacity = opacity;
+        this.rotation = rotation;
+        this.dateCreation = dateCreation;
+        this.id_project = id_project;
+    }
+    public Element() {}
+
+    @NonNull
+    public String getId() {
+        return id;
+    }
+
+    public void setId(@NonNull String id) {
+        this.id = id;
+    }
+
+    public String getTypeElement() {
+        return typeElement;
+    }
+
+    public void setTypeElement(String typeElement) {
+        this.typeElement = typeElement;
+    }
+
+    public float getWidthElement() {
+        return widthElement;
+    }
+
+    public void setWidthElement(float widthElement) {
+        this.widthElement = widthElement;
+    }
+
+    public float getHeightElement() {
+        return heightElement;
+    }
+
+    public void setHeightElement(float heightElement) {
+        this.heightElement = heightElement;
+    }
+
+    public float getPosxElement() {
+        return posxElement;
+    }
+
+    public void setPosxElement(float posxElement) {
+        this.posxElement = posxElement;
+    }
+
+    public float getPosyElement() {
+        return posyElement;
+    }
+
+    public void setPosyElement(float posyElement) {
+        this.posyElement = posyElement;
+    }
+
+    public int getzIndex() {
+        return zIndex;
+    }
+
+    public void setzIndex(int zIndex) {
+        this.zIndex = zIndex;
+    }
+
+    public float getOpacity() {
+        return opacity;
+    }
+
+    public void setOpacity(float opacity) {
+        this.opacity = opacity;
+    }
+
+    public float getRotation() {
+        return rotation;
+    }
+
+    public void setRotation(float rotation) {
+        this.rotation = rotation;
+    }
+
+    public Date getDateCreation() {
+        return dateCreation;
+    }
+
+    public void setDateCreation(Date dateCreation) {
+        this.dateCreation = dateCreation;
+    }
+
+    public String getId_project() {
+        return id_project;
+    }
+
+    public void setId_project(String id_project) {
+        this.id_project = id_project;
+    }
 }
