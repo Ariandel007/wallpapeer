@@ -4,8 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <data>
         <variable
-            name="JoinLienzoViewModel"
-            type="pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel" />
+            name="ConnectionPeerToPeerViewModel"
+            type="pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/mainScreenJoinPaleta"

@@ -20,15 +20,14 @@ import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 
 import java.util.List;
-import java.util.Objects;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
-import pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel;
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class LastProjectActivity extends AppCompatActivity {
 
-    private JoinLienzoViewModel model;
+    private ConnectionPeerToPeerViewModel model;
     Button btnQr;
     ImageView imgQr;
     private String addressee;
@@ -56,13 +55,13 @@ public class LastProjectActivity extends AppCompatActivity {
         } else {
 
             model.startSearch();
-            model.chatIsReady().observe(this, new Observer<Boolean>() {
+            model.socketIsReady().observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-                        Objects.requireNonNull(getSupportActionBar()).show();
-                        addressee = model.getAddressee();
-                        getSupportActionBar().setTitle(addressee);
+//                        Objects.requireNonNull(getSupportActionBar()).show();
+//                        addressee = model.getAddressee();
+//                        getSupportActionBar().setTitle(addressee);
                     }
                 }
             });
@@ -112,7 +111,7 @@ public class LastProjectActivity extends AppCompatActivity {
 
     private void initConnection() {
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
-        model = ViewModelProviders.of(this).get(JoinLienzoViewModel.class);
+        model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
         startDate = getIntent().getStringExtra(Constants.DATE);
     }
