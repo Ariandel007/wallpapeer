@@ -8,6 +8,7 @@ import androidx.room.Transaction;
 
 import java.util.List;
 
+import io.reactivex.Completable;
 import pe.edu.upc.wallpapeer.entities.Palette;
 
 import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
@@ -16,7 +17,7 @@ import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 public interface PaletteDAO {
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    void insert(Palette palette);
+    Completable insert(Palette palette);
 
 
 
