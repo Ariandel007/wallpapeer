@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -14,17 +15,21 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Element;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.model.figures.Circle;
+import pe.edu.upc.wallpapeer.utils.AppDatabase;
 
 public class CanvasView  extends View {
 
     private Paint mPaint;
     private int backgroundFill;
-    private List<Circle> circleList;
+//    private List<Circle> circleList;
     float posX = 50;
     float posY = 50;
     private List<Paint> paintList;
@@ -40,7 +45,7 @@ public class CanvasView  extends View {
     public CanvasView(Context context, @Nullable AttributeSet attributeSet) {
         super(context, attributeSet);
         paintList = new ArrayList<>();
-        circleList = new ArrayList<>();
+//        circleList = new ArrayList<>();
         //mPaint.setStyle(Paint.Style.FILL);
     }
 
@@ -48,12 +53,14 @@ public class CanvasView  extends View {
     protected void onDraw(Canvas canvas){
         super.onDraw(canvas);
 
-        //mPaint.setColor(backgroundFill);
-        //canvas.drawPaint(mPaint);
+        for(Element element : getElementListCanvas()){
+            if(element.getTypeElement().equals("circle_figure")) {
+                mPaint = new Paint();
+                mPaint.setStyle(Paint.Style.FILL);
+                mPaint.setColor(Color.BLUE);
+                canvas.drawCircle(element.getPosxElement(),element.getPosyElement(),element.getWidthElement(), mPaint);
+            }
 
-        int i = 0;
-        for(Circle circle : getCircleList()){
-            canvas.drawCircle(circle.getX(),circle.getY(),30, paintList.get(i));
         }
 
     }
@@ -61,12 +68,12 @@ public class CanvasView  extends View {
     public void setBackgroundFill(@ColorInt int backgroundFill){
         this.backgroundFill = backgroundFill;
     }
-    public List<Circle> getCircleList(){
-        return circleList;
-    }
-    public void setCircleList(List<Circle> circles){
-        this.circleList = circles;
-    }
+//    public List<Circle> getCircleList(){
+//        return circleList;
+//    }
+//    public void setCircleList(List<Circle> circles){
+//        this.circleList = circles;
+//    }
 
     ///para el evento ontouch
 
@@ -81,14 +88,34 @@ public class CanvasView  extends View {
         if(event.getAction() == MotionEvent.ACTION_UP){accion = "up"; }*/
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
-                mPaint = new Paint();
-                mPaint.setStyle(Paint.Style.FILL);
-                mPaint.setColor(Color.BLUE);
-                paintList.add(mPaint);
-                mCircle = new Circle(posX,posY);
+//                mPaint = new Paint();
+//                mPaint.setStyle(Paint.Style.FILL);
+//                mPaint.setColor(Color.BLUE);
+//                paintList.add(mPaint);
+//                mCircle = new Circle(posX,posY);
+//                mPath = new Path();
+//                mPath.moveTo(posX,posY);
+//                circleList.add(mCircle);
+                //SAVE AN ELEMENT
+                Element newElement = new Element();
+                newElement.setId(UUID.randomUUID().toString());
+                newElement.setTypeElement("circle_figure");
+                newElement.setRotation(0);
+                newElement.setzIndex(0);
+                newElement.setHeightElement(30);
+                newElement.setWidthElement(30);
+                newElement.setPosxElement(posX);
+                newElement.setPosyElement(posY);
+                newElement.setId_project(currentProjectEntity.id);
+                AppDatabase.getInstance(canvasContext).elementDAO().insert(newElement).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                    Log.e("Se creo","Se creo con exito");
+                }, throwable -> {
+                    Log.e("Error","Error al crear");
+                });
+                //SET PATH
                 mPath = new Path();
                 mPath.moveTo(posX,posY);
-                circleList.add(mCircle);
                 break;
             case MotionEvent.ACTION_MOVE:
                 /*respecto a un area*/
@@ -100,8 +127,14 @@ public class CanvasView  extends View {
                 }
                 break;*/
         }
-        invalidate();
+        //on Draw se llamada tras cualquierda llamada a invalidate
+//        invalidate();
         return true;
+    }
+
+    //on Draw se llamada tras cualquierda llamada a invalidate
+    public void triggerOnDraw() {
+        invalidate();
     }
 
     public Paint getmPaint() {

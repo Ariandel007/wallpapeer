@@ -210,6 +210,8 @@ public class CanvasActivity extends AppCompatActivity {
                         Toast.makeText(CanvasActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
                         //Se inicia la busqueda de pares
                         initializaPeerSearch();
+                        // Se inicializa observable del proyecto
+                        startElementObservable(contextCanvas);
                     },
                     throwable -> {
                         Log.e("ERROR - GET PRY", throwable.getMessage());
@@ -217,5 +219,20 @@ public class CanvasActivity extends AppCompatActivity {
         }, throwable -> {
             Log.e("ERROR - GET PRY", throwable.getMessage());
         });
+    }
+
+    public void startElementObservable(Context contextCanvas) {
+        AppDatabase.getInstance(contextCanvas).elementDAO().getAllElementsLiveDataByProject(projetcId).observe(this, new Observer<List<Element>>() {
+                    @Override
+                    public void onChanged(List<Element> elements) {
+                        if(elements.size() > 0) {
+                            Log.e("On CHanged Elements", String.valueOf(elements.size()));
+                            canvasView.setElementListCanvas(elements);
+                            canvasView.triggerOnDraw();
+                        }
+                    }
+                }
+
+        );
     }
 }

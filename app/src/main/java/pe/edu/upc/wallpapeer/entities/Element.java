@@ -54,6 +54,7 @@ public class Element {
     @TypeConverters(DateConverter.class)
     public Date dateCreation;
 
+    @ColumnInfo(name = "id_project")
     public String id_project;
 
     public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project) {

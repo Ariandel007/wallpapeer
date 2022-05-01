@@ -20,10 +20,17 @@ public interface ElementDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     Completable insert(Element element);
 
-    @Query("SELECT * FROM element")
+    @Query("SELECT * FROM element ")
     LiveData<List<Element>> getAllElementsLiveData();
+
+    @Query("SELECT * FROM element WHERE id_project = :idProject")
+    LiveData<List<Element>> getAllElementsLiveDataByProject(String idProject);
+
 
     @Query("SELECT * FROM element")
     Single<List<Element>> getAll();
+
+    @Query("SELECT * FROM element WHERE id_project =:idProject")
+    Single<List<Element>> getAllByProject(String idProject);
 
 }
