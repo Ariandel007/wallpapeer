@@ -96,6 +96,7 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
                                    intent.putExtra("project_id",idMPRoject);
                                    intent.putExtra("device_id",device.getId());
                                     intent.putExtra("canva_id",canva.getId());
+                                    intent.putExtra("project_load","new_project");
                                     this.startActivity(intent);
 
                                 }, throwable -> {

@@ -6,6 +6,8 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
@@ -20,10 +22,16 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.entities.Element;
+import pe.edu.upc.wallpapeer.entities.Project;
+import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 
@@ -40,6 +48,10 @@ public class CanvasActivity extends AppCompatActivity {
     private boolean isOffline;
     private String startDate;
     private CanvasView canvasView;
+    private String projetcId = "";
+    private String deviceId  = "";
+    private String canvaId   = "";
+    private  List<Element> elementList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,12 +77,20 @@ public class CanvasActivity extends AppCompatActivity {
         startDate = getIntent().getStringExtra(Constants.DATE);
 
         //EJEMPLO PARA OBTENER INTENTS
-//        Bundle extras = getIntent().getExtras();
-//        if (extras != null) {
-//            String projetcId = extras.getString("project_id");
-//            String deviceId = extras.getString("device_id");
-//            //The key argument here must match that used in the other activity
-//        }
+        Bundle extras = getIntent().getExtras();
+        Context contextCanvas = this;
+        if (extras != null) {
+            projetcId = extras.getString("project_id");
+            deviceId = extras.getString("device_id");
+            canvaId = extras.getString("canva_id");
+
+            if(extras.getString("project_load").equals("loaded_project")) {
+                //Hacer cosas adicionales para cuando cargue un proyecto
+            } else {
+                //Hacer cosas cuando se cree un proyecto
+                loadNewProject(contextCanvas);
+            }
+        }
 
         userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
         if (userDeviceName == null)
@@ -92,17 +112,16 @@ public class CanvasActivity extends AppCompatActivity {
                 }
             });
 
-            model.getInicioLaBusquedaDePares().observe(this, new Observer<Boolean>() {
-                @Override
-                public void onChanged(@Nullable Boolean aBoolean) {
-                    if (aBoolean != null && aBoolean) {
-//                        Toast.makeText(CanvasActivity.this, "Se incio la busqueda de pares.", Toast.LENGTH_SHORT).show();
-                        constraintLayoutLoadingSearchPeers.setVisibility(View.GONE);
-                        btnQr.setVisibility(View.VISIBLE);
-                        canvasView.setVisibility(View.VISIBLE);
-                    }
-                }
-            });
+//            model.getInicioLaBusquedaDePares().observe(this, new Observer<Boolean>() {
+//                @Override
+//                public void onChanged(@Nullable Boolean aBoolean) {
+//                    if (aBoolean != null && aBoolean) {
+//                        constraintLayoutLoadingSearchPeers.setVisibility(View.GONE);
+//                        btnQr.setVisibility(View.VISIBLE);
+//                        canvasView.setVisibility(View.VISIBLE);
+//                    }
+//                }
+//            });
 
             model.getPeerList().observe(this, new Observer<List<WifiP2pDevice>>() {
                 @Override
@@ -160,5 +179,43 @@ public class CanvasActivity extends AppCompatActivity {
 //        activityMainBinding.executePendingBindings();
 
 
+    }
+
+    public void initializaPeerSearch() {
+        model.getInicioLaBusquedaDePares().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean != null && aBoolean) {
+                    constraintLayoutLoadingSearchPeers.setVisibility(View.GONE);
+                    btnQr.setVisibility(View.VISIBLE);
+                    canvasView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    @SuppressLint("CheckResult")
+    public void loadNewProject(Context contextCanvas) {
+        AppDatabase.getInstance(contextCanvas).projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe((Project project) -> {
+            Log.e("Proyecto Traido", project.toString());
+            AppDatabase.getInstance(contextCanvas).canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe((canva)-> {
+                        Log.e("Canvas Traido", canva.toString());
+                        elementList = new ArrayList<>();
+                        canvasView.setElementListCanvas(elementList);
+                        canvasView.setCanvasContext(contextCanvas);
+                        canvasView.setCurrentProjectEntity(project);
+                        canvasView.setCurrentCanvaEntity(canva);
+                        Toast.makeText(CanvasActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
+                        //Se inicia la busqueda de pares
+                        initializaPeerSearch();
+                    },
+                    throwable -> {
+                        Log.e("ERROR - GET PRY", throwable.getMessage());
+                    });
+        }, throwable -> {
+            Log.e("ERROR - GET PRY", throwable.getMessage());
+        });
     }
 }

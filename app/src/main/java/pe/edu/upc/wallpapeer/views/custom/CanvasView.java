@@ -15,17 +15,24 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
+import pe.edu.upc.wallpapeer.entities.Canva;
+import pe.edu.upc.wallpapeer.entities.Element;
+import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.model.figures.Circle;
 
 public class CanvasView  extends View {
 
     private Paint mPaint;
     private int backgroundFill;
-    private List<Circle> circleList; // = Collections.emptyList();
+    private List<Circle> circleList;
     float posX = 50;
     float posY = 50;
     private List<Paint> paintList;
     private Circle mCircle;
+    private  List<Element> elementListCanvas;
+    private  Context canvasContext;
+    private Project currentProjectEntity;
+    private Canva currentCanvaEntity;
 
     ///para el evento ontouch
     private Path mPath;
@@ -48,33 +55,7 @@ public class CanvasView  extends View {
         for(Circle circle : getCircleList()){
             canvas.drawCircle(circle.getX(),circle.getY(),30, paintList.get(i));
         }
-        //mPaint.setColor(Color.BLUE);
-        /*for(Circle model : circleList) {
-            canvas.drawCircle(model.getX(), model.getY(), 100, mPaint);
-            if (accion =="down"){
-                mPath.moveTo(iniTouchX,iniTouchY);
-                model.setX(iniTouchX);
-                model.setY(iniTouchY);
-                //setCircleList(Arrays.asList(model));
-                canvas.drawCircle(model.getX(), model.getY(), 100, mPaint);
-                canvas.drawPath(mPath,mPaint);
-            }
-        }*/
-        /// para el evento ontouch
-        /*if (accion =="down"){
-            mPath.moveTo(iniTouchX,iniTouchY);
-            canvas.drawCircle(iniTouchX, iniTouchY, 100, mPaint);
-        }
-        if (accion == "move") {
-            mPath.moveTo(iniTouchX, iniTouchY);
-            canvas.drawCircle(iniTouchX, iniTouchY, 100, mPaint);
-        }
-        if (accion == "up")
-            mPath.moveTo(iniTouchX, iniTouchY);
-            canvas.drawCircle(iniTouchX, iniTouchY, 100, mPaint);*/
 
-        //canvas.drawPath(mPath,mPaint);
-        //canvas.restore();
     }
 
     public void setBackgroundFill(@ColorInt int backgroundFill){
@@ -121,6 +102,90 @@ public class CanvasView  extends View {
         }
         invalidate();
         return true;
+    }
+
+    public Paint getmPaint() {
+        return mPaint;
+    }
+
+    public void setmPaint(Paint mPaint) {
+        this.mPaint = mPaint;
+    }
+
+    public int getBackgroundFill() {
+        return backgroundFill;
+    }
+
+    public float getPosX() {
+        return posX;
+    }
+
+    public void setPosX(float posX) {
+        this.posX = posX;
+    }
+
+    public float getPosY() {
+        return posY;
+    }
+
+    public void setPosY(float posY) {
+        this.posY = posY;
+    }
+
+    public List<Paint> getPaintList() {
+        return paintList;
+    }
+
+    public void setPaintList(List<Paint> paintList) {
+        this.paintList = paintList;
+    }
+
+    public Circle getmCircle() {
+        return mCircle;
+    }
+
+    public void setmCircle(Circle mCircle) {
+        this.mCircle = mCircle;
+    }
+
+    public List<Element> getElementListCanvas() {
+        return elementListCanvas;
+    }
+
+    public void setElementListCanvas(List<Element> elementListCanvas) {
+        this.elementListCanvas = elementListCanvas;
+    }
+
+    public Path getmPath() {
+        return mPath;
+    }
+
+    public void setmPath(Path mPath) {
+        this.mPath = mPath;
+    }
+
+    public Context getCanvasContext() {
+        return canvasContext;
+    }
+
+    public void setCanvasContext(Context canvasContext) {
+        this.canvasContext = canvasContext;
+    }
+
+    public Project getCurrentProjectEntity() {
+        return currentProjectEntity;
+    }
+
+    public void setCurrentProjectEntity(Project currentProjectEntity) {
+        this.currentProjectEntity = currentProjectEntity;
+    }
+
+    public Canva getCurrentCanvaEntity() {
+        return currentCanvaEntity;
+    }
+
+    public void setCurrentCanvaEntity(Canva currentCanvaEntity) {
+        this.currentCanvaEntity = currentCanvaEntity;
     }
 }
 
