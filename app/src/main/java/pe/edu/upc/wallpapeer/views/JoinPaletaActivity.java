@@ -19,18 +19,17 @@ import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
-import pe.edu.upc.wallpapeer.viewmodels.JoinLienzoViewModel;
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class JoinPaletaActivity extends AppCompatActivity {
 
     private String addressee;
     private String startDate;
     private boolean isOffline;
-    private JoinLienzoViewModel model;
+    private ConnectionPeerToPeerViewModel model;
     private ConstraintLayout loadingScreen;
     private ConstraintLayout loadingPallete;
 
@@ -65,13 +64,16 @@ public class JoinPaletaActivity extends AppCompatActivity {
             btnDecodes.setVisibility(View.VISIBLE);
 
             model.startSearch();
-            model.chatIsReady().observe(this, new Observer<Boolean>() {
+            model.socketIsReady().observe(this, new Observer<Boolean>() {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-                        Objects.requireNonNull(getSupportActionBar()).show();
-                        addressee = model.getAddressee();
-                        getSupportActionBar().setTitle(addressee);
+//                        Objects.requireNonNull(getSupportActionBar()).show();
+//                        addressee = model.getAddressee();
+//                        getSupportActionBar().setTitle(addressee);
+                        Toast.makeText(JoinPaletaActivity.this, "Conexion realizada.", Toast.LENGTH_SHORT).show();
+                        loadingScreen.setVisibility(View.GONE);
+                        loadingPallete.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -134,7 +136,7 @@ public class JoinPaletaActivity extends AppCompatActivity {
 //            }
 //        });
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
-        model = ViewModelProviders.of(this).get(JoinLienzoViewModel.class);
+        model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
         startDate = getIntent().getStringExtra(Constants.DATE);
 
@@ -154,26 +156,28 @@ public class JoinPaletaActivity extends AppCompatActivity {
             }
         });
 
-        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
-            @Override
-            public void onChanged(@Nullable Boolean aBoolean) {
-                // Acción de comexion iniciada
-                if (aBoolean) {
-                    Toast.makeText(JoinPaletaActivity.this, "Conexion realizada.", Toast.LENGTH_SHORT).show();
-                    loadingScreen.setVisibility(View.GONE);
-                    loadingPallete.setVisibility(View.VISIBLE);
-                }
-            }
-        });
+//        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
+//            @Override
+//            public void onChanged(@Nullable Boolean aBoolean) {
+//                // Acción de comexion iniciada
+//                if (aBoolean) {
+//                    Toast.makeText(JoinPaletaActivity.this, "Conexion realizada.", Toast.LENGTH_SHORT).show();
+//                    loadingScreen.setVisibility(View.GONE);
+//                    loadingPallete.setVisibility(View.VISIBLE);
+//                }
+//            }
+//        });
     }
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
         if(wifiP2pDevices == null) {
             Log.e("NULO", "wifiP2pDevices es nulo");
+            Toast.makeText(JoinPaletaActivity.this, "La lista de pares esta vacia", Toast.LENGTH_LONG).show();
             return;
         }
         if(targetDeviceName.equals("")) {
+            Toast.makeText(JoinPaletaActivity.this, "No se leyo a ningun dispòsitivo", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -184,6 +188,7 @@ public class JoinPaletaActivity extends AppCompatActivity {
             }
         }
         if(peersFindedWithTargetDeviceName.size() == 0) {
+            Toast.makeText(JoinPaletaActivity.this, "No se leyo a ningun dispòsitivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
             return;
         }
         WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);

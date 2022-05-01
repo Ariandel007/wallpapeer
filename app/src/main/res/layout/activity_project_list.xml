@@ -43,89 +43,40 @@
             android:id="@+id/tvDescriptionProjectList"
             android:layout_width="272dp"
             android:layout_height="49sp"
+            android:layout_marginBottom="580dp"
             android:text="Estos son los proyectos que tiene disponibles"
             android:textColor="#767BBF"
             android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.496"
+            app:layout_constraintHorizontal_bias="0.546"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.155" />
+            app:layout_constraintTop_toBottomOf="@+id/tvHola" />
 
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilboxProjectList1"
-            android:layout_width="305dp"
-            android:layout_height="195dp"
-            android:background="@drawable/menu_box"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btnGetSelected"
+            android:layout_width="145dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            android:layout_marginTop="12dp"
+            android:background="#651FFF"
+            android:text="Abrir proyecto"
+            android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.333">
+            app:layout_constraintTop_toBottomOf="@+id/tvDescriptionProjectList" />
 
-            <TextView
-                android:id="@+id/tilPLTextView1"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="185dp"
-                android:text="Últ. Edición: 22/03"
-                android:textColor="#737373"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tilPLTextView2"
-                android:layout_width="118dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="Proyecto 1"
-                android:textColor="#767BBF"
-                android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/tilPLImageView1"
-                android:layout_width="265dp"
-                android:layout_height="137dp"
-                android:layout_marginStart="20dp"
-                android:src="@drawable/project_image" />
-        </com.google.android.material.textfield.TextInputLayout>
-
-        <com.google.android.material.textfield.TextInputLayout
-            android:id="@+id/tilboxProjectList2"
-            android:layout_width="305dp"
-            android:layout_height="195dp"
-            android:background="@drawable/menu_box"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvProjects"
+            android:layout_width="304dp"
+            android:layout_height="482dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tilboxProjectList1"
-            app:layout_constraintVertical_bias="0.179">
-
-            <TextView
-                android:id="@+id/tilPLTextView3"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="185dp"
-                android:text="Últ. Edición: 22/03"
-                android:textColor="#737373"
-                android:textSize="12sp" />
-
-            <TextView
-                android:id="@+id/tilPLTextView4"
-                android:layout_width="118dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:text="Proyecto 2"
-                android:textColor="#767BBF"
-                android:textSize="18sp" />
-
-            <ImageView
-                android:id="@+id/tilPLImageView2"
-                android:layout_width="265dp"
-                android:layout_height="137dp"
-                android:layout_marginStart="20dp"
-                android:src="@drawable/project_image" />
-        </com.google.android.material.textfield.TextInputLayout>
+            app:layout_constraintTop_toBottomOf="@+id/btnGetSelected"
+            app:layout_constraintVertical_bias="0.578" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
