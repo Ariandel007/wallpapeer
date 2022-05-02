@@ -3,16 +3,20 @@ package pe.edu.upc.wallpapeer.views;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -52,6 +56,12 @@ public class CanvasActivity extends AppCompatActivity {
     private String deviceId  = "";
     private String canvaId   = "";
     private  List<Element> elementList;
+
+    //para el pinch
+    boolean isPinchActivate = true;
+    SwipeListener swipeListener;
+    CoordinatorLayout mainScreenJoinLienzo;
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +190,9 @@ public class CanvasActivity extends AppCompatActivity {
 //        activityMainBinding.executePendingBindings();
 
 
+        //Para el pinch
+        mainScreenJoinLienzo = findViewById(R.id.mainScreenJoinLienzo);
+        swipeListener = new SwipeListener(mainScreenJoinLienzo);
     }
 
     public void initializaPeerSearch() {
@@ -273,5 +286,88 @@ public class CanvasActivity extends AppCompatActivity {
                 }
 
         );
+    }
+
+    //PINCH COMIENZA ACA
+//    private int getHeigthDevice() {
+//        return Resources.getSystem().getDisplayMetrics().heightPixels;
+//    }
+
+    private int getWidthDevice() {
+        return Resources.getSystem().getDisplayMetrics().widthPixels;
+    }
+
+    private boolean touchAScreenLimit(float limit, float coord) {
+        if(coord <0) {
+            return true;
+        }
+        int absValue = (int) Math.abs(coord - limit);
+        return absValue <= 100;
+    }
+
+    private void sendCoordsToPinch(float xDiff, float yDiff, MotionEvent e2,int threshoold, float velocityX, float velocityY, int velocity_threshold) {
+        if(Math.abs(xDiff) > Math.abs(yDiff)){
+            if(Math.abs(xDiff) > threshoold && Math.abs(velocityX) >velocity_threshold){
+                if(xDiff>0){
+                    //Se movio hacia la derecha Derecha
+//                    if(touchAScreenLimit(getWidthDevice(),e2.getX())) {
+//                        Log.e("Se movio a la derecha", "X: " + getWidthDevice() + ", Y: "+ e2.getY());
+//                    }
+                    Log.i("Se movio a la derecha", "X: " + getWidthDevice() + ", Y: "+ e2.getY());
+
+                } else {
+//                    if(touchAScreenLimit(0,e2.getX())) {
+//                        Log.e("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
+//                    }
+                    Log.i("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
+
+                }
+            }
+        }
+    }
+    //PINCH LISTENER
+    private class SwipeListener implements View.OnTouchListener{
+
+        GestureDetector gestureDetector;
+
+        SwipeListener(View view){
+            final int threshoold = 100;
+            final int velocity_threshold = 100;
+
+            GestureDetector.SimpleOnGestureListener listener =
+                    new GestureDetector.SimpleOnGestureListener(){
+                        @Override
+                        public boolean onDown(MotionEvent e) {
+                            return true;
+                        }
+
+                        @Override
+                        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+                            float xDiff = e2.getX() - e1.getX();
+                            float yDiff = e2.getY() - e1.getY();
+
+                            try{
+                                if(isPinchActivate) {
+                                    sendCoordsToPinch(xDiff, yDiff, e2, threshoold, velocityX, velocityY, velocity_threshold);
+                                }
+                                return true;
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            return false;
+                        }
+                    };
+            gestureDetector = new GestureDetector(getApplicationContext(), listener);
+
+            view.setOnTouchListener(this);
+
+
+        }
+
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+
+            return gestureDetector.onTouchEvent(event);
+        }
     }
 }

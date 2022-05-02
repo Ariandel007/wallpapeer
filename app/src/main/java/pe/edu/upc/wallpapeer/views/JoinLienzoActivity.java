@@ -11,6 +11,7 @@ import androidx.lifecycle.ViewModelProviders;
 import android.content.res.Resources;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
@@ -18,6 +19,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -27,12 +29,16 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
+import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class JoinLienzoActivity extends AppCompatActivity {
 
-//    private View chatBox;
-//    private MessageListAdapter adapter;
+    private String userDeviceName;
+
+
     private String addressee;
     private String startDate;
     private boolean isOffline;
@@ -42,13 +48,13 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //    private ConstraintLayout messengerLayout;
     Button btnDecodes;
 
-    boolean isPinchActivate = true;
-
     private String targetDeviceName = "";
 
     //para el pinch
+    boolean isPinchActivate = true;
     SwipeListener swipeListener;
     CoordinatorLayout mainScreenJoinLienzo;
+    //
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
@@ -67,6 +73,10 @@ public class JoinLienzoActivity extends AppCompatActivity {
         setContentView(R.layout.activity_join_lienzo);
 
         btnDecodes = findViewById(R.id.btnScanQr);
+
+        userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
+        if (userDeviceName == null)
+            userDeviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
 
         initConnection();
 
@@ -282,9 +292,9 @@ public class JoinLienzoActivity extends AppCompatActivity {
         model.unregisterBroadcast();
     }
 //PINCH COMIENZA ACA
-//    private int getHeigthDevice() {
-//        return Resources.getSystem().getDisplayMetrics().heightPixels;
-//    }
+    private int getHeigthDevice() {
+        return Resources.getSystem().getDisplayMetrics().heightPixels;
+    }
 
     private int getWidthDevice() {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
@@ -307,12 +317,42 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //                        Log.e("Se movio a la derecha", "X: " + getWidthDevice() + ", Y: "+ e2.getY());
 //                    }
                     Log.i("Se movio a la derecha", "X: " + getWidthDevice() + ", Y: "+ e2.getY());
+                    //Creamos Objecto
+                    EngagePinchEvent engagePinchEvent = new EngagePinchEvent();
+                    engagePinchEvent.setEventCode(CodeEvent.PINCH_EVENT);
+                    engagePinchEvent.setDirection("RIGHT");
+                    engagePinchEvent.setDeviceName(userDeviceName);
+                    engagePinchEvent.setMacAddress("");
+                    engagePinchEvent.setPosPinchX((float) getWidthDevice());
+                    engagePinchEvent.setPosPinchY(e2.getY());
+                    engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
+                    engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
+                    engagePinchEvent.setDatePinch(new Date());
+
+                    String json = JsonConverter.getGson().toJson(engagePinchEvent);
+                    model.sendMessage(json);
+
 
                 } else {
 //                    if(touchAScreenLimit(0,e2.getX())) {
 //                        Log.e("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
 //                    }
                     Log.i("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
+
+                    EngagePinchEvent engagePinchEvent = new EngagePinchEvent();
+                    engagePinchEvent.setEventCode(CodeEvent.PINCH_EVENT);
+                    engagePinchEvent.setDirection("LEFT");
+                    engagePinchEvent.setDeviceName(userDeviceName);
+                    engagePinchEvent.setMacAddress("");
+                    engagePinchEvent.setPosPinchX(0.0f);
+                    engagePinchEvent.setPosPinchY(e2.getY());
+                    engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
+                    engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
+                    engagePinchEvent.setDatePinch(new Date());
+
+                    String json = JsonConverter.getGson().toJson(engagePinchEvent);
+                    model.sendMessage(json);
+
 
                 }
             }
