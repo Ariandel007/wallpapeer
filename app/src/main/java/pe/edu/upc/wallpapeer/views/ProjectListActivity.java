@@ -70,7 +70,7 @@ public class ProjectListActivity extends AppCompatActivity {
     @SuppressLint("CheckResult")
     public void init(){
         Context context = this;
-        AppDatabase.getInstance(context).projectDAO().getAll().subscribeOn(Schedulers.io())
+        AppDatabase.getInstance().projectDAO().getAll().subscribeOn(Schedulers.io())
         .observeOn(AndroidSchedulers.mainThread())
         .subscribe((projects)-> {
             elements = projects;
@@ -83,10 +83,10 @@ public class ProjectListActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     if (adapter.getSelected() != null) {
                         Project projectSelected = adapter.getSelected();
-                        AppDatabase.getInstance(context).deviceDAO().getDeviceByDeviceNameAndProject(userDeviceName, projectSelected.getId())
+                        AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(userDeviceName, projectSelected.getId())
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                         (device) -> {
-                            AppDatabase.getInstance(context).canvaDAO().getCanvaByIdDevice(device.getId())
+                            AppDatabase.getInstance().canvaDAO().getCanvaByIdDevice(device.getId())
                                     .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
                                     .subscribe((canva)->{
                                         Intent intent = new Intent(context, CanvasActivity.class);
