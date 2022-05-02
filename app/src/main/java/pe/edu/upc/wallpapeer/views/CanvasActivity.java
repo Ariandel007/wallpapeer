@@ -197,10 +197,10 @@ public class CanvasActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     public void loadNewProject(Context contextCanvas) {
-        AppDatabase.getInstance(contextCanvas).projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
+        AppDatabase.getInstance().projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe((Project project) -> {
             Log.e("Proyecto Traido", project.toString());
-            AppDatabase.getInstance(contextCanvas).canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
+            AppDatabase.getInstance().canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe((canva)-> {
                         Log.e("Canvas Traido", canva.toString());
                         elementList = new ArrayList<>();
@@ -224,12 +224,12 @@ public class CanvasActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     public void loadExistingProject(Context contextCanvas) {
-        AppDatabase.getInstance(contextCanvas).projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
+        AppDatabase.getInstance().projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe((Project project) -> {
             Log.e("Proyecto Traido", project.toString());
-            AppDatabase.getInstance(contextCanvas).canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
+            AppDatabase.getInstance().canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe((canva)-> {
-                        AppDatabase.getInstance(contextCanvas).elementDAO().getAllByProject(projetcId)
+                        AppDatabase.getInstance().elementDAO().getAllByProject(projetcId)
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                         elements -> {
                             elementList = elements;
@@ -261,7 +261,7 @@ public class CanvasActivity extends AppCompatActivity {
     }
 
     public void startElementObservable(Context contextCanvas) {
-        AppDatabase.getInstance(contextCanvas).elementDAO().getAllElementsLiveDataByProject(projetcId).observe(this, new Observer<List<Element>>() {
+        AppDatabase.getInstance().elementDAO().getAllElementsLiveDataByProject(projetcId).observe(this, new Observer<List<Element>>() {
                     @Override
                     public void onChanged(List<Element> elements) {
                         if(elements.size() > 0) {

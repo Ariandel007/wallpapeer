@@ -107,7 +107,7 @@ public class CanvasView  extends View {
                 newElement.setPosxElement(posX);
                 newElement.setPosyElement(posY);
                 newElement.setId_project(currentProjectEntity.id);
-                AppDatabase.getInstance(canvasContext).elementDAO().insert(newElement).subscribeOn(Schedulers.io())
+                AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                     Log.e("Se creo","Se creo con exito");
                 }, throwable -> {

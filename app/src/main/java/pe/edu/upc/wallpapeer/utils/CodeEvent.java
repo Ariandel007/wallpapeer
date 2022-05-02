@@ -5,5 +5,6 @@ public final class CodeEvent {
     public static  final String ADDING_PALLETE_TO_DEVICE = "00002";
     public static  final String SELECT_OPTION_PALLETE = "00003";
     public static  final String INSERT_NEW_ELEMENT = "00004";
+    public static  final String PINCH_EVENT_RESPONSE = "00005";
 
 }
