@@ -60,7 +60,7 @@ public class CanvasActivity extends AppCompatActivity {
     //para el pinch
     boolean isPinchActivate = true;
     SwipeListener swipeListener;
-    CoordinatorLayout mainScreenJoinLienzo;
+    CoordinatorLayout mainCoordinator;
     //
 
     @Override
@@ -191,8 +191,8 @@ public class CanvasActivity extends AppCompatActivity {
 
 
         //Para el pinch
-        mainScreenJoinLienzo = findViewById(R.id.mainScreenJoinLienzo);
-        swipeListener = new SwipeListener(mainScreenJoinLienzo);
+        mainCoordinator = findViewById(R.id.mainCoordinator);
+        swipeListener = new SwipeListener(mainCoordinator);
     }
 
     public void initializaPeerSearch() {
