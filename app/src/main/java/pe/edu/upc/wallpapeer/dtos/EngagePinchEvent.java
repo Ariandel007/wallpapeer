@@ -3,7 +3,7 @@ package pe.edu.upc.wallpapeer.dtos;
 import java.util.Date;
 
 public class EngagePinchEvent {
-    private String eventCode;
+    private String a1_eventCode;
     private String direction;
     private String deviceName;
     private String macAddress;
@@ -15,8 +15,8 @@ public class EngagePinchEvent {
 
     public EngagePinchEvent() {}
 
-    public EngagePinchEvent(String eventCode, String direction, String deviceName, String macAddress, Float posPinchX, Float posPinchY, Float widthScreenPinch, Float heightScreenPinch, Date datePinch) {
-        this.eventCode = eventCode;
+    public EngagePinchEvent(String a1_eventCode, String direction, String deviceName, String macAddress, Float posPinchX, Float posPinchY, Float widthScreenPinch, Float heightScreenPinch, Date datePinch) {
+        this.a1_eventCode = a1_eventCode;
         this.direction = direction;
         this.deviceName = deviceName;
         this.macAddress = macAddress;
@@ -28,11 +28,11 @@ public class EngagePinchEvent {
     }
 
     public String getEventCode() {
-        return eventCode;
+        return a1_eventCode;
     }
 
     public void setEventCode(String eventCode) {
-        this.eventCode = eventCode;
+        this.a1_eventCode = eventCode;
     }
 
     public String getDirection() {

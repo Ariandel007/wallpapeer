@@ -87,7 +87,8 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
 
                             AppDatabase.getInstance().deviceDAO().insert(device).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
-                                Canva canva = new Canva(UUID.randomUUID().toString(), true, device.getHeightScreen(), device.getWidthScreen(), 0, 0, device.getId());
+                                Canva canva = new Canva(UUID.randomUUID().toString(), true, device.getHeightScreen(), device.getWidthScreen(), 0.0f, 0.0f, device.getId());
+                                canva.setMod_date(new Date().getTime());
 
                                 AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {

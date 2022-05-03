@@ -36,7 +36,7 @@ import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
                         Text.class,
                         Image.class,
                         Filter.class,
-                        }, version = 6)
+                        }, version = 8)
 public abstract class AppDatabase extends RoomDatabase {
 
     public abstract PaletteDAO paletteDAO();
