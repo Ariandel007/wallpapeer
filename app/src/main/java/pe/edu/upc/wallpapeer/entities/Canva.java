@@ -6,6 +6,8 @@ import androidx.room.Entity;
 import androidx.room.ForeignKey;
 import androidx.room.PrimaryKey;
 
+import java.util.Date;
+
 @Entity(tableName = "canva",
         foreignKeys = @ForeignKey(
                 entity = Device.class,
@@ -38,6 +40,10 @@ public class Canva {
 
     @ColumnInfo(name = "id_device")
     public String id_device;
+
+    @ColumnInfo(name = "mod_date")
+    public Long mod_date;
+
 
     public Canva(@NonNull String id, boolean isMain, float heightCanvas, float widthCanvas, float posX, float posY, String id_device) {
         this.id = id;
@@ -106,5 +112,13 @@ public class Canva {
 
     public void setId_device(String id_device) {
         this.id_device = id_device;
+    }
+
+    public Long getMod_date() {
+        return mod_date;
+    }
+
+    public void setMod_date(Long mod_date) {
+        this.mod_date = mod_date;
     }
 }

@@ -3,16 +3,21 @@ package pe.edu.upc.wallpapeer.views;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.GestureDetectorCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -23,15 +28,19 @@ import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.entities.Element;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
+import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 
@@ -52,6 +61,14 @@ public class CanvasActivity extends AppCompatActivity {
     private String deviceId  = "";
     private String canvaId   = "";
     private  List<Element> elementList;
+
+//    private GestureDetectorCompat mDetector;
+
+    //para el pinch
+//    boolean isPinchActivate = true;
+//    SwipeListener swipeListener;
+//    CoordinatorLayout mainCoordinator;
+    //
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,6 +197,10 @@ public class CanvasActivity extends AppCompatActivity {
 //        activityMainBinding.executePendingBindings();
 
 
+        //Para el pinch
+//        mainCoordinator = findViewById(R.id.mainCoordinator);
+//        swipeListener = new SwipeListener(mainCoordinator);
+//        mDetector = new GestureDetectorCompat(this, new MyGestureListener());
     }
 
     public void initializaPeerSearch() {
@@ -209,10 +230,16 @@ public class CanvasActivity extends AppCompatActivity {
                         canvasView.setCurrentProjectEntity(project);
                         canvasView.setCurrentCanvaEntity(canva);
                         Toast.makeText(CanvasActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
+                        //Instancia de last Pinch
+                        MyLastPinch.getInstance().setProjectId(projetcId);
+                        MyLastPinch.getInstance().setProject(project);
+                        MyLastPinch.getInstance().setCanvaId(canvaId);
+                        MyLastPinch.getInstance().setCanva(canva);
                         //Se inicia la busqueda de pares
                         initializaPeerSearch();
                         // Se inicializa observable del proyecto
                         startElementObservable(contextCanvas);
+
                     },
                     throwable -> {
                         Log.e("ERROR - GET PRY", throwable.getMessage());
@@ -240,6 +267,12 @@ public class CanvasActivity extends AppCompatActivity {
                             canvasView.setCurrentProjectEntity(project);
                             canvasView.setCurrentCanvaEntity(canva);
                             Toast.makeText(CanvasActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
+                            //Instancia de last Pinch
+                            MyLastPinch.getInstance().setProjectId(projetcId);
+                            MyLastPinch.getInstance().setProject(project);
+                            MyLastPinch.getInstance().setCanvaId(canvaId);
+                            MyLastPinch.getInstance().setCanva(canva);
+
                             //Se inicia la busqueda de pares
                             initializaPeerSearch();
                             // Se inicializa observable del proyecto
@@ -274,4 +307,6 @@ public class CanvasActivity extends AppCompatActivity {
 
         );
     }
+
+
 }
