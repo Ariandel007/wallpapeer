@@ -40,7 +40,6 @@ public class CanvasView  extends View {
     float posX = 50;
     float posY = 50;
     private List<Paint> paintList;
-    private Circle mCircle;
     private  List<Element> elementListCanvas;
     private  Context canvasContext;
     private Project currentProjectEntity;
@@ -64,6 +63,8 @@ public class CanvasView  extends View {
 
         for(Element element : getElementListCanvas()){
             if(element.getTypeElement().equals("circle_figure")) {
+                element.setPosyElement(element.getPosyElement() - currentCanvaEntity.getPosY());
+                element.setPosxElement(element.getPosxElement() - currentCanvaEntity.getPosX());
                 mPaint = new Paint();
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.BLUE);
@@ -125,13 +126,6 @@ public class CanvasView  extends View {
         this.paintList = paintList;
     }
 
-    public Circle getmCircle() {
-        return mCircle;
-    }
-
-    public void setmCircle(Circle mCircle) {
-        this.mCircle = mCircle;
-    }
 
     public List<Element> getElementListCanvas() {
         return elementListCanvas;
@@ -222,10 +216,11 @@ public class CanvasView  extends View {
                 newElement.setWidthElement(30);
                 newElement.setPosxElement(posX);
                 newElement.setPosyElement(posY);
+                newElement.setDateCreation(new Date());
                 newElement.setId_project(currentProjectEntity.id);
                 AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
-                    Log.e("Se creo","Se creo con exito");
+                    Log.i("Se creo","Se creo con exito");
                 }, throwable -> {
                     Log.e("Error","Error al crear");
                 });
