@@ -20,6 +20,10 @@ public interface ElementDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     Completable insert(Element element);
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    Completable insertMany(List<Element> elements);
+
+
     @Query("SELECT * FROM element ")
     LiveData<List<Element>> getAllElementsLiveData();
 

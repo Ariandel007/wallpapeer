@@ -17,7 +17,7 @@ import pe.edu.upc.wallpapeer.entities.Project;
 @Dao
 public interface CanvaDAO {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insert(Canva canva);
 
     @Update
@@ -33,5 +33,9 @@ public interface CanvaDAO {
             "INNER JOIN device ON device.id = id_device WHERE device.id_project = :idProject " +
             " ORDER BY mod_date ASC")
     LiveData<List<Canva>> getCanvaByIdProjectLiveData(String idProject);
+
+    @Query("SELECT * FROM canva")
+    LiveData<List<Canva>> listenAllCanvasChanges();
+
 
 }

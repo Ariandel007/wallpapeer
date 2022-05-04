@@ -5,9 +5,6 @@ import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,7 +12,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Properties;
 import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -28,7 +24,6 @@ import pe.edu.upc.wallpapeer.entities.Device;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
-import pe.edu.upc.wallpapeer.utils.LastPinchEventResponse;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
@@ -209,7 +204,9 @@ public class Server extends IMessenger {
                                                         pinchEventResponse.setCanva(canva);
 
                                                         //Agregar a Last Pinch Response
-                                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+
+                                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
                                                         AppDatabase.getInstance().canvaDAO().update(canva)
                                                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
@@ -221,7 +218,8 @@ public class Server extends IMessenger {
                                                         //SIGNIFICA QUE ES NUEVO
                                                         //Agregar a Last Pinch Response
                                                         pinchEventResponse.getCanva().setMod_date(new Date().getTime());
-                                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+                                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
                                                         AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
                                                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
@@ -240,7 +238,8 @@ public class Server extends IMessenger {
                                                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                                     //Agregar a Last Pinch Response
                                                     pinchEventResponse.getCanva().setMod_date(new Date().getTime());
-                                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+                                                    send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
                                                     AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
                                                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
@@ -279,6 +278,8 @@ public class Server extends IMessenger {
                 break;
             case CodeEvent.PINCH_EVENT_RESPONSE:
                 Log.i("EVENT", "PINCH_EVENT_RESPONSE");
+                PinchEventResponse pinchEventResponse = JsonConverter.getGson().fromJson(jsonMessage, PinchEventResponse.class);
+
                 break;
             default:
                 Log.i("EVENT", "Default");
