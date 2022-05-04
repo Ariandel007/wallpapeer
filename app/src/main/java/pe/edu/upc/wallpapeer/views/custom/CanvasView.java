@@ -37,7 +37,6 @@ public class CanvasView  extends View {
 
     private Paint mPaint;
     private int backgroundFill;
-//    private List<Circle> circleList;
     float posX = 50;
     float posY = 50;
     private List<Paint> paintList;
@@ -78,71 +77,11 @@ public class CanvasView  extends View {
     public void setBackgroundFill(@ColorInt int backgroundFill){
         this.backgroundFill = backgroundFill;
     }
-//    public List<Circle> getCircleList(){
-//        return circleList;
-//    }
-//    public void setCircleList(List<Circle> circles){
-//        this.circleList = circles;
-//    }
-
-    ///para el evento ontouch
-
-    //String accion = "accion";
 
     @Override
     public boolean onTouchEvent(MotionEvent event){
-//        posX = event.getX();
-//        posY = event.getY();
-//        /*if (event.getAction() == MotionEvent.ACTION_DOWN){accion = "down"; }
-//        if (event.getAction() == MotionEvent.ACTION_MOVE){accion = "move"; }
-//        if(event.getAction() == MotionEvent.ACTION_UP){accion = "up"; }*/
-//        switch (event.getAction()){
-//            case MotionEvent.ACTION_DOWN:
-////                mPaint = new Paint();
-////                mPaint.setStyle(Paint.Style.FILL);
-////                mPaint.setColor(Color.BLUE);
-////                paintList.add(mPaint);
-////                mCircle = new Circle(posX,posY);
-////                mPath = new Path();
-////                mPath.moveTo(posX,posY);
-////                circleList.add(mCircle);
-//                //SAVE AN ELEMENT
-//                Element newElement = new Element();
-//                newElement.setId(UUID.randomUUID().toString());
-//                newElement.setTypeElement("circle_figure");
-//                newElement.setRotation(0);
-//                newElement.setzIndex(0);
-//                newElement.setHeightElement(30);
-//                newElement.setWidthElement(30);
-//                newElement.setPosxElement(posX);
-//                newElement.setPosyElement(posY);
-//                newElement.setId_project(currentProjectEntity.id);
-//                AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
-//                .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
-//                    Log.e("Se creo","Se creo con exito");
-//                }, throwable -> {
-//                    Log.e("Error","Error al crear");
-//                });
-//                //SET PATH
-//                mPath = new Path();
-//                mPath.moveTo(posX,posY);
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                /*respecto a un area*/
-//            case MotionEvent.ACTION_UP:
-//                /*int pHistorical = event.getHistorySize();
-//                for (int i=0; i < pHistorical; i++) {
-//                    mPath.moveTo(event.getHistoricalX(i),event.getHistoricalY(i));
-//                    circleList.add(mCircle);
-//                }
-//                break;*/
-//        }
-//        //on Draw se llamada tras cualquierda llamada a invalidate
-////        invalidate();
-//        return true;
         mDetector.onTouchEvent(event);
         return true;
-
     }
 
     //on Draw se llamada tras cualquierda llamada a invalidate

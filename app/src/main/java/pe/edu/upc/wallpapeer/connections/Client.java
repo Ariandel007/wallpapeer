@@ -178,9 +178,38 @@ public class Client extends IMessenger {
                             AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(newDevice.getDeviceName(), newDevice.getId_project())
                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                             device -> {
-                                if(device == null ) {
-                                    AppDatabase.getInstance().deviceDAO().insert(pinchEventResponse.getDevice())
-                                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                device.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
+                                device.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
+                                device.setDeviceName(engagePinchEvent.getDeviceName());
+                                device.setMacAddress("");
+                                pinchEventResponse.setDevice(device);
+                                pinchEventResponse.getCanva().setId_device(device.getId());
+                                AppDatabase.getInstance().deviceDAO().update(device)
+                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                                    //Canva
+                                    AppDatabase.getInstance().canvaDAO().getCanvaByIdDevice(device.getId())
+                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((canva)->{
+                                            canva.setMain(false);
+                                            canva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
+                                            canva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
+                                            canva.setPosX(posXnewCanva);
+                                            canva.setPosY(posYnewCanva);
+
+                                            canva.setMod_date(new Date().getTime());
+
+                                            pinchEventResponse.setCanva(canva);
+
+                                            //Agregar a Last Pinch Response
+                                            LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+
+                                            AppDatabase.getInstance().canvaDAO().update(canva)
+                                                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                Log.i("Actualizacion Canvas","Canvas actualizado");
+                                            });
+                                    }, throwable3 -> {
+                                        //QUERY VACIO
+                                        Log.e("Error",throwable3.getMessage());
+                                        //SIGNIFICA QUE ES NUEVO
                                         //Agregar a Last Pinch Response
                                         pinchEventResponse.getCanva().setMod_date(new Date().getTime());
                                         LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
@@ -189,60 +218,28 @@ public class Client extends IMessenger {
                                                 .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                             Log.i("Creacion Canvas","Canvas creado");
                                         });
-                                    }, throwable -> {
-                                        Log.e("Error",throwable.getMessage());
                                     });
-                                } else {
-                                    device.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
-                                    device.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
-                                    device.setDeviceName(engagePinchEvent.getDeviceName());
-                                    device.setMacAddress("");
-                                    pinchEventResponse.setDevice(device);
-                                    pinchEventResponse.getCanva().setId_device(device.getId());
-                                    AppDatabase.getInstance().deviceDAO().update(device)
-                                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
-                                        //Canva
-                                        AppDatabase.getInstance().canvaDAO().getCanvaByIdDevice(device.getId())
-                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((canva)->{
-                                            if(canva == null) {
-                                                //Agregar a Last Pinch Response
-                                                pinchEventResponse.getCanva().setMod_date(new Date().getTime());
-                                                LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
-
-                                                AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
-                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                                    Log.i("Creacion Canvas","Canvas creado");
-                                                });
-                                            } else {
-                                                canva.setMain(false);
-                                                canva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
-                                                canva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
-                                                canva.setPosX(posXnewCanva);
-                                                canva.setPosY(posYnewCanva);
-
-                                                canva.setMod_date(new Date().getTime());
-
-                                                pinchEventResponse.setCanva(canva);
-
-                                                //Agregar a Last Pinch Response
-                                                LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
-
-                                                AppDatabase.getInstance().canvaDAO().update(canva)
-                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                                    Log.i("Actualizacion Canvas","Canvas actualizado");
-                                                });
-                                            }
-
-                                        }, throwable -> {
-                                            Log.e("Error",throwable.getMessage());
-                                        });
-                                    },throwable -> {
-                                        Log.e("Error",throwable.getMessage());
-                                    });
-                                }
+                                },throwable -> {
+                                    Log.e("Error",throwable.getMessage());
+                                });
                             },
                             throwable -> {
+                                //QUERY VACIO
                                 Log.e("Error",throwable.getMessage());
+                                //SIGNIFICA QUE ES NUEVO
+                                AppDatabase.getInstance().deviceDAO().insert(pinchEventResponse.getDevice())
+                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                    //Agregar a Last Pinch Response
+                                    pinchEventResponse.getCanva().setMod_date(new Date().getTime());
+                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+
+                                    AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
+                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                        Log.i("Creacion Canvas","Canvas creado");
+                                    });
+                                }, throwable2 -> {
+                                    Log.e("Error",throwable2.getMessage());
+                                });
                             });
                         }, throwable -> {
                             Log.e("Error",throwable.getMessage());
