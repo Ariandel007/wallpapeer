@@ -24,6 +24,7 @@ import java.util.UUID;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
+import pe.edu.upc.wallpapeer.dtos.NewElementInserted;
 import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Element;
 import pe.edu.upc.wallpapeer.entities.Project;
@@ -32,6 +33,7 @@ import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class CanvasView  extends View {
 
@@ -45,6 +47,7 @@ public class CanvasView  extends View {
     private Project currentProjectEntity;
     private Canva currentCanvaEntity;
     private GestureDetectorCompat mDetector;
+    private ConnectionPeerToPeerViewModel model;
 
     ///para el evento ontouch
     private Path mPath;
@@ -167,8 +170,15 @@ public class CanvasView  extends View {
         this.currentCanvaEntity = currentCanvaEntity;
     }
 
+    public ConnectionPeerToPeerViewModel getModel() {
+        return model;
+    }
 
-    private void sendCoordsToPinch(float xDiff, float yDiff, MotionEvent e2,int threshoold, float velocityX, float velocityY, int velocity_threshold) {
+    public void setModel(ConnectionPeerToPeerViewModel model) {
+        this.model = model;
+    }
+
+    private void sendCoordsToPinch(float xDiff, float yDiff, MotionEvent e2, int threshoold, float velocityX, float velocityY, int velocity_threshold) {
         if(Math.abs(xDiff) > Math.abs(yDiff)){
             if(Math.abs(xDiff) > threshoold && Math.abs(velocityX) >velocity_threshold){
                 if(xDiff>0){
@@ -201,8 +211,8 @@ public class CanvasView  extends View {
         @Override
         public boolean onDown(MotionEvent event) {
             Log.d(DEBUG_TAG,"onDown: " + event.toString());
-            posX = event.getX();
-        posY = event.getY();
+            posX = event.getX() + getCurrentCanvaEntity().getPosX();
+            posY = event.getY() + getCurrentCanvaEntity().getPosY();
 
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
@@ -218,12 +228,18 @@ public class CanvasView  extends View {
                 newElement.setPosyElement(posY);
                 newElement.setDateCreation(new Date());
                 newElement.setId_project(currentProjectEntity.id);
+
+                ///Informamos a los dispositivos el cambio
+                getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+
                 AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                     Log.i("Se creo","Se creo con exito");
                 }, throwable -> {
                     Log.e("Error","Error al crear");
                 });
+                //Se termino de crear
+
                 //SET PATH
                 mPath = new Path();
                 mPath.moveTo(posX,posY);

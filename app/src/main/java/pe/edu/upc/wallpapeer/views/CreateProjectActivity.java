@@ -26,6 +26,7 @@ import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Device;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 
 public class CreateProjectActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -98,6 +99,8 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
                                    intent.putExtra("device_id",device.getId());
                                     intent.putExtra("canva_id",canva.getId());
                                     intent.putExtra("project_load","new_project");
+                                    LastProjectState.getInstance().setProjectId(idMPRoject);
+                                    LastProjectState.getInstance().setCanvaId(canva.getId());
                                     this.startActivity(intent);
 
                                 }, throwable -> {

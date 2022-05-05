@@ -14,6 +14,7 @@ import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -23,6 +24,7 @@ import java.util.Objects;
 import pe.edu.upc.wallpapeer.R;
 import pe.edu.upc.wallpapeer.databinding.ActivityMainBinding;
 import pe.edu.upc.wallpapeer.model.User;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.viewmodels.LoginViewModel;
 import pe.edu.upc.wallpapeer.viewmodels.factory.LoginViewModelFactory;
 
@@ -48,6 +50,10 @@ public class LoginActivity extends AppCompatActivity {
 //        setUpDrawer();
 //        setUpHistoryPage();
 //        setUpViewModel();
+        String deviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
+        if (deviceName == null)
+            deviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
+        LastProjectState.getInstance().setDeviceName(deviceName);
 
     }
 

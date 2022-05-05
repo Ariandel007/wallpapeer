@@ -62,14 +62,6 @@ public class CanvasActivity extends AppCompatActivity {
     private String canvaId   = "";
     private  List<Element> elementList;
 
-//    private GestureDetectorCompat mDetector;
-
-    //para el pinch
-//    boolean isPinchActivate = true;
-//    SwipeListener swipeListener;
-//    CoordinatorLayout mainCoordinator;
-    //
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +80,7 @@ public class CanvasActivity extends AppCompatActivity {
         constraintLayoutLoadingSearchPeers.setVisibility(View.VISIBLE);
         btnQr.setVisibility(View.GONE);
         canvasView.setVisibility(View.GONE);
+        canvasView.setModel(model);
         //
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
@@ -123,23 +116,11 @@ public class CanvasActivity extends AppCompatActivity {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-//                        Objects.requireNonNull(getSupportActionBar()).show();
-//                        addressee = model.getAddressee();
-//                        getSupportActionBar().setTitle(addressee);
+
                     }
                 }
             });
 
-//            model.getInicioLaBusquedaDePares().observe(this, new Observer<Boolean>() {
-//                @Override
-//                public void onChanged(@Nullable Boolean aBoolean) {
-//                    if (aBoolean != null && aBoolean) {
-//                        constraintLayoutLoadingSearchPeers.setVisibility(View.GONE);
-//                        btnQr.setVisibility(View.VISIBLE);
-//                        canvasView.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//            });
 
             model.getPeerList().observe(this, new Observer<List<WifiP2pDevice>>() {
                 @Override
@@ -189,18 +170,6 @@ public class CanvasActivity extends AppCompatActivity {
                 }
             }
         });
-
-//        ActivityCanvasBinding activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_canvas);
-//
-//        MainCanvasViewModel viewModel = new MainCanvasViewModel();
-//        activityMainBinding.setVariable(BR.mainCanvasViewModel, viewModel);
-//        activityMainBinding.executePendingBindings();
-
-
-        //Para el pinch
-//        mainCoordinator = findViewById(R.id.mainCoordinator);
-//        swipeListener = new SwipeListener(mainCoordinator);
-//        mDetector = new GestureDetectorCompat(this, new MyGestureListener());
     }
 
     public void initializaPeerSearch() {

@@ -8,7 +8,10 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -17,9 +20,13 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
+import com.google.zxing.BarcodeFormat;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 import com.journeyapps.barcodescanner.ScanContract;
 import com.journeyapps.barcodescanner.ScanOptions;
 
@@ -27,34 +34,55 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
 import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
+import pe.edu.upc.wallpapeer.entities.Canva;
+import pe.edu.upc.wallpapeer.entities.Element;
+import pe.edu.upc.wallpapeer.entities.Project;
+import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
+import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
+import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 
 public class JoinLienzoActivity extends AppCompatActivity {
 
-    private String userDeviceName;
-
-
-    private String addressee;
-    private String startDate;
-    private boolean isOffline;
     private ConnectionPeerToPeerViewModel model;
+    FloatingActionButton btnQr;
+    ImageView imgQr;
+    private String userDeviceName;
+    private ConstraintLayout constraintLayout;
+    //ConstraintLayout constraintLayoutLoadingSearchPeers;
+    private boolean imgQrShowed = false;
+    private String addressee;
+    private boolean isOffline;
+    private String startDate;
+    private CanvasView canvasView;
+    private String projetcId = "";
+    private String deviceId  = "";
+    private String canvaId   = "";
+    private  List<Element> elementList;
+
+
+
     private ConstraintLayout loadingScreen;
     private ConstraintLayout pinchScreen;
-//    private ConstraintLayout messengerLayout;
     Button btnDecodes;
 
     private String targetDeviceName = "";
 
     //para el pinch
-    boolean isPinchActivate = true;
+    private Boolean waitToJoinLienzo = true;
+//    boolean isPinchActivate = true;
     SwipeListener swipeListener;
     CoordinatorLayout mainScreenJoinLienzo;
     //
+
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
@@ -80,30 +108,39 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
         initConnection();
 
-//        User user = (User)getIntent().getSerializableExtra("USER");
-//
-//        ActivityJoinLienzoBinding activityJoinLienzoBinding = DataBindingUtil.setContentView(this,R.layout.activity_join_lienzo);
-//        LoginViewModel loginViewModel = ViewModelProviders.of(this, new LoginViewModelFactory(user, this)).get(LoginViewModel.class);
-//
-//        activityJoinLienzoBinding.setLoginViewModel(loginViewModel);
+        userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
+        if (userDeviceName == null)
+            userDeviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
 
-//        final AlertDialog.Builder adb = new AlertDialog.Builder(JoinLienzoActivity.this);
-//        final Boolean[] dialogActive = {Boolean.FALSE};
-//        final AlertDialog[] dialogs = {null};
+
+        //
+        btnQr = findViewById(R.id.btn_qr_join_lienzo);
+        imgQr = findViewById(R.id.img_qr_join_lienzo);
+        canvasView = findViewById(R.id.canvas_join_lienzo);
+        constraintLayout = findViewById(R.id.popup_qr_join_lienzo);
+        constraintLayout.setVisibility(View.GONE);
+        //constraintLayoutLoadingSearchPeers  = findViewById(R.id.search_peer_connections_canvas_join_canvas);
+
+        //constraintLayoutLoadingSearchPeers.setVisibility(View.VISIBLE);
+        btnQr.setVisibility(View.GONE);
+        canvasView.setVisibility(View.GONE);
+        canvasView.setModel(model);
+        //
+
+        isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
+        addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
+        startDate = getIntent().getStringExtra(Constants.DATE);
+
+        ///
+
         if (isOffline) {
-//            chatBox.setVisibility(View.GONE);
+
             model.setAddressee(addressee);
-//            model.getMessageList().observe(this, new Observer<List<MessageEntity>>() {
-//                @Override
-//                public void onChanged(@Nullable List<MessageEntity> messageEntities) {
-//                    adapter.updateData(messageEntities);
-//                }
-//            });
+
         } else {
             loadingScreen.setVisibility(View.VISIBLE);
             btnDecodes.setVisibility(View.VISIBLE);
-//            messengerLayout.setVisibility(View.GONE);
-//            Objects.requireNonNull(getSupportActionBar()).hide();
+
 
             model.startSearch();
             model.socketIsReady().observe(this, new Observer<Boolean>() {
@@ -113,19 +150,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         Toast.makeText(JoinLienzoActivity.this, "Conexion realizada con dispositivo!!", Toast.LENGTH_SHORT).show();
                         loadingScreen.setVisibility(View.GONE);
                         pinchScreen.setVisibility(View.VISIBLE);
-
-//                        Objects.requireNonNull(getSupportActionBar()).show();
-//                        addressee = model.getAddressee();
-//                        getSupportActionBar().setTitle(addressee);
-
-//                        model.sendMessage("TEST MESSAGE");
-
-                        //                        model.getMessageList().observe(ChatActivity.this, new Observer<List<MessageEntity>>() {
-//                            @Override
-//                            public void onChanged(@Nullable List<MessageEntity> messageEntities) {
-//                                adapter.updateData(messageEntities);
-//                            }
-//                        });
                     }
                 }
             });
@@ -153,16 +177,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
 
                     model.connectToPeer(peerFindedInQR);
-//                    adb.setSingleChoiceItems(items, 0, new DialogInterface.OnClickListener() {
-//                        @Override
-//                        public void onClick(DialogInterface d, int n) {
-//                            model.connectToPeer(peers.get(n));
-//                            d.cancel();
-//                        }
-//
-//                    });
-//                    adb.setNegativeButton("Cancelar", null);
-//                    adb.setTitle("¿Cual de estos es el dispositivo que deseas conectar?");
+
                 }
             });
 
@@ -178,49 +193,137 @@ public class JoinLienzoActivity extends AppCompatActivity {
             });
         }
 
+        btnQr.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                try {
+                    if(imgQrShowed) {
+                        constraintLayout.setVisibility(View.GONE);
+                        imgQrShowed = !imgQrShowed;
+                    } else {
+                        constraintLayout.setVisibility(View.VISIBLE);
+                        BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+                        Bitmap bitmap = barcodeEncoder.encodeBitmap(userDeviceName, BarcodeFormat.QR_CODE, 300, 300);
+                        imgQr.setImageBitmap(bitmap);
+                        imgQrShowed = !imgQrShowed;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
         //Para el pinch
         mainScreenJoinLienzo = findViewById(R.id.mainScreenJoinLienzo);
         swipeListener = new SwipeListener(mainScreenJoinLienzo);
 
+        Context context = this;
+        //listen change in Canva
+        AppDatabase.getInstance().canvaDAO().listenAllCanvasChanges().observe(this, new Observer<List<Canva>>() {
+            @Override
+            public void onChanged(List<Canva> canvas) {
+                //Haz cosas
+                if(waitToJoinLienzo) {
+                    projetcId = LastProjectState.getInstance().getProjectId();
+                    canvaId = LastProjectState.getInstance().getCanvaId();
+                    //Traer data
+                    loadExistingProject(context);
+                }
+            }
+        });
+
+
+    }
+
+    public void initializaPeerSearch() {
+        model.getInicioLaBusquedaDePares().observe(this, new Observer<Boolean>() {
+            @Override
+            public void onChanged(@Nullable Boolean aBoolean) {
+                if (aBoolean != null && aBoolean) {
+                    pinchScreen.setVisibility(View.GONE);
+
+                    btnQr.setVisibility(View.VISIBLE);
+                    canvasView.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+    }
+
+    @SuppressLint("CheckResult")
+    public void loadExistingProject(Context contextCanvas) {
+        AppDatabase.getInstance().projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread()).subscribe((Project project) -> {
+            Log.e("Proyecto Traido", project.toString());
+            AppDatabase.getInstance().canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
+                    .observeOn(AndroidSchedulers.mainThread()).subscribe((canva)-> {
+                        AppDatabase.getInstance().elementDAO().getAllByProject(projetcId)
+                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                                elements -> {
+                                    elementList = elements;
+                                    canvasView.setElementListCanvas(elements);
+                                    //
+//                            canvasView.setElementListCanvas(elementList);
+                                    canvasView.setCanvasContext(contextCanvas);
+                                    canvasView.setCurrentProjectEntity(project);
+                                    canvasView.setCurrentCanvaEntity(canva);
+                                    Toast.makeText(JoinLienzoActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
+                                    //Instancia de last Pinch
+                                    MyLastPinch.getInstance().setProjectId(projetcId);
+                                    MyLastPinch.getInstance().setProject(project);
+                                    MyLastPinch.getInstance().setCanvaId(canvaId);
+                                    MyLastPinch.getInstance().setCanva(canva);
+
+                                    //Se inicia la busqueda de pares
+                                    initializaPeerSearch();
+
+                                    waitToJoinLienzo = false;
+
+                                    // Se inicializa observable del proyecto
+                                    startElementObservable(contextCanvas);
+                                    //Se pinta
+                                    canvasView.triggerOnDraw();
+
+
+                                }, throwable -> {
+                                    Log.e("Error", "Error consulta");
+                                }
+                        );
+                    },
+                    throwable -> {
+                        Log.e("ERROR - GET PRY", throwable.getMessage());
+                    });
+        }, throwable -> {
+            Log.e("ERROR - GET PRY", throwable.getMessage());
+        });
+    }
+
+    public void startElementObservable(Context contextCanvas) {
+        AppDatabase.getInstance().elementDAO().getAllElementsLiveDataByProject(projetcId).observe(this, new Observer<List<Element>>() {
+                    @Override
+                    public void onChanged(List<Element> elements) {
+                        if(elements.size() > 0) {
+                            Log.e("On CHanged Elements", String.valueOf(elements.size()));
+                            canvasView.setElementListCanvas(elements);
+                            canvasView.triggerOnDraw();
+                        }
+                    }
+                }
+
+        );
     }
 
     private void initConnection() {
-//        messengerLayout = findViewById(R.id.messengerLayout);
-//        chatBox = findViewById(R.id.layout_chatbox);
+
         loadingScreen = findViewById(R.id.loadingScreen);
         loadingScreen.setVisibility(View.GONE);
         pinchScreen = findViewById(R.id.PinchScreen);
         pinchScreen.setVisibility(View.GONE);
-        //CANCELAR BUSQUEDA Y CERRAR SOCKET
-//        findViewById(R.id.stopSearch).setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if (!isOffline) {
-//                    model.closeChat();
-//                }
-//                finish();
-//            }
-//        });
+
+
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
         model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
-        startDate = getIntent().getStringExtra(Constants.DATE);
-//        newMessage = findViewById(R.id.edittext_chatbox);
-//        ImageButton sendMessage = findViewById(R.id.button_chatbox_send);
-//        sendMessage.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//                if(newMessage.getText().toString().length() == 0)
-//                    return;
-//                model.sendMessage(newMessage.getText().toString());
-//                newMessage.setText("");
-//            }
-//        });
-
-//        RecyclerView messages = findViewById(R.id.reyclerview_message_list);
-//        messages.setLayoutManager(new LinearLayoutManager(this, 1, true));
-//        adapter = new MessageListAdapter(new ArrayList<MessageEntity>());
-//        messages.setAdapter(adapter);
+//        startDate = getIntent().getStringExtra(Constants.DATE);
 
         btnDecodes.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,18 +340,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
             }
         });
 
-//        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
-//            @Override
-//            public void onChanged(@Nullable Boolean aBoolean) {
-//                // Acción de comexion iniciada
-//                if (aBoolean) {
-//                    Toast.makeText(JoinLienzoActivity.this, "Conexion realizada con dispositivo!!", Toast.LENGTH_SHORT).show();
-//                    loadingScreen.setVisibility(View.GONE);
-//                    pinchScreen.setVisibility(View.VISIBLE);
-////                    model.sendMessage("TEST MSG");
-//                }
-//            }
-//        });
     }
 
     public void connectionToDevice() {
@@ -312,10 +403,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
         if(Math.abs(xDiff) > Math.abs(yDiff)){
             if(Math.abs(xDiff) > threshoold && Math.abs(velocityX) >velocity_threshold){
                 if(xDiff>0){
-                    //Se movio hacia la derecha Derecha
-//                    if(touchAScreenLimit(getWidthDevice(),e2.getX())) {
-//                        Log.e("Se movio a la derecha", "X: " + getWidthDevice() + ", Y: "+ e2.getY());
-//                    }
                     Log.i("Se movio a la derecha", "X: " + getWidthDevice() + ", Y: "+ e2.getY());
                     //Creamos Objecto
                     EngagePinchEvent engagePinchEvent = new EngagePinchEvent();
@@ -334,9 +421,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
 
                 } else {
-//                    if(touchAScreenLimit(0,e2.getX())) {
-//                        Log.e("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
-//                    }
                     Log.i("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
 
                     EngagePinchEvent engagePinchEvent = new EngagePinchEvent();
@@ -382,7 +466,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                             float yDiff = e2.getY() - e1.getY();
 
                             try{
-                                if(isPinchActivate) {
+                                if(waitToJoinLienzo) {
                                     sendCoordsToPinch(xDiff, yDiff, e2, threshoold, velocityX, velocityY, velocity_threshold);
                                 }
                                 return true;
