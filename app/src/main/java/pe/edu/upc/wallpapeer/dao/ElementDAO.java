@@ -17,7 +17,7 @@ import pe.edu.upc.wallpapeer.entities.Project;
 @Dao
 public interface ElementDAO {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insert(Element element);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

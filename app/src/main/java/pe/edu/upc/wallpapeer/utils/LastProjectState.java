@@ -5,6 +5,7 @@ public class LastProjectState {
 
     private String projectId;
     private String canvaId;
+    private String deviceName;
 
 
     public LastProjectState() {
@@ -43,5 +44,13 @@ public class LastProjectState {
 
     public void setCanvaId(String canvaId) {
         this.canvaId = canvaId;
+    }
+
+    public String getDeviceName() {
+        return deviceName;
+    }
+
+    public void setDeviceName(String deviceName) {
+        this.deviceName = deviceName;
     }
 }

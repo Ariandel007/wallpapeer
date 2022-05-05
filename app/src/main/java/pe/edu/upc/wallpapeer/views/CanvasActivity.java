@@ -80,6 +80,7 @@ public class CanvasActivity extends AppCompatActivity {
         constraintLayoutLoadingSearchPeers.setVisibility(View.VISIBLE);
         btnQr.setVisibility(View.GONE);
         canvasView.setVisibility(View.GONE);
+        canvasView.setModel(model);
         //
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);

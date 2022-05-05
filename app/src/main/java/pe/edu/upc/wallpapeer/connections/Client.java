@@ -1,6 +1,7 @@
 package pe.edu.upc.wallpapeer.connections;
 
 import android.annotation.SuppressLint;
+import android.provider.Settings;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
@@ -19,6 +20,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.LocalDevice;
 import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
+import pe.edu.upc.wallpapeer.dtos.NewElementInserted;
 import pe.edu.upc.wallpapeer.dtos.PinchEventResponse;
 import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Device;
@@ -138,11 +140,14 @@ public class Client extends IMessenger {
 
     @SuppressLint("CheckResult")
     private void deserializeBasedOnEventCode(String eventCode, String jsonMessage) {
+
         switch(eventCode) {
             case CodeEvent.PINCH_EVENT:
                 Log.i("EVENT", "PINCH_EVENT");
                 if(MyLastPinch.getInstance().getProjectId() != null && MyLastPinch.getInstance().getCanva() != null && MyLastPinch.getInstance().getDate() != null) {
                     EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMessage, EngagePinchEvent.class);
+                    //TODO: Comprobar si entra en el rango de tiempo
+
                     if(MyLastPinch.getInstance().getDirection().equals("RIGHT") && engagePinchEvent.getDirection().equals("LEFT")) {
                         float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX();
                         float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY() - engagePinchEvent.getPosPinchY();
@@ -175,81 +180,81 @@ public class Client extends IMessenger {
                         pinchEventResponse.setCanva(newCanva);
 
                         AppDatabase.getInstance().elementDAO().getAllByProject(MyLastPinch.getInstance().getProjectId())
-                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                        elements -> {
-                            pinchEventResponse.setElements(elements);
-                            AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(newDevice.getDeviceName(), newDevice.getId_project())
-                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
-                            device -> {
-                                device.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
-                                device.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
-                                device.setDeviceName(engagePinchEvent.getDeviceName());
-                                device.setMacAddress("");
-                                pinchEventResponse.setDevice(device);
-                                pinchEventResponse.getCanva().setId_device(device.getId());
-                                AppDatabase.getInstance().deviceDAO().update(device)
-                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
-                                    //Canva
-                                    AppDatabase.getInstance().canvaDAO().getCanvaByIdDevice(device.getId())
-                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((canva)->{
-                                            canva.setMain(false);
-                                            canva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
-                                            canva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
-                                            canva.setPosX(posXnewCanva);
-                                            canva.setPosY(posYnewCanva);
+                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                                elements -> {
+                                    pinchEventResponse.setElements(elements);
+                                    AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(newDevice.getDeviceName(), newDevice.getId_project())
+                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                                            device -> {
+                                                device.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
+                                                device.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
+                                                device.setDeviceName(engagePinchEvent.getDeviceName());
+                                                device.setMacAddress("");
+                                                pinchEventResponse.setDevice(device);
+                                                pinchEventResponse.getCanva().setId_device(device.getId());
+                                                AppDatabase.getInstance().deviceDAO().update(device)
+                                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                                                    //Canva
+                                                    AppDatabase.getInstance().canvaDAO().getCanvaByIdDevice(device.getId())
+                                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((canva)->{
+                                                        canva.setMain(false);
+                                                        canva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
+                                                        canva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
+                                                        canva.setPosX(posXnewCanva);
+                                                        canva.setPosY(posYnewCanva);
 
-                                            canva.setMod_date(new Date().getTime());
+                                                        canva.setMod_date(new Date().getTime());
 
-                                            pinchEventResponse.setCanva(canva);
+                                                        pinchEventResponse.setCanva(canva);
 
-                                            //Agregar a Last Pinch Response
+                                                        //Agregar a Last Pinch Response
 //                                            LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
-                                            send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+                                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
-                                            AppDatabase.getInstance().canvaDAO().update(canva)
-                                                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                                Log.i("Actualizacion Canvas","Canvas actualizado");
-                                            });
-                                    }, throwable3 -> {
-                                        //QUERY VACIO
-                                        Log.e("Error",throwable3.getMessage());
-                                        //SIGNIFICA QUE ES NUEVO
-                                        //Agregar a Last Pinch Response
-                                        pinchEventResponse.getCanva().setMod_date(new Date().getTime());
+                                                        AppDatabase.getInstance().canvaDAO().update(canva)
+                                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                            Log.i("Actualizacion Canvas","Canvas actualizado");
+                                                        });
+                                                    }, throwable3 -> {
+                                                        //QUERY VACIO
+                                                        Log.e("Error",throwable3.getMessage());
+                                                        //SIGNIFICA QUE ES NUEVO
+                                                        //Agregar a Last Pinch Response
+                                                        pinchEventResponse.getCanva().setMod_date(new Date().getTime());
 //                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
-                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+                                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
-                                        AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
-                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                            Log.i("Creacion Canvas","Canvas creado");
-                                        });
-                                    });
-                                },throwable -> {
+                                                        AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
+                                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                            Log.i("Creacion Canvas","Canvas creado");
+                                                        });
+                                                    });
+                                                },throwable -> {
+                                                    Log.e("Error",throwable.getMessage());
+                                                });
+                                            },
+                                            throwable -> {
+                                                //QUERY VACIO
+                                                Log.e("Error",throwable.getMessage());
+                                                //SIGNIFICA QUE ES NUEVO
+                                                AppDatabase.getInstance().deviceDAO().insert(pinchEventResponse.getDevice())
+                                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                    //Agregar a Last Pinch Response
+                                                    pinchEventResponse.getCanva().setMod_date(new Date().getTime());
+//                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+                                                    send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+
+                                                    AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
+                                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                        Log.i("Creacion Canvas","Canvas creado");
+                                                    });
+                                                }, throwable2 -> {
+                                                    Log.e("Error",throwable2.getMessage());
+                                                });
+                                            });
+                                }, throwable -> {
                                     Log.e("Error",throwable.getMessage());
                                 });
-                            },
-                            throwable -> {
-                                //QUERY VACIO
-                                Log.e("Error",throwable.getMessage());
-                                //SIGNIFICA QUE ES NUEVO
-                                AppDatabase.getInstance().deviceDAO().insert(pinchEventResponse.getDevice())
-                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                    //Agregar a Last Pinch Response
-                                    pinchEventResponse.getCanva().setMod_date(new Date().getTime());
-//                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
-                                    send(JsonConverter.getGson().toJson(pinchEventResponse), true);
-
-                                    AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
-                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                        Log.i("Creacion Canvas","Canvas creado");
-                                    });
-                                }, throwable2 -> {
-                                    Log.e("Error",throwable2.getMessage());
-                                });
-                            });
-                        }, throwable -> {
-                            Log.e("Error",throwable.getMessage());
-                        });
 
 
                     }
@@ -259,6 +264,115 @@ public class Client extends IMessenger {
                             //No hay izquierda
                             return;
                         }
+                        //TODO: Comprobar si entra en el rango de tiempo
+
+                        float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX() - engagePinchEvent.getWidthScreenPinch();
+                        float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY() - engagePinchEvent.getPosPinchY();
+
+                        Device newDevice = new Device();
+                        newDevice.setId(UUID.randomUUID().toString());
+                        newDevice.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
+                        newDevice.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
+                        newDevice.setDeviceName(engagePinchEvent.getDeviceName());
+                        newDevice.setMacAddress("");
+                        newDevice.setId_project(MyLastPinch.getInstance().getProjectId());
+
+
+                        Canva newCanva = new Canva();
+                        newCanva.setId(UUID.randomUUID().toString());
+                        newCanva.setMain(false);
+                        newCanva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
+                        newCanva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
+                        newCanva.setPosX(posXnewCanva);
+                        newCanva.setPosY(posYnewCanva);
+                        newCanva.setId_device(newDevice.getId());
+
+                        PinchEventResponse pinchEventResponse = new PinchEventResponse();
+                        pinchEventResponse.setA1_eventCode(CodeEvent.PINCH_EVENT_RESPONSE);
+                        pinchEventResponse.setDirection("");
+                        pinchEventResponse.setDeviceName(engagePinchEvent.getDeviceName());
+                        pinchEventResponse.setMacAddress("");
+                        pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
+                        pinchEventResponse.setDevice(newDevice);
+                        pinchEventResponse.setCanva(newCanva);
+
+                        AppDatabase.getInstance().elementDAO().getAllByProject(MyLastPinch.getInstance().getProjectId())
+                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                                elements -> {
+                                    pinchEventResponse.setElements(elements);
+                                    AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(newDevice.getDeviceName(), newDevice.getId_project())
+                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+                                            device -> {
+                                                device.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
+                                                device.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
+                                                device.setDeviceName(engagePinchEvent.getDeviceName());
+                                                device.setMacAddress("");
+                                                pinchEventResponse.setDevice(device);
+                                                pinchEventResponse.getCanva().setId_device(device.getId());
+                                                AppDatabase.getInstance().deviceDAO().update(device)
+                                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                                                    //Canva
+                                                    AppDatabase.getInstance().canvaDAO().getCanvaByIdDevice(device.getId())
+                                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((canva)->{
+                                                        canva.setMain(false);
+                                                        canva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
+                                                        canva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
+                                                        canva.setPosX(posXnewCanva);
+                                                        canva.setPosY(posYnewCanva);
+
+                                                        canva.setMod_date(new Date().getTime());
+
+                                                        pinchEventResponse.setCanva(canva);
+
+                                                        //Agregar a Last Pinch Response
+//                                            LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+                                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+
+                                                        AppDatabase.getInstance().canvaDAO().update(canva)
+                                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                            Log.i("Actualizacion Canvas","Canvas actualizado");
+                                                        });
+                                                    }, throwable3 -> {
+                                                        //QUERY VACIO
+                                                        Log.e("Error",throwable3.getMessage());
+                                                        //SIGNIFICA QUE ES NUEVO
+                                                        //Agregar a Last Pinch Response
+                                                        pinchEventResponse.getCanva().setMod_date(new Date().getTime());
+//                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+                                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+
+                                                        AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
+                                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                            Log.i("Creacion Canvas","Canvas creado");
+                                                        });
+                                                    });
+                                                },throwable -> {
+                                                    Log.e("Error",throwable.getMessage());
+                                                });
+                                            },
+                                            throwable -> {
+                                                //QUERY VACIO
+                                                Log.e("Error",throwable.getMessage());
+                                                //SIGNIFICA QUE ES NUEVO
+                                                AppDatabase.getInstance().deviceDAO().insert(pinchEventResponse.getDevice())
+                                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                    //Agregar a Last Pinch Response
+                                                    pinchEventResponse.getCanva().setMod_date(new Date().getTime());
+//                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+                                                    send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+
+                                                    AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
+                                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                                        Log.i("Creacion Canvas","Canvas creado");
+                                                    });
+                                                }, throwable2 -> {
+                                                    Log.e("Error",throwable2.getMessage());
+                                                });
+                                            });
+                                }, throwable -> {
+                                    Log.e("Error",throwable.getMessage());
+                                });
+
 
                     }
 
@@ -273,34 +387,50 @@ public class Client extends IMessenger {
                 break;
             case CodeEvent.INSERT_NEW_ELEMENT:
                 Log.i("EVENT", "INSERT_NEW_ELEMENT");
+                if(LastProjectState.getInstance().getProjectId() == null) {
+                    return;
+                }
+
+                NewElementInserted newElementInserted = JsonConverter.getGson().fromJson(jsonMessage, NewElementInserted.class);
+                if(LastProjectState.getInstance().getProjectId().equals(newElementInserted.getElement().getId_project())) {
+
+                    AppDatabase.getInstance().elementDAO().insert(newElementInserted.getElement())
+                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                            subscribe(()->{
+                                Log.i("Insercion por socket","Se isnerto cone exito");
+                            });
+                }
+
                 break;
             case CodeEvent.PINCH_EVENT_RESPONSE:
                 Log.i("EVENT", "PINCH_EVENT_RESPONSE");
                 PinchEventResponse pinchEventResponse = JsonConverter.getGson().fromJson(jsonMessage, PinchEventResponse.class);
+                //Comprobar si somos el target device
+                if(!LastProjectState.getInstance().getDeviceName().equals(pinchEventResponse.getDeviceName())) {
+                    return;
+                }
                 Project project = pinchEventResponse.getProject();
                 Device device = pinchEventResponse.getDevice();
                 Canva canva = pinchEventResponse.getCanva();
                 List<Element> elements = pinchEventResponse.getElements();
 
                 AppDatabase.getInstance().projectDAO().getProject(project.getId())
-                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((projectInBD)->{
+                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((projectInBD)->{
                     AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(device.getDeviceName(), device.getId_project())
                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((deviceInBD)->{
-                                //QUE HACER SI YA EXISTE EL DEVICE
-                                AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                    AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                        //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
-                                        LastProjectState.getInstance().setProjectId(project.getId());
-                                        LastProjectState.getInstance().setCanvaId(canva.getId());
+                        //QUE HACER SI YA EXISTE EL DEVICE
+                        AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                            AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                LastProjectState.getInstance().setProjectId(project.getId());
+                                LastProjectState.getInstance().setCanvaId(canva.getId());
 
-                                    });
-                                });
+                            });
+                        });
                     }, throwableDevice -> {
                         //QUE HACER SI NO EXISTE EL DEVICE
                         AppDatabase.getInstance().deviceDAO().insert(device).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                             AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                 AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                    //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
                                     LastProjectState.getInstance().setProjectId(project.getId());
                                     LastProjectState.getInstance().setCanvaId(canva.getId());
 
@@ -312,16 +442,16 @@ public class Client extends IMessenger {
                     //ERROR PORQUE NO EXISTE PROYECTO
                     AppDatabase.getInstance().projectDAO().insert(project)
                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                //
-                                AppDatabase.getInstance().deviceDAO().insert(device).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                    AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                        AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
-                                            //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
-                                            LastProjectState.getInstance().setProjectId(project.getId());
-                                            LastProjectState.getInstance().setCanvaId(canva.getId());
-                                        });
-                                    });
+                        //
+                        AppDatabase.getInstance().deviceDAO().insert(device).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                            AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                    LastProjectState.getInstance().setProjectId(project.getId());
+                                    LastProjectState.getInstance().setCanvaId(canva.getId());
+
                                 });
+                            });
+                        });
                     });
 
                 });
@@ -334,4 +464,82 @@ public class Client extends IMessenger {
         }
     }
 
+//    public void onPinchEvent(pinchEventResponse) {
+//        AppDatabase.getInstance().elementDAO().getAllByProject(MyLastPinch.getInstance().getProjectId())
+//                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+//                elements -> {
+//                    pinchEventResponse.setElements(elements);
+//                    AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(newDevice.getDeviceName(), newDevice.getId_project())
+//                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
+//                            device -> {
+//                                device.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
+//                                device.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
+//                                device.setDeviceName(engagePinchEvent.getDeviceName());
+//                                device.setMacAddress("");
+//                                pinchEventResponse.setDevice(device);
+//                                pinchEventResponse.getCanva().setId_device(device.getId());
+//                                AppDatabase.getInstance().deviceDAO().update(device)
+//                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+//                                    //Canva
+//                                    AppDatabase.getInstance().canvaDAO().getCanvaByIdDevice(device.getId())
+//                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((canva)->{
+//                                        canva.setMain(false);
+//                                        canva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
+//                                        canva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
+//                                        canva.setPosX(posXnewCanva);
+//                                        canva.setPosY(posYnewCanva);
+//
+//                                        canva.setMod_date(new Date().getTime());
+//
+//                                        pinchEventResponse.setCanva(canva);
+//
+//                                        //Agregar a Last Pinch Response
+////                                            LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+//
+//                                        AppDatabase.getInstance().canvaDAO().update(canva)
+//                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+//                                            Log.i("Actualizacion Canvas","Canvas actualizado");
+//                                        });
+//                                    }, throwable3 -> {
+//                                        //QUERY VACIO
+//                                        Log.e("Error",throwable3.getMessage());
+//                                        //SIGNIFICA QUE ES NUEVO
+//                                        //Agregar a Last Pinch Response
+//                                        pinchEventResponse.getCanva().setMod_date(new Date().getTime());
+////                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                        send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+//
+//                                        AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
+//                                                .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+//                                            Log.i("Creacion Canvas","Canvas creado");
+//                                        });
+//                                    });
+//                                },throwable -> {
+//                                    Log.e("Error",throwable.getMessage());
+//                                });
+//                            },
+//                            throwable -> {
+//                                //QUERY VACIO
+//                                Log.e("Error",throwable.getMessage());
+//                                //SIGNIFICA QUE ES NUEVO
+//                                AppDatabase.getInstance().deviceDAO().insert(pinchEventResponse.getDevice())
+//                                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+//                                    //Agregar a Last Pinch Response
+//                                    pinchEventResponse.getCanva().setMod_date(new Date().getTime());
+////                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                    send(JsonConverter.getGson().toJson(pinchEventResponse), true);
+//
+//                                    AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
+//                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+//                                        Log.i("Creacion Canvas","Canvas creado");
+//                                    });
+//                                }, throwable2 -> {
+//                                    Log.e("Error",throwable2.getMessage());
+//                                });
+//                            });
+//                }, throwable -> {
+//                    Log.e("Error",throwable.getMessage());
+//                });
+//    }
 }
