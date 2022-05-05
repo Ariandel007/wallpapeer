@@ -45,6 +45,7 @@ import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
@@ -221,9 +222,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
             public void onChanged(List<Canva> canvas) {
                 //Haz cosas
                 if(waitToJoinLienzo) {
-                    Canva lastCanva = canvas.get(canvas.size() - 1);
-//                    projetcId = obtenerProyecto;
-                    canvaId = lastCanva.id;
+                    projetcId = LastProjectState.getInstance().getProjectId();
+                    canvaId = LastProjectState.getInstance().getCanvaId();
                     //Traer data
                     loadExistingProject(context);
                 }

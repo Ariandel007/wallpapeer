@@ -12,6 +12,7 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -21,9 +22,12 @@ import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.dtos.PinchEventResponse;
 import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Device;
+import pe.edu.upc.wallpapeer.entities.Element;
+import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
@@ -204,8 +208,7 @@ public class Server extends IMessenger {
                                                         pinchEventResponse.setCanva(canva);
 
                                                         //Agregar a Last Pinch Response
-//                                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
-
+//                                            LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
                                                         send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
                                                         AppDatabase.getInstance().canvaDAO().update(canva)
@@ -218,7 +221,7 @@ public class Server extends IMessenger {
                                                         //SIGNIFICA QUE ES NUEVO
                                                         //Agregar a Last Pinch Response
                                                         pinchEventResponse.getCanva().setMod_date(new Date().getTime());
-//                                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                        LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
                                                         send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
                                                         AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
@@ -238,7 +241,7 @@ public class Server extends IMessenger {
                                                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                                     //Agregar a Last Pinch Response
                                                     pinchEventResponse.getCanva().setMod_date(new Date().getTime());
-//                                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
+//                                    LastPinchEventResponse.getInstance().setPinchEventResponse(pinchEventResponse);
                                                     send(JsonConverter.getGson().toJson(pinchEventResponse), true);
 
                                                     AppDatabase.getInstance().canvaDAO().insert(pinchEventResponse.getCanva())
@@ -279,6 +282,56 @@ public class Server extends IMessenger {
             case CodeEvent.PINCH_EVENT_RESPONSE:
                 Log.i("EVENT", "PINCH_EVENT_RESPONSE");
                 PinchEventResponse pinchEventResponse = JsonConverter.getGson().fromJson(jsonMessage, PinchEventResponse.class);
+                Project project = pinchEventResponse.getProject();
+                Device device = pinchEventResponse.getDevice();
+                Canva canva = pinchEventResponse.getCanva();
+                List<Element> elements = pinchEventResponse.getElements();
+
+                AppDatabase.getInstance().projectDAO().getProject(project.getId())
+                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((projectInBD)->{
+                    AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(device.getDeviceName(), device.getId_project())
+                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((deviceInBD)->{
+                        //QUE HACER SI YA EXISTE EL DEVICE
+                        AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                            AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
+                                LastProjectState.getInstance().setProjectId(project.getId());
+                                LastProjectState.getInstance().setCanvaId(canva.getId());
+
+                            });
+                        });
+                    }, throwableDevice -> {
+                        //QUE HACER SI NO EXISTE EL DEVICE
+                        AppDatabase.getInstance().deviceDAO().insert(device).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                            AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                    //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
+                                    LastProjectState.getInstance().setProjectId(project.getId());
+                                    LastProjectState.getInstance().setCanvaId(canva.getId());
+
+                                });
+                            });
+                        });
+                    });
+                }, throwable1 -> {
+                    //ERROR PORQUE NO EXISTE PROYECTO
+                    AppDatabase.getInstance().projectDAO().insert(project)
+                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                        //
+                        AppDatabase.getInstance().deviceDAO().insert(device).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                            AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                    //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
+                                    LastProjectState.getInstance().setProjectId(project.getId());
+                                    LastProjectState.getInstance().setCanvaId(canva.getId());
+
+                                });
+                            });
+                        });
+                    });
+
+                });
+
 
                 break;
             default:

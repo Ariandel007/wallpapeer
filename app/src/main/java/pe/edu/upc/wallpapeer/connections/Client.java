@@ -27,6 +27,7 @@ import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
@@ -289,6 +290,9 @@ public class Client extends IMessenger {
                                 AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                     AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                         //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
+                                        LastProjectState.getInstance().setProjectId(project.getId());
+                                        LastProjectState.getInstance().setCanvaId(canva.getId());
+
                                     });
                                 });
                     }, throwableDevice -> {
@@ -297,6 +301,9 @@ public class Client extends IMessenger {
                             AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                 AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                     //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
+                                    LastProjectState.getInstance().setProjectId(project.getId());
+                                    LastProjectState.getInstance().setCanvaId(canva.getId());
+
                                 });
                             });
                         });
@@ -310,6 +317,8 @@ public class Client extends IMessenger {
                                     AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                         AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                             //TODO: GUARDAR PROYECTO EN ESTADO GENERAL
+                                            LastProjectState.getInstance().setProjectId(project.getId());
+                                            LastProjectState.getInstance().setCanvaId(canva.getId());
                                         });
                                     });
                                 });

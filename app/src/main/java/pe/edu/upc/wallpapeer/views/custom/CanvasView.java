@@ -201,8 +201,8 @@ public class CanvasView  extends View {
         @Override
         public boolean onDown(MotionEvent event) {
             Log.d(DEBUG_TAG,"onDown: " + event.toString());
-            posX = event.getX();
-        posY = event.getY();
+            posX = event.getX() + getCurrentCanvaEntity().getPosX();
+            posY = event.getY() + getCurrentCanvaEntity().getPosY();
 
         switch (event.getAction()){
             case MotionEvent.ACTION_DOWN:
