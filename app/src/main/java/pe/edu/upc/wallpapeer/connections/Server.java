@@ -145,13 +145,17 @@ public class Server extends IMessenger {
 
     @SuppressLint("CheckResult")
     private void deserializeBasedOnEventCode(String eventCode, String jsonMessage) {
+        long currentMls = new Date().getTime();
 
         switch(eventCode) {
             case CodeEvent.PINCH_EVENT:
                 Log.i("EVENT", "PINCH_EVENT");
                 if(MyLastPinch.getInstance().getProjectId() != null && MyLastPinch.getInstance().getCanva() != null && MyLastPinch.getInstance().getDate() != null) {
                     EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMessage, EngagePinchEvent.class);
-                    //TODO: Comprobar si entra en el rango de tiempo
+                    //Comprobar si entra en el rango de tiempo
+                    if(currentMls - engagePinchEvent.getDatePinch().getTime() > 5000) {
+                        return;
+                    }
 
                     if(MyLastPinch.getInstance().getDirection().equals("RIGHT") && engagePinchEvent.getDirection().equals("LEFT")) {
                         float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX();
@@ -192,10 +196,83 @@ public class Server extends IMessenger {
                             //No hay izquierda
                             return;
                         }
-                        //TODO: Comprobar si entra en el rango de tiempo
 
                         float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX() - engagePinchEvent.getWidthScreenPinch();
                         float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY() - engagePinchEvent.getPosPinchY();
+
+                        Device newDevice = new Device();
+                        newDevice.setId(UUID.randomUUID().toString());
+                        newDevice.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
+                        newDevice.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
+                        newDevice.setDeviceName(engagePinchEvent.getDeviceName());
+                        newDevice.setMacAddress("");
+                        newDevice.setId_project(MyLastPinch.getInstance().getProjectId());
+
+
+                        Canva newCanva = new Canva();
+                        newCanva.setId(UUID.randomUUID().toString());
+                        newCanva.setMain(false);
+                        newCanva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
+                        newCanva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
+                        newCanva.setPosX(posXnewCanva);
+                        newCanva.setPosY(posYnewCanva);
+                        newCanva.setId_device(newDevice.getId());
+
+                        PinchEventResponse pinchEventResponse = new PinchEventResponse();
+                        pinchEventResponse.setA1_eventCode(CodeEvent.PINCH_EVENT_RESPONSE);
+                        pinchEventResponse.setDirection("");
+                        pinchEventResponse.setDeviceName(engagePinchEvent.getDeviceName());
+                        pinchEventResponse.setMacAddress("");
+                        pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
+                        pinchEventResponse.setDevice(newDevice);
+                        pinchEventResponse.setCanva(newCanva);
+
+                        onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
+                    }
+
+                    if(MyLastPinch.getInstance().getDirection().equals("UP") && engagePinchEvent.getDirection().equals("DOWN")) {
+                        if(MyLastPinch.getInstance().getCanva().getPosY() == 0.0f || MyLastPinch.getInstance().getCanva().getPosY() == 0) {
+                            //No hay arriba
+                            return;
+                        }
+
+                        float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX() - engagePinchEvent.getPosPinchX();
+                        float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY() - engagePinchEvent.getHeightScreenPinch();
+
+
+                        Device newDevice = new Device();
+                        newDevice.setId(UUID.randomUUID().toString());
+                        newDevice.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
+                        newDevice.setHeightScreen(engagePinchEvent.getHeightScreenPinch());
+                        newDevice.setDeviceName(engagePinchEvent.getDeviceName());
+                        newDevice.setMacAddress("");
+                        newDevice.setId_project(MyLastPinch.getInstance().getProjectId());
+
+
+                        Canva newCanva = new Canva();
+                        newCanva.setId(UUID.randomUUID().toString());
+                        newCanva.setMain(false);
+                        newCanva.setHeightCanvas(engagePinchEvent.getHeightScreenPinch());
+                        newCanva.setWidthCanvas(engagePinchEvent.getWidthScreenPinch());
+                        newCanva.setPosX(posXnewCanva);
+                        newCanva.setPosY(posYnewCanva);
+                        newCanva.setId_device(newDevice.getId());
+
+                        PinchEventResponse pinchEventResponse = new PinchEventResponse();
+                        pinchEventResponse.setA1_eventCode(CodeEvent.PINCH_EVENT_RESPONSE);
+                        pinchEventResponse.setDirection("");
+                        pinchEventResponse.setDeviceName(engagePinchEvent.getDeviceName());
+                        pinchEventResponse.setMacAddress("");
+                        pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
+                        pinchEventResponse.setDevice(newDevice);
+                        pinchEventResponse.setCanva(newCanva);
+
+                        onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
+                    }
+
+                    if(MyLastPinch.getInstance().getDirection().equals("DOWN") && engagePinchEvent.getDirection().equals("UP")) {
+                        float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX() - engagePinchEvent.getPosPinchX();
+                        float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY();
 
                         Device newDevice = new Device();
                         newDevice.setId(UUID.randomUUID().toString());
