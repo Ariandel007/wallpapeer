@@ -440,6 +440,47 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                 }
             }
+        } else {
+            if(Math.abs(yDiff) > threshoold && Math.abs(velocityY) > velocity_threshold) {
+                if(yDiff>0){
+                    //
+                    Log.i("DOWN", "DOWN");
+
+                    EngagePinchEvent engagePinchEvent = new EngagePinchEvent();
+                    engagePinchEvent.setEventCode(CodeEvent.PINCH_EVENT);
+                    engagePinchEvent.setDirection("DOWN");
+                    engagePinchEvent.setDeviceName(userDeviceName);
+                    engagePinchEvent.setMacAddress("");
+                    engagePinchEvent.setPosPinchX(e2.getX());
+                    engagePinchEvent.setPosPinchY((float) getHeigthDevice());
+                    engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
+                    engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
+                    engagePinchEvent.setDatePinch(new Date());
+
+                    String json = JsonConverter.getGson().toJson(engagePinchEvent);
+                    model.sendMessage(json);
+
+                } else {
+                    //UP
+                    Log.i("UP", "UP");
+
+                    EngagePinchEvent engagePinchEvent = new EngagePinchEvent();
+                    engagePinchEvent.setEventCode(CodeEvent.PINCH_EVENT);
+                    engagePinchEvent.setDirection("UP");
+                    engagePinchEvent.setDeviceName(userDeviceName);
+                    engagePinchEvent.setMacAddress("");
+                    engagePinchEvent.setPosPinchX(e2.getX());
+                    engagePinchEvent.setPosPinchY(0.0f);
+                    engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
+                    engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
+                    engagePinchEvent.setDatePinch(new Date());
+
+                    String json = JsonConverter.getGson().toJson(engagePinchEvent);
+                    model.sendMessage(json);
+
+                }
+
+            }
         }
     }
 
