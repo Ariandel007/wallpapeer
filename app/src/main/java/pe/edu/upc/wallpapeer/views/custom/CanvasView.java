@@ -193,6 +193,25 @@ public class CanvasView  extends View {
                     MyLastPinch.getInstance().setDirection("LEFT");
                 }
             }
+        } else {
+            if(Math.abs(yDiff) > threshoold && Math.abs(velocityY) > velocity_threshold) {
+                if(yDiff>0){
+                    //DOWN
+                    MyLastPinch.getInstance().setPinchX(e2.getX());
+                    MyLastPinch.getInstance().setPinchY((float) getHeigthDevice());
+                    MyLastPinch.getInstance().setDate(new Date());
+                    MyLastPinch.getInstance().setDirection("DOWN");
+
+                } else {
+                    //UP
+                    MyLastPinch.getInstance().setPinchX(e2.getX());
+                    MyLastPinch.getInstance().setPinchY(0.0f);
+                    MyLastPinch.getInstance().setDate(new Date());
+                    MyLastPinch.getInstance().setDirection("UP");
+
+                }
+
+            }
         }
     }
 

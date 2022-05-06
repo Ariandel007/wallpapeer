@@ -161,6 +161,11 @@ public class Server extends IMessenger {
                         float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX();
                         float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY() - engagePinchEvent.getPosPinchY();
 
+                        if(posXnewCanva < 0 || posYnewCanva < 0) {
+                            //Se sale de los limites
+                            return;
+                        }
+
                         Device newDevice = new Device();
                         newDevice.setId(UUID.randomUUID().toString());
                         newDevice.setWidthScreen(engagePinchEvent.getWidthScreenPinch());
@@ -192,13 +197,15 @@ public class Server extends IMessenger {
                     }
 
                     if(MyLastPinch.getInstance().getDirection().equals("LEFT") && engagePinchEvent.getDirection().equals("RIGHT")) {
-                        if(MyLastPinch.getInstance().getCanva().getPosX() == 0.0f || MyLastPinch.getInstance().getCanva().getPosX() == 0) {
-                            //No hay izquierda
-                            return;
-                        }
+
 
                         float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX() - engagePinchEvent.getWidthScreenPinch();
                         float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY() - engagePinchEvent.getPosPinchY();
+
+                        if(posXnewCanva < 0 || posYnewCanva < 0) {
+                            //Se sale de los limites
+                            return;
+                        }
 
                         Device newDevice = new Device();
                         newDevice.setId(UUID.randomUUID().toString());
@@ -231,14 +238,14 @@ public class Server extends IMessenger {
                     }
 
                     if(MyLastPinch.getInstance().getDirection().equals("UP") && engagePinchEvent.getDirection().equals("DOWN")) {
-                        if(MyLastPinch.getInstance().getCanva().getPosY() == 0.0f || MyLastPinch.getInstance().getCanva().getPosY() == 0) {
-                            //No hay arriba
-                            return;
-                        }
 
                         float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX() - engagePinchEvent.getPosPinchX();
                         float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY() - engagePinchEvent.getHeightScreenPinch();
 
+                        if(posXnewCanva < 0 || posYnewCanva < 0) {
+                            //Se sale de los limites
+                            return;
+                        }
 
                         Device newDevice = new Device();
                         newDevice.setId(UUID.randomUUID().toString());
@@ -273,6 +280,11 @@ public class Server extends IMessenger {
                     if(MyLastPinch.getInstance().getDirection().equals("DOWN") && engagePinchEvent.getDirection().equals("UP")) {
                         float posXnewCanva = MyLastPinch.getInstance().getPinchX() + MyLastPinch.getInstance().getCanva().getPosX() - engagePinchEvent.getPosPinchX();
                         float posYnewCanva = MyLastPinch.getInstance().getPinchY() + MyLastPinch.getInstance().getCanva().getPosY();
+
+                        if(posXnewCanva < 0 || posYnewCanva < 0) {
+                            //Se sale de los limites
+                            return;
+                        }
 
                         Device newDevice = new Device();
                         newDevice.setId(UUID.randomUUID().toString());
@@ -471,5 +483,6 @@ public class Server extends IMessenger {
                     Log.e("Error",throwable.getMessage());
                 });
     }
+
 
 }
