@@ -227,6 +227,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     projetcId = LastProjectState.getInstance().getProjectId();
                     canvaId = LastProjectState.getInstance().getCanvaId();
                     //Traer data
+                    LastProjectState.getInstance().setProjectId(projetcId);
                     loadExistingProject(context);
                 }
             }

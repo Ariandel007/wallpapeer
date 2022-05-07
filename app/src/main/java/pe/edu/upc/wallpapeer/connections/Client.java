@@ -3,6 +3,7 @@ package pe.edu.upc.wallpapeer.connections;
 import android.annotation.SuppressLint;
 import android.provider.Settings;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.lifecycle.MutableLiveData;
 
@@ -18,15 +19,20 @@ import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import pe.edu.upc.wallpapeer.App;
 import pe.edu.upc.wallpapeer.LocalDevice;
+import pe.edu.upc.wallpapeer.dtos.AcceptingPalette;
+import pe.edu.upc.wallpapeer.dtos.AddingPalette;
 import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.dtos.NewElementInserted;
 import pe.edu.upc.wallpapeer.dtos.PinchEventResponse;
 import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Device;
 import pe.edu.upc.wallpapeer.entities.Element;
+import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
+import pe.edu.upc.wallpapeer.utils.CanvaStateForPalette;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
@@ -315,10 +321,96 @@ public class Client extends IMessenger {
 
                 break;
             case CodeEvent.ADDING_PALLETE_TO_DEVICE:
+                if(LastProjectState.getInstance().getDeviceName() == null){
+                    return;
+                }
                 Log.i("EVENT", "ADDING_PALLETE_TO_DEVICE");
+                AddingPalette addingPalette = JsonConverter.getGson().fromJson(jsonMessage, AddingPalette.class);
+                if(LastProjectState.getInstance().getProjectId() == null){
+                    return;
+                }
+                if(!addingPalette.getTargetDeviceName().equals(LastProjectState.getInstance().getDeviceName())){
+                    return;
+                }
+                Palette palette = new Palette();
+                palette.setId(UUID.randomUUID().toString());
+                palette.setName(addingPalette.getDeviceName());
+                palette.setSelectedOption(addingPalette.getSelectedOption());
+                palette.setSubOption(addingPalette.getSubOption());
+                palette.setPaletteDeviceName(addingPalette.getTargetDeviceName());
+
+                //Toast.makeText(App.getContext(), addingPalette.getDeviceName() + " se unió como paleta", Toast.LENGTH_SHORT).show();
+                AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(LastProjectState.getInstance().getDeviceName(), LastProjectState.getInstance().getProjectId())
+                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                        subscribe((myDevice)->{
+                            String myId = myDevice.getId();
+                            palette.setId_device(myId);
+                            AppDatabase.getInstance().paletteDAO().getPaletteByProjectIdDeviceId(LastProjectState.getInstance().getProjectId(), myId)
+                                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                    subscribe((myPalette)->{
+                                        myPalette.setName(addingPalette.getDeviceName());
+                                        myPalette.setSelectedOption(addingPalette.getSelectedOption());
+                                        myPalette.setSubOption(addingPalette.getSubOption());
+                                        myPalette.setPaletteDeviceName(addingPalette.getTargetDeviceName());
+
+                                        AppDatabase.getInstance().paletteDAO().update(myPalette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                                subscribe(()->{
+                                                    Log.i("Update Palette", "Se actualizó la paleta");
+                                                    AcceptingPalette acceptingPalette = new AcceptingPalette();
+                                                    acceptingPalette.setA1_eventCode(CodeEvent.ACCEPTED_PALETTE);
+                                                    acceptingPalette.setMacAddress("");
+                                                    acceptingPalette.setLinkedDevice(myPalette.getPaletteDeviceName());
+                                                    acceptingPalette.setLinkedIdDevice(myPalette.getId_device());
+                                                    acceptingPalette.setPaletteDeviceName(addingPalette.getDeviceName());
+                                                    AppDatabase.getInstance().projectDAO().getProject(LastProjectState.getInstance().getProjectId())
+                                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                                            subscribe((myProject)->{
+                                                                acceptingPalette.setProject(myProject);
+                                                                send(JsonConverter.getGson().toJson(acceptingPalette), true);
+                                                            });
+                                                });
+                                    }, throwable -> {
+                                        AppDatabase.getInstance().paletteDAO().insert(palette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                                subscribe(()->{
+                                                    Log.i("Create Palette", "Se creó la paleta");
+                                                    AcceptingPalette acceptingPalette = new AcceptingPalette();
+                                                    acceptingPalette.setA1_eventCode(CodeEvent.ACCEPTED_PALETTE);
+                                                    acceptingPalette.setMacAddress("");
+                                                    acceptingPalette.setLinkedDevice(palette.getPaletteDeviceName());
+                                                    acceptingPalette.setLinkedIdDevice(palette.getId_device());
+                                                    acceptingPalette.setPaletteDeviceName(addingPalette.getDeviceName());
+                                                    AppDatabase.getInstance().projectDAO().getProject(LastProjectState.getInstance().getProjectId())
+                                                            .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                                            subscribe((myProject)->{
+                                                                acceptingPalette.setProject(myProject);
+                                                                send(JsonConverter.getGson().toJson(acceptingPalette), true);
+                                                            });
+                                                });
+                                    });
+                        }, throwable -> {
+
+                        });
+
+
+
+
                 break;
             case CodeEvent.SELECT_OPTION_PALLETE:
                 Log.i("EVENT", "SELECT_OPTION_PALLETE");
+                break;
+            case CodeEvent.ACCEPTED_PALETTE:
+                AcceptingPalette acceptingPalette = JsonConverter.getGson().fromJson(jsonMessage, AcceptingPalette.class);
+                if(!acceptingPalette.getPaletteDeviceName().equals(LastProjectState.getInstance().getDeviceName())){
+                    return;
+                }
+                CanvaStateForPalette.getInstance().setAcceptingPalette(acceptingPalette);
+                Project project2 = acceptingPalette.getProject();
+
+                AppDatabase.getInstance().projectDAO().insert(project2).subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(()->{
+                            Log.i("Proyecto creado", "Se creó el proyecto");
+                        });
                 break;
             case CodeEvent.INSERT_NEW_ELEMENT:
                 Log.i("EVENT", "INSERT_NEW_ELEMENT");

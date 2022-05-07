@@ -1,12 +1,12 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 8,
-    "identityHash": "4e56c5ddeafcd6c6576c7fa8fb525b90",
+    "version": 9,
+    "identityHash": "ce09242bf06179671d8711d43f634d71",
     "entities": [
       {
         "tableName": "palette",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `selected_option` INTEGER NOT NULL, `sub_option` INTEGER NOT NULL, `palette_device_name` TEXT, PRIMARY KEY(`id`))",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `name` TEXT, `selected_option` INTEGER NOT NULL, `sub_option` INTEGER NOT NULL, `id_device` TEXT, `palette_device_name` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`id_device`) REFERENCES `device`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -33,6 +33,12 @@
             "notNull": true
           },
           {
+            "fieldPath": "id_device",
+            "columnName": "id_device",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
             "fieldPath": "paletteDeviceName",
             "columnName": "palette_device_name",
             "affinity": "TEXT",
@@ -46,7 +52,19 @@
           "autoGenerate": false
         },
         "indices": [],
-        "foreignKeys": []
+        "foreignKeys": [
+          {
+            "table": "device",
+            "onDelete": "CASCADE",
+            "onUpdate": "CASCADE",
+            "columns": [
+              "id_device"
+            ],
+            "referencedColumns": [
+              "id"
+            ]
+          }
+        ]
       },
       {
         "tableName": "canva",
@@ -124,7 +142,7 @@
       },
       {
         "tableName": "device",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `width_screen` REAL NOT NULL, `height_screen` REAL NOT NULL, `device_name` TEXT, `mac_address` TEXT, `id_paleta` TEXT, `id_project` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`id_paleta`) REFERENCES `palette`(`id`) ON UPDATE CASCADE ON DELETE CASCADE , FOREIGN KEY(`id_project`) REFERENCES `project`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `width_screen` REAL NOT NULL, `height_screen` REAL NOT NULL, `device_name` TEXT, `mac_address` TEXT, `id_project` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`id_project`) REFERENCES `project`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -157,12 +175,6 @@
             "notNull": false
           },
           {
-            "fieldPath": "id_paleta",
-            "columnName": "id_paleta",
-            "affinity": "TEXT",
-            "notNull": false
-          },
-          {
             "fieldPath": "id_project",
             "columnName": "id_project",
             "affinity": "TEXT",
@@ -177,17 +189,6 @@
         },
         "indices": [],
         "foreignKeys": [
-          {
-            "table": "palette",
-            "onDelete": "CASCADE",
-            "onUpdate": "CASCADE",
-            "columns": [
-              "id_paleta"
-            ],
-            "referencedColumns": [
-              "id"
-            ]
-          },
           {
             "table": "project",
             "onDelete": "CASCADE",
@@ -523,7 +524,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '4e56c5ddeafcd6c6576c7fa8fb525b90')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, 'ce09242bf06179671d8711d43f634d71')"
     ]
   }
 }
