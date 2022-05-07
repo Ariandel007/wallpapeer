@@ -3,11 +3,14 @@ package pe.edu.upc.wallpapeer.views;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
@@ -49,9 +52,9 @@ public class CanvasActivity extends AppCompatActivity {
     private String startDate;
     private CanvasView canvasView;
     private String projetcId = "";
-    private String deviceId  = "";
-    private String canvaId   = "";
-    private  List<Element> elementList;
+    private String deviceId = "";
+    private String canvaId = "";
+    private List<Element> elementList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +69,7 @@ public class CanvasActivity extends AppCompatActivity {
         canvasView = findViewById(R.id.canvas);
         constraintLayout = findViewById(R.id.popup_qr);
         constraintLayout.setVisibility(View.GONE);
-        constraintLayoutLoadingSearchPeers  = findViewById(R.id.search_peer_connections_canvas);
+        constraintLayoutLoadingSearchPeers = findViewById(R.id.search_peer_connections_canvas);
         //
         constraintLayoutLoadingSearchPeers.setVisibility(View.VISIBLE);
         btnQr.setVisibility(View.GONE);
@@ -84,7 +87,7 @@ public class CanvasActivity extends AppCompatActivity {
             deviceId = extras.getString("device_id");
             canvaId = extras.getString("canva_id");
 
-            if(extras.getString("project_load").equals("loaded_project")) {
+            if (extras.getString("project_load").equals("loaded_project")) {
                 //Hacer cosas adicionales para cuando cargue un proyecto
                 loadExistingProject(contextCanvas);
             } else {
@@ -157,7 +160,7 @@ public class CanvasActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 try {
-                    if(imgQrShowed) {
+                    if (imgQrShowed) {
                         constraintLayout.setVisibility(View.GONE);
                         imgQrShowed = !imgQrShowed;
                     } else {

@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        //LoadingScreen
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingScreen"
             android:layout_width="match_parent"
@@ -65,7 +66,7 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+        //JoinScreen
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingPallete"
             android:layout_width="match_parent"
@@ -76,7 +77,7 @@
                 android:id="@+id/imageView"
                 android:layout_width="344dp"
                 android:layout_height="324dp"
-                android:tint="#8363AC"
+                app:tint="#8363AC"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.492"
