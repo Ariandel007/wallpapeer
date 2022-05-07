@@ -8,13 +8,13 @@ import androidx.room.PrimaryKey;
 
 @Entity(tableName = "device",
         foreignKeys ={
-                @ForeignKey(
-                        entity = Palette.class,
-                        parentColumns = "id",
-                        childColumns = "id_paleta",
-                        onUpdate = ForeignKey.CASCADE,
-                        onDelete = ForeignKey.CASCADE
-                ),
+//                @ForeignKey(
+//                        entity = Palette.class,
+//                        parentColumns = "id",
+//                        childColumns = "id_paleta",
+//                        onUpdate = ForeignKey.CASCADE,
+//                        onDelete = ForeignKey.CASCADE
+//                ),
                 @ForeignKey(
                         entity = Project.class,
                         parentColumns = "id",
@@ -40,21 +40,21 @@ public class Device {
     @ColumnInfo(name = "mac_address")
     public String macAddress;
 
-    //FKS
-    @ColumnInfo(name = "id_paleta")
-    public String id_paleta;
+//    //FKS
+//    @ColumnInfo(name = "id_paleta")
+//    public String id_paleta;
 
     @ColumnInfo(name = "id_project")
     public String id_project;
 
 
-    public Device(@NonNull String id, float widthScreen, float heightScreen, String deviceName, String macAddress, String id_paleta, String id_project) {
+    public Device(@NonNull String id, float widthScreen, float heightScreen, String deviceName, String macAddress, String id_project) {
         this.id = id;
         this.widthScreen = widthScreen;
         this.heightScreen = heightScreen;
         this.deviceName = deviceName;
         this.macAddress = macAddress;
-        this.id_paleta = id_paleta;
+//        this.id_paleta = id_paleta;
         this.id_project = id_project;
     }
 
@@ -101,13 +101,13 @@ public class Device {
         this.macAddress = macAddress;
     }
 
-    public String getId_paleta() {
-        return id_paleta;
-    }
-
-    public void setId_paleta(String id_paleta) {
-        this.id_paleta = id_paleta;
-    }
+//    public String getId_paleta() {
+//        return id_paleta;
+//    }
+//
+//    public void setId_paleta(String id_paleta) {
+//        this.id_paleta = id_paleta;
+//    }
 
     public String getId_project() {
         return id_project;

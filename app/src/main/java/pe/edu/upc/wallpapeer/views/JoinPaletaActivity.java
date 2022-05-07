@@ -9,6 +9,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -22,16 +23,25 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dtos.AddingPalette;
+import pe.edu.upc.wallpapeer.entities.Project;
+import pe.edu.upc.wallpapeer.utils.AppDatabase;
+import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class JoinPaletaActivity extends AppCompatActivity {
 
     private String addressee;
     private String startDate;
+    private String userDeviceName;
+    private boolean paletteIsReady = false;
     private boolean isOffline;
     private ConnectionPeerToPeerViewModel model;
     private ConstraintLayout loadingScreen;
     private ConstraintLayout loadingPallete;
+    private ConstraintLayout paletteSelector;
+    private String lastTarget = "";
 
     private String targetDeviceName = "";
 
@@ -43,6 +53,7 @@ public class JoinPaletaActivity extends AppCompatActivity {
                     Toast.makeText(JoinPaletaActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 } else {
                     targetDeviceName = result.getContents();
+                    lastTarget = result.getContents();
                     Toast.makeText(JoinPaletaActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }
@@ -54,6 +65,10 @@ public class JoinPaletaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_join_paleta);
 
         btnDecodes = findViewById(R.id.btnScanQr);
+
+        userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
+        if (userDeviceName == null)
+            userDeviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
 
         initConnection();
 
@@ -74,6 +89,8 @@ public class JoinPaletaActivity extends AppCompatActivity {
                         Toast.makeText(JoinPaletaActivity.this, "Conexion realizada.", Toast.LENGTH_SHORT).show();
                         loadingScreen.setVisibility(View.GONE);
                         loadingPallete.setVisibility(View.VISIBLE);
+                        sendPaletteRequest();
+
                     }
                 }
             });
@@ -115,6 +132,17 @@ public class JoinPaletaActivity extends AppCompatActivity {
                     }
                 }
             });
+            AppDatabase.getInstance().projectDAO().listenAllProjectChanges().observe(this, new Observer<List<Project>>() {
+                @Override
+                public void onChanged(List<Project> projects) {
+                    if(!paletteIsReady && projects.size() > 0){
+                        paletteIsReady = true;
+                        loadingPallete.setVisibility(View.GONE);
+                        paletteSelector.setVisibility(View.VISIBLE);
+                        Toast.makeText(JoinPaletaActivity.this, "Se recontra logró", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         }
 
     }
@@ -125,6 +153,8 @@ public class JoinPaletaActivity extends AppCompatActivity {
         loadingScreen.setVisibility(View.GONE);
         loadingPallete = findViewById(R.id.loadingPallete);
         loadingPallete.setVisibility(View.GONE);
+        paletteSelector = findViewById(R.id.paletteSelector);
+        paletteSelector.setVisibility(View.GONE);
         //CANCELAR BUSQUEDA Y CERRAR SOCKET
 //        findViewById(R.id.stopSearch).setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -195,6 +225,19 @@ public class JoinPaletaActivity extends AppCompatActivity {
 
         model.connectToPeer(peerFindedInQR);
         targetDeviceName = "";
+    }
+
+    private void sendPaletteRequest(){
+        AddingPalette addingPalette = new AddingPalette();
+        addingPalette.setA1_eventCode(CodeEvent.ADDING_PALLETE_TO_DEVICE);
+        addingPalette.setDeviceName(userDeviceName);
+        addingPalette.setTargetDeviceName(lastTarget);
+        addingPalette.setMacAddress("");
+        addingPalette.setSelectedOption(1);
+        addingPalette.setSubOption(1);
+
+        String json = JsonConverter.getGson().toJson(addingPalette);
+        model.sendMessage(json);
     }
 
     @Override

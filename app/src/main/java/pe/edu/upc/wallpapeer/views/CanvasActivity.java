@@ -38,6 +38,7 @@ import pe.edu.upc.wallpapeer.entities.Element;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
@@ -89,6 +90,7 @@ public class CanvasActivity extends AppCompatActivity {
         Context contextCanvas = this;
         if (extras != null) {
             projetcId = extras.getString("project_id");
+            LastProjectState.getInstance().setProjectId(projetcId);
             deviceId = extras.getString("device_id");
             canvaId = extras.getString("canva_id");
 
