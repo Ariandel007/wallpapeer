@@ -7,10 +7,45 @@
             name="ConnectionPeerToPeerViewModel"
             type="pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel" />
     </data>
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/mainScreenJoinLienzo"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
+
+        <pe.edu.upc.wallpapeer.views.custom.CanvasView
+            android:id="@+id/canvas_join_lienzo"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_qr_join_lienzo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
+            android:layout_margin="16dp"
+            android:contentDescription="QR"
+            android:visibility="gone"
+            android:src="@drawable/qrcodelogo"
+            app:backgroundTint="#B79AF6" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/popup_qr_join_lienzo"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/img_qr_join_lienzo"
+                android:layout_width="250dp"
+                android:layout_height="235dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.496"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.395" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingScreen"
@@ -116,6 +151,6 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
 </layout>

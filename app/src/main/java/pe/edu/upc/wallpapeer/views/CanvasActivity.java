@@ -3,19 +3,19 @@ package pe.edu.upc.wallpapeer.views;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -26,15 +26,19 @@ import com.google.zxing.BarcodeFormat;
 import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.entities.Element;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
+import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 
@@ -74,6 +78,7 @@ public class CanvasActivity extends AppCompatActivity {
         constraintLayoutLoadingSearchPeers.setVisibility(View.VISIBLE);
         btnQr.setVisibility(View.GONE);
         canvasView.setVisibility(View.GONE);
+        canvasView.setModel(model);
         //
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
         addressee = getIntent().getStringExtra(Constants.ADDRESAT_NAME);
@@ -109,23 +114,11 @@ public class CanvasActivity extends AppCompatActivity {
                 @Override
                 public void onChanged(@Nullable Boolean aBoolean) {
                     if (aBoolean != null && aBoolean) {
-//                        Objects.requireNonNull(getSupportActionBar()).show();
-//                        addressee = model.getAddressee();
-//                        getSupportActionBar().setTitle(addressee);
+
                     }
                 }
             });
 
-//            model.getInicioLaBusquedaDePares().observe(this, new Observer<Boolean>() {
-//                @Override
-//                public void onChanged(@Nullable Boolean aBoolean) {
-//                    if (aBoolean != null && aBoolean) {
-//                        constraintLayoutLoadingSearchPeers.setVisibility(View.GONE);
-//                        btnQr.setVisibility(View.VISIBLE);
-//                        canvasView.setVisibility(View.VISIBLE);
-//                    }
-//                }
-//            });
 
             model.getPeerList().observe(this, new Observer<List<WifiP2pDevice>>() {
                 @Override
@@ -175,14 +168,6 @@ public class CanvasActivity extends AppCompatActivity {
                 }
             }
         });
-
-//        ActivityCanvasBinding activityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_canvas);
-//
-//        MainCanvasViewModel viewModel = new MainCanvasViewModel();
-//        activityMainBinding.setVariable(BR.mainCanvasViewModel, viewModel);
-//        activityMainBinding.executePendingBindings();
-
-
     }
 
     public void initializaPeerSearch() {
@@ -200,10 +185,10 @@ public class CanvasActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     public void loadNewProject(Context contextCanvas) {
-        AppDatabase.getInstance(contextCanvas).projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
+        AppDatabase.getInstance().projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe((Project project) -> {
             Log.e("Proyecto Traido", project.toString());
-            AppDatabase.getInstance(contextCanvas).canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
+            AppDatabase.getInstance().canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe((canva)-> {
                         Log.e("Canvas Traido", canva.toString());
                         elementList = new ArrayList<>();
@@ -212,10 +197,16 @@ public class CanvasActivity extends AppCompatActivity {
                         canvasView.setCurrentProjectEntity(project);
                         canvasView.setCurrentCanvaEntity(canva);
                         Toast.makeText(CanvasActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
+                        //Instancia de last Pinch
+                        MyLastPinch.getInstance().setProjectId(projetcId);
+                        MyLastPinch.getInstance().setProject(project);
+                        MyLastPinch.getInstance().setCanvaId(canvaId);
+                        MyLastPinch.getInstance().setCanva(canva);
                         //Se inicia la busqueda de pares
                         initializaPeerSearch();
                         // Se inicializa observable del proyecto
                         startElementObservable(contextCanvas);
+
                     },
                     throwable -> {
                         Log.e("ERROR - GET PRY", throwable.getMessage());
@@ -227,12 +218,12 @@ public class CanvasActivity extends AppCompatActivity {
 
     @SuppressLint("CheckResult")
     public void loadExistingProject(Context contextCanvas) {
-        AppDatabase.getInstance(contextCanvas).projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
+        AppDatabase.getInstance().projectDAO().getProject(projetcId).subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread()).subscribe((Project project) -> {
             Log.e("Proyecto Traido", project.toString());
-            AppDatabase.getInstance(contextCanvas).canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
+            AppDatabase.getInstance().canvaDAO().getCanva(canvaId).subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread()).subscribe((canva)-> {
-                        AppDatabase.getInstance(contextCanvas).elementDAO().getAllByProject(projetcId)
+                        AppDatabase.getInstance().elementDAO().getAllByProject(projetcId)
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(
                         elements -> {
                             elementList = elements;
@@ -243,6 +234,12 @@ public class CanvasActivity extends AppCompatActivity {
                             canvasView.setCurrentProjectEntity(project);
                             canvasView.setCurrentCanvaEntity(canva);
                             Toast.makeText(CanvasActivity.this,"Se inicio canvas", Toast.LENGTH_LONG).show();
+                            //Instancia de last Pinch
+                            MyLastPinch.getInstance().setProjectId(projetcId);
+                            MyLastPinch.getInstance().setProject(project);
+                            MyLastPinch.getInstance().setCanvaId(canvaId);
+                            MyLastPinch.getInstance().setCanva(canva);
+
                             //Se inicia la busqueda de pares
                             initializaPeerSearch();
                             // Se inicializa observable del proyecto
@@ -264,7 +261,7 @@ public class CanvasActivity extends AppCompatActivity {
     }
 
     public void startElementObservable(Context contextCanvas) {
-        AppDatabase.getInstance(contextCanvas).elementDAO().getAllElementsLiveDataByProject(projetcId).observe(this, new Observer<List<Element>>() {
+        AppDatabase.getInstance().elementDAO().getAllElementsLiveDataByProject(projetcId).observe(this, new Observer<List<Element>>() {
                     @Override
                     public void onChanged(List<Element> elements) {
                         if(elements.size() > 0) {
@@ -277,4 +274,6 @@ public class CanvasActivity extends AppCompatActivity {
 
         );
     }
+
+
 }

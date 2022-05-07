@@ -26,6 +26,7 @@ import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Device;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 
 public class CreateProjectActivity extends AppCompatActivity implements View.OnClickListener {
 
@@ -69,7 +70,7 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
                     userDeviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
                 final String finalUserDeviceName = userDeviceName;
 
-                AppDatabase.getInstance(this).projectDAO().insert(proyecto).subscribeOn(Schedulers.io())
+                AppDatabase.getInstance().projectDAO().insert(proyecto).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                             Log.e("nunca dudé", "a");
 //                            Ejemplo de llamar un getAll
@@ -85,11 +86,12 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
                             device.setHeightScreen(getScreenHeight());
                             device.setWidthScreen(getScreenWidth());
 
-                            AppDatabase.getInstance(context).deviceDAO().insert(device).subscribeOn(Schedulers.io())
+                            AppDatabase.getInstance().deviceDAO().insert(device).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
-                                Canva canva = new Canva(UUID.randomUUID().toString(), true, device.getHeightScreen(), device.getWidthScreen(), 0, 0, device.getId());
+                                Canva canva = new Canva(UUID.randomUUID().toString(), true, device.getHeightScreen(), device.getWidthScreen(), 0.0f, 0.0f, device.getId());
+                                canva.setMod_date(new Date().getTime());
 
-                                AppDatabase.getInstance(context).canvaDAO().insert(canva).subscribeOn(Schedulers.io())
+                                AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
 
                                    Intent intent = new Intent(this, CanvasActivity.class);
@@ -97,6 +99,8 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
                                    intent.putExtra("device_id",device.getId());
                                     intent.putExtra("canva_id",canva.getId());
                                     intent.putExtra("project_load","new_project");
+                                    LastProjectState.getInstance().setProjectId(idMPRoject);
+                                    LastProjectState.getInstance().setCanvaId(canva.getId());
                                     this.startActivity(intent);
 
                                 }, throwable -> {
