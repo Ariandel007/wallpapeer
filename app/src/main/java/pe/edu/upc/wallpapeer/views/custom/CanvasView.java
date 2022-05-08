@@ -231,6 +231,9 @@ public class CanvasView  extends View {
 
         @Override
         public boolean onDown(MotionEvent event) {
+            if(!isPinchLocked) {
+                return true;
+            }
             Log.d(DEBUG_TAG,"onDown: " + event.toString());
             posX = event.getX() + getCurrentCanvaEntity().getPosX();
             posY = event.getY() + getCurrentCanvaEntity().getPosY();
