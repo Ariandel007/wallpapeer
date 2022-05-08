@@ -27,6 +27,16 @@
             android:visibility="gone"
             android:src="@drawable/qrcodelogo"
             app:backgroundTint="#B79AF6" />
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/btn_lock_pinch_lienzo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:layout_gravity="end|top"
+            android:contentDescription="lockPinch"
+            android:visibility="gone"
+            android:src="@drawable/ic_lock_open"
+            app:backgroundTint="#B79AF6"/>
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/popup_qr_join_lienzo"

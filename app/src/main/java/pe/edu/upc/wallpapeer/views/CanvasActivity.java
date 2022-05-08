@@ -46,7 +46,7 @@ import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 public class CanvasActivity extends AppCompatActivity {
 
     private ConnectionPeerToPeerViewModel model;
-    FloatingActionButton btnQr;
+    FloatingActionButton btnQr, btnLockPinch;
     ImageView imgQr;
     private String userDeviceName;
     private ConstraintLayout constraintLayout;
@@ -70,6 +70,7 @@ public class CanvasActivity extends AppCompatActivity {
         model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
 
         btnQr = findViewById(R.id.btn_qr);
+        btnLockPinch = findViewById(R.id.btn_lock_pinch);
         imgQr = findViewById(R.id.img_qr);
         canvasView = findViewById(R.id.canvas);
         constraintLayout = findViewById(R.id.popup_qr);
@@ -78,6 +79,7 @@ public class CanvasActivity extends AppCompatActivity {
         //
         constraintLayoutLoadingSearchPeers.setVisibility(View.VISIBLE);
         btnQr.setVisibility(View.GONE);
+        btnLockPinch.setVisibility(View.GONE);
         canvasView.setVisibility(View.GONE);
         canvasView.setModel(model);
         //
@@ -170,6 +172,18 @@ public class CanvasActivity extends AppCompatActivity {
                 }
             }
         });
+
+        btnLockPinch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                canvasView.isPinchLocked = !canvasView.isPinchLocked;
+                if(canvasView.isPinchLocked) {
+                    btnLockPinch.setImageDrawable(getResources().getDrawable(R.drawable.ic_lock_open, null));
+                } else {
+                    btnLockPinch.setImageDrawable(getResources().getDrawable(R.drawable.ic_lock, null));
+                }
+            }
+        });
     }
 
     public void initializaPeerSearch() {
@@ -179,6 +193,7 @@ public class CanvasActivity extends AppCompatActivity {
                 if (aBoolean != null && aBoolean) {
                     constraintLayoutLoadingSearchPeers.setVisibility(View.GONE);
                     btnQr.setVisibility(View.VISIBLE);
+                    btnLockPinch.setVisibility(View.VISIBLE);
                     canvasView.setVisibility(View.VISIBLE);
                 }
             }
