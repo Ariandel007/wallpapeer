@@ -1,5 +1,6 @@
 package pe.edu.upc.wallpapeer.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
@@ -13,12 +14,13 @@ import io.reactivex.Completable;
 import io.reactivex.Single;
 import pe.edu.upc.wallpapeer.entities.Palette;
 
+import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.entities.relations.PaletteDevice;
 
 @Dao
 public interface PaletteDAO {
 
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     Completable insert(Palette palette);
 
     @Update
@@ -29,6 +31,12 @@ public interface PaletteDAO {
             "and id_device = :idDevice")
     Single<Palette> getPaletteByProjectIdDeviceId(String idProject, String idDevice);
 
+    @Query("SELECT * FROM palette " +
+            "WHERE id_device = :idDevice")
+    LiveData<Palette> listenPaletteChanges(String idDevice);
 
+    @Query("SELECT * FROM palette " +
+            "WHERE name = :nameDevice LIMIT 1")
+    LiveData<Palette> listenPaletteChangesByDeviceName(String nameDevice);
 
 }

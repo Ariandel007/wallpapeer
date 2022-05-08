@@ -55,7 +55,7 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
 
     private MutableLiveData<Boolean> chatClosed;
 
-//    private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
+//  private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
 
     private boolean isConnected = false;
 //
@@ -158,6 +158,8 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
     public void registerReceiver() {
         app.getApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
     }
+
+
 
 
     public void unregisterBroadcast() {

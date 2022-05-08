@@ -23,6 +23,7 @@ import pe.edu.upc.wallpapeer.App;
 import pe.edu.upc.wallpapeer.LocalDevice;
 import pe.edu.upc.wallpapeer.dtos.AcceptingPalette;
 import pe.edu.upc.wallpapeer.dtos.AddingPalette;
+import pe.edu.upc.wallpapeer.dtos.ChangingOption;
 import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.dtos.NewElementInserted;
 import pe.edu.upc.wallpapeer.dtos.PinchEventResponse;
@@ -37,6 +38,7 @@ import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
+import pe.edu.upc.wallpapeer.utils.PaletteState;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class Client extends IMessenger {
@@ -397,6 +399,40 @@ public class Client extends IMessenger {
                 break;
             case CodeEvent.SELECT_OPTION_PALLETE:
                 Log.i("EVENT", "SELECT_OPTION_PALLETE");
+                ChangingOption changingOption = JsonConverter.getGson().fromJson(jsonMessage, ChangingOption.class);
+                if(LastProjectState.getInstance().getProjectId() == null){
+                    return;
+                }
+                if(!changingOption.getTargetDeviceName().equals(LastProjectState.getInstance().getDeviceName())){
+                    return;
+                }
+                AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(LastProjectState.getInstance().getDeviceName(), LastProjectState.getInstance().getProjectId())
+                        .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                        subscribe((myDevice)->{
+                            String myId = myDevice.getId();
+                            AppDatabase.getInstance().paletteDAO().getPaletteByProjectIdDeviceId(LastProjectState.getInstance().getProjectId(), myId)
+                                    .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                    subscribe((myPalette)->{
+                                        myPalette.setName(changingOption.getDeviceName());
+                                        myPalette.setSelectedOption(changingOption.getSelectedOption());
+                                        myPalette.setSubOption(changingOption.getSubOption());
+                                        myPalette.setPaletteDeviceName(changingOption.getTargetDeviceName());
+
+                                        PaletteState.getInstance().setSelectedOption(changingOption.getSelectedOption());
+                                        PaletteState.getInstance().setSubOption(changingOption.getSubOption());
+                                        PaletteState.getInstance().setTextToPrint(changingOption.getTextToInsert());
+
+                                        AppDatabase.getInstance().paletteDAO().insert(myPalette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                                subscribe(()->{
+                                                    Log.i("Update Palette", "Se actualizó la paleta");
+                                                });
+                                    }, throwable -> {
+
+                                    });
+                        }, throwable -> {
+
+                        });
+
                 break;
             case CodeEvent.ACCEPTED_PALETTE:
                 AcceptingPalette acceptingPalette = JsonConverter.getGson().fromJson(jsonMessage, AcceptingPalette.class);
@@ -406,10 +442,26 @@ public class Client extends IMessenger {
                 CanvaStateForPalette.getInstance().setAcceptingPalette(acceptingPalette);
                 Project project2 = acceptingPalette.getProject();
 
+//                Palette palette1 = new Palette();
+//                palette1.setId(UUID.randomUUID().toString());
+//                palette1.setId_device(acceptingPalette.getLinkedIdDevice());
+//                palette1.setPaletteDeviceName("");
+//                palette1.setSelectedOption(1);
+//                palette1.setSubOption(-1);
+//                palette1.setName(acceptingPalette.getPaletteDeviceName());
+//                PaletteState.getInstance().setMyDeviceName(acceptingPalette.getPaletteDeviceName());
+//                PaletteState.getInstance().setTargetDeviceName(acceptingPalette.getLinkedDevice());
+//                PaletteState.getInstance().setSelectedOption(0);
+//                PaletteState.getInstance().setSubOption(-1);
+
                 AppDatabase.getInstance().projectDAO().insert(project2).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(()->{
                             Log.i("Proyecto creado", "Se creó el proyecto");
+
+//                            AppDatabase.getInstance().paletteDAO().insert(palette1).subscribeOn(Schedulers.io())
+//                                    .observeOn(AndroidSchedulers.mainThread())
+//                                    .subscribe();
                         });
                 break;
             case CodeEvent.INSERT_NEW_ELEMENT:

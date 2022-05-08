@@ -41,12 +41,14 @@ import pe.edu.upc.wallpapeer.R;
 import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Element;
+import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
+import pe.edu.upc.wallpapeer.utils.PaletteState;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 
@@ -289,6 +291,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                                     //Se inicia la busqueda de pares
                                     initializaPeerSearch();
+                                    startPaletteObservable(contextCanvas);
 
                                     waitToJoinLienzo = false;
 
@@ -324,6 +327,43 @@ public class JoinLienzoActivity extends AppCompatActivity {
                 }
 
         );
+    }
+
+    public void startPaletteObservable(Context context1){
+        AppDatabase.getInstance().paletteDAO().listenPaletteChangesByDeviceName(LastProjectState.getInstance().getDeviceName()).observe(this, new Observer<Palette>() {
+            @Override
+            public void onChanged(Palette palette) {
+                if(PaletteState.getInstance() != null){
+                    Toast.makeText(JoinLienzoActivity.this, "Se recontra logró", Toast.LENGTH_SHORT).show();
+                    switch (PaletteState.getInstance().getSelectedOption()){
+                        case 0:
+                            Toast.makeText(context1, "Se recibió la opción de trazo", Toast.LENGTH_SHORT).show();
+                            Log.i("Pencil Button", "Se recibió la opción de trazo");
+                            break;
+                        case 1:
+                            Toast.makeText(context1, "Se recibió la opción de deshacer", Toast.LENGTH_SHORT).show();
+                            Log.i("Undo Button", "Se recibió la opción de deshacer");
+                            break;
+                        case 2:
+                            Toast.makeText(context1, "Se recibió la opción de modificar capa", Toast.LENGTH_SHORT).show();
+                            Log.i("Layers Button", "Se recibió la opción de modificar capa");
+                            break;
+                        case 3:
+                            Toast.makeText(context1, "Se recibió la opción de texto", Toast.LENGTH_SHORT).show();
+                            Log.i("Text Button", "Se recibió la opción de texto");
+                            break;
+                        case 4:
+                            Toast.makeText(context1, "Se recibió la opción de rotar", Toast.LENGTH_SHORT).show();
+                            Log.i("Rotate Button", "Se recibió la opción de rotar");
+                            break;
+                        case 5:
+                            Toast.makeText(context1, "Se recibió la opción de añadir forma", Toast.LENGTH_SHORT).show();
+                            Log.i("Shape Button", "Se recibió la opción de añadir forma");
+                            break;
+                    }
+                }
+            }
+        });
     }
 
     private void initConnection() {
