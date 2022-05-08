@@ -217,7 +217,9 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
     }
 
     public void sendMessage(String text) {
-        messenger.send(text, true);
+        if(messenger != null){
+            messenger.send(text, true);
+        }
     }
 
     //El propietario del grupo elimina el grupo. Cierra el socket
