@@ -49,6 +49,8 @@ public class CanvasView  extends View {
     private GestureDetectorCompat mDetector;
     private ConnectionPeerToPeerViewModel model;
 
+    public boolean isPinchLocked = true;
+
     ///para el evento ontouch
     private Path mPath;
 
@@ -280,7 +282,7 @@ public class CanvasView  extends View {
             float yDiff = e2.getY() - e1.getY();
 
             try{
-                if(true) {
+                if(!isPinchLocked) {
                     sendCoordsToPinch(xDiff, yDiff, e2, 100, velocityX, velocityY, 100);
                 }
                 return true;
