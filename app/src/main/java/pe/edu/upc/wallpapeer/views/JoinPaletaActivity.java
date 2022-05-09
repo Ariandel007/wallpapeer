@@ -31,6 +31,9 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dialogs.LayersDialog;
+import pe.edu.upc.wallpapeer.dialogs.ShapesDialog;
+import pe.edu.upc.wallpapeer.dialogs.TextDialog;
 import pe.edu.upc.wallpapeer.dtos.AddingPalette;
 import pe.edu.upc.wallpapeer.dtos.ChangingOption;
 import pe.edu.upc.wallpapeer.entities.Palette;
@@ -43,12 +46,13 @@ import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
-public class JoinPaletaActivity extends AppCompatActivity {
+public class JoinPaletaActivity extends AppCompatActivity implements LayersDialog.LayersDialogListener, TextDialog.TextDialogListener, ShapesDialog.ShapesDialogListener {
 
     private String addressee;
     private String startDate;
     private String userDeviceName;
     private String textToInsert;
+
     private boolean paletteIsReady = false;
     private boolean optionChanged = false;
     private boolean isOffline;
@@ -186,6 +190,26 @@ public class JoinPaletaActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void applyLayerOption(int option) {
+        pSubOption = option;
+        PaletteState.getInstance().setSubOption(pSubOption);
+        PaletteState.getInstance().setSelectedOption(pSelectedOption);
+        sendSelectedOption(pSelectedOption, pSubOption);
+    }
+
+    @Override
+    public void applyTextOption(String textToSend) {
+        sendSelectedOptionText(pSelectedOption, pSubOption, textToSend);
+    }
+
+    @Override
+    public void applyShapeOption(int option) {
+        pSubOption = option;
+        PaletteState.getInstance().setSubOption(pSubOption);
+        PaletteState.getInstance().setSelectedOption(pSelectedOption);
+        sendSelectedOption(pSelectedOption, pSubOption);
+    }
 
     private void initConnection() {
         loadingScreen = findViewById(R.id.loadingScreen);
@@ -230,6 +254,8 @@ public class JoinPaletaActivity extends AppCompatActivity {
             public void onClick(View view) {
                 pSelectedOption = 0;
                 pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
                 sendSelectedOption(pSelectedOption, pSubOption);
             }
         });
@@ -239,6 +265,8 @@ public class JoinPaletaActivity extends AppCompatActivity {
             public void onClick(View view) {
                 pSelectedOption = 1;
                 pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
                 sendSelectedOption(pSelectedOption, pSubOption);
             }
         });
@@ -247,8 +275,7 @@ public class JoinPaletaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 pSelectedOption = 2;
-                DialogFragment layersFragment = new layersDialogFragment();
-                layersFragment.show(getSupportFragmentManager(), "layer");
+                openLayersDialog();
             }
         });
 
@@ -256,8 +283,10 @@ public class JoinPaletaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 pSelectedOption = 3;
-                DialogFragment layersFragment = new textDialogFragment();
-                layersFragment.show(getSupportFragmentManager(), "text");
+                pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
+                openTextDialog();
             }
         });
 
@@ -266,6 +295,9 @@ public class JoinPaletaActivity extends AppCompatActivity {
             public void onClick(View view) {
                 pSelectedOption = 4;
                 pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
+                sendSelectedOption(pSelectedOption, pSubOption);
             }
         });
 
@@ -273,8 +305,7 @@ public class JoinPaletaActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 pSelectedOption = 5;
-                DialogFragment layersFragment = new shapesDialogFragment();
-                layersFragment.show(getSupportFragmentManager(), "shape");
+                openShapesDialog();
             }
         });
 
@@ -292,61 +323,23 @@ public class JoinPaletaActivity extends AppCompatActivity {
 //            }
 //        });
     }
+
+    private void openTextDialog() {
+        TextDialog textDialog = new TextDialog();
+        textDialog.show(getSupportFragmentManager(), "text");
+    }
+
     Context context = this;
-    public class layersDialogFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Seleccione su opción")
-                    .setItems(R.array.layers_array, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // The 'which' argument contains the index position
-                            // of the selected item
-                            pSubOption = which;
-                            sendSelectedOption(pSelectedOption, pSubOption);
-                        }
-                    });
-            return builder.create();
-        }
+
+    public void openLayersDialog() {
+        LayersDialog layersDialog = new LayersDialog();
+        layersDialog.show(getSupportFragmentManager(), "layer");
     }
 
-    public class shapesDialogFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Seleccione su opción")
-                    .setItems(R.array.shapes_array, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            // The 'which' argument contains the index position
-                            // of the selected item
-                            pSubOption = which;
-                            sendSelectedOption(pSelectedOption, pSubOption);
-                        }
-                    });
-            return builder.create();
-        }
+    public void openShapesDialog(){
+        ShapesDialog shapesDialog = new ShapesDialog();
+        shapesDialog.show(getSupportFragmentManager(), "shape");
     }
-
-    public class textDialogFragment extends DialogFragment {
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(context);
-            builder.setTitle("Añadir texto");
-            builder.setMessage("Texto");
-            builder.setView(editText);
-            builder.setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialogInterface, int i) {
-                    String inputText = editText.getText().toString();
-                    sendSelectedOptionText(pSelectedOption, pSubOption, inputText);
-                }
-            });
-            builder.setNegativeButton("Cancelar", null);
-
-            return builder.create();
-        }
-    }
-
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
