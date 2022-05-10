@@ -114,114 +114,105 @@
             android:id="@+id/paletteSelector"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible">
+            android:visibility="visible"><![CDATA[
+
+            " />
+
+
+
+
+
+
+
+            ]]>
 
             <ImageButton
                 android:id="@+id/btnAddShape"
                 android:layout_width="149dp"
                 android:layout_height="86dp"
-                android:layout_marginStart="226dp"
-                android:layout_marginTop="479dp"
-                android:layout_marginEnd="36dp"
-                android:layout_marginBottom="166dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="24dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_mono_ungroup_stencils"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/btnRotate"
+                app:layout_constraintTop_toBottomOf="@+id/btnAddText" />
 
             <TextView
                 android:id="@+id/textPaletteSelector"
-                android:layout_width="281dp"
-                android:layout_height="29dp"
+                android:layout_width="282dp"
+                android:layout_height="34dp"
                 android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
                 android:layout_marginEnd="8dp"
                 android:text="Paleta"
                 android:textColor="#767BBF"
                 android:textSize="26sp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.601"
                 app:layout_constraintLeft_toLeftOf="parent"
                 app:layout_constraintRight_toRightOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.044" />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <ImageButton
                 android:id="@+id/btnPencil"
                 android:layout_width="149dp"
                 android:layout_height="86dp"
-                android:layout_marginStart="47dp"
-                android:layout_marginTop="96dp"
-                android:layout_marginEnd="215dp"
-                android:layout_marginBottom="549dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="28dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_baseline_edit_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/textPaletteSelector" />
 
             <ImageButton
                 android:id="@+id/btnUndo"
                 android:layout_width="149dp"
                 android:layout_height="86dp"
-                android:layout_marginStart="226dp"
-                android:layout_marginTop="96dp"
-                android:layout_marginEnd="36dp"
-                android:layout_marginBottom="549dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="28dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_baseline_undo_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toEndOf="@+id/btnPencil"
+                app:layout_constraintTop_toBottomOf="@+id/textPaletteSelector" />
 
             <ImageButton
                 android:id="@+id/btnLayers"
                 android:layout_width="149dp"
                 android:layout_height="86dp"
-                android:layout_marginStart="47dp"
-                android:layout_marginTop="291dp"
-                android:layout_marginEnd="215dp"
-                android:layout_marginBottom="354dp"
+                android:layout_marginStart="60dp"
+                android:layout_marginTop="36dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_baseline_layers_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/btnPencil" />
 
             <ImageButton
                 android:id="@+id/btnAddText"
                 android:layout_width="149dp"
                 android:layout_height="86dp"
-                android:layout_marginStart="226dp"
-                android:layout_marginTop="291dp"
-                android:layout_marginEnd="36dp"
-                android:layout_marginBottom="354dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="36dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_baseline_text_fields_24"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/btnLayers"
+                app:layout_constraintTop_toBottomOf="@+id/btnUndo" />
 
             <ImageButton
                 android:id="@+id/btnRotate"
                 android:layout_width="149dp"
                 android:layout_height="86dp"
-                android:layout_marginStart="47dp"
-                android:layout_marginTop="479dp"
-                android:layout_marginEnd="215dp"
-                android:layout_marginBottom="166dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="24dp"
                 android:scaleType="fitCenter"
                 android:src="@drawable/ic_baseline_rotate_right_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/btnLayers" />
+            " />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
