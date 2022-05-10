@@ -57,7 +57,13 @@ public class Element {
     @ColumnInfo(name = "id_project")
     public String id_project;
 
-    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project) {
+    @ColumnInfo(name = "text")
+    public String text;
+
+    @ColumnInfo(name = "color")
+    public String color;
+
+    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color) {
         this.id = id;
         this.typeElement = typeElement;
         this.widthElement = widthElement;
@@ -69,7 +75,10 @@ public class Element {
         this.rotation = rotation;
         this.dateCreation = dateCreation;
         this.id_project = id_project;
+        this.text = text;
+        this.color = color;
     }
+
     public Element() {}
 
     @NonNull
@@ -159,5 +168,20 @@ public class Element {
 
     public void setId_project(String id_project) {
         this.id_project = id_project;
+    }
+
+    public String getText() {   return text;
+    }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
     }
 }
