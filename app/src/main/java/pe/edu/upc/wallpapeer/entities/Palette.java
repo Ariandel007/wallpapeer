@@ -25,7 +25,7 @@ public class Palette implements Serializable {
     public String name;
 
     @ColumnInfo(name = "selected_option")
-    public int selectedOption;
+    public Integer selectedOption;
 
     @ColumnInfo(name = "sub_option")
     public int subOption;
@@ -61,11 +61,11 @@ public class Palette implements Serializable {
         this.name = name;
     }
 
-    public int getSelectedOption() {
+    public Integer getSelectedOption() {
         return selectedOption;
     }
 
-    public void setSelectedOption(int selectedOption) {
+    public void setSelectedOption(Integer selectedOption) {
         this.selectedOption = selectedOption;
     }
 

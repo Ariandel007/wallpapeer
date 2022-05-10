@@ -2,17 +2,25 @@ package pe.edu.upc.wallpapeer.views;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.app.Dialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import com.journeyapps.barcodescanner.ScanContract;
@@ -23,29 +31,47 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dialogs.LayersDialog;
+import pe.edu.upc.wallpapeer.dialogs.ShapesDialog;
+import pe.edu.upc.wallpapeer.dialogs.TextDialog;
 import pe.edu.upc.wallpapeer.dtos.AddingPalette;
+import pe.edu.upc.wallpapeer.dtos.ChangingOption;
+import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
+import pe.edu.upc.wallpapeer.utils.CanvaStateForPalette;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
+import pe.edu.upc.wallpapeer.utils.PaletteState;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
-public class JoinPaletaActivity extends AppCompatActivity {
+public class JoinPaletaActivity extends AppCompatActivity implements LayersDialog.LayersDialogListener, TextDialog.TextDialogListener, ShapesDialog.ShapesDialogListener {
 
     private String addressee;
     private String startDate;
     private String userDeviceName;
+    private String textToInsert;
+
     private boolean paletteIsReady = false;
+    private boolean optionChanged = false;
     private boolean isOffline;
+    private boolean isInNetwork = false;
     private ConnectionPeerToPeerViewModel model;
     private ConstraintLayout loadingScreen;
     private ConstraintLayout loadingPallete;
     private ConstraintLayout paletteSelector;
+    private int pSelectedOption = 0;
+    private int pSubOption = -1;
     private String lastTarget = "";
-
+    List<String> layerList = new ArrayList<String>();
     private String targetDeviceName = "";
 
+
+
     Button btnDecodes;
+    ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape;
+    EditText editText;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
@@ -64,7 +90,21 @@ public class JoinPaletaActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_join_paleta);
 
+        layerList.add("Traer adelante");
+        layerList.add("Enviar atrás");
+        layerList.add("Traer al frente");
+        layerList.add("Enviar al fondo");
+
         btnDecodes = findViewById(R.id.btnScanQr);
+
+        btnAddShape = findViewById(R.id.btnAddShape);
+        btnAddText = findViewById(R.id.btnAddText);
+        btnLayers = findViewById(R.id.btnLayers);
+        btnPencil = findViewById(R.id.btnPencil);
+        btnRotate = findViewById(R.id.btnRotate);
+        btnUndo = findViewById(R.id.btnUndo);
+
+        editText = new EditText(this);
 
         userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
         if (userDeviceName == null)
@@ -89,6 +129,10 @@ public class JoinPaletaActivity extends AppCompatActivity {
                         Toast.makeText(JoinPaletaActivity.this, "Conexion realizada.", Toast.LENGTH_SHORT).show();
                         loadingScreen.setVisibility(View.GONE);
                         loadingPallete.setVisibility(View.VISIBLE);
+                        isInNetwork = true;
+                        if(lastTarget.equals("")){
+                            return;
+                        }
                         sendPaletteRequest();
 
                     }
@@ -135,11 +179,10 @@ public class JoinPaletaActivity extends AppCompatActivity {
             AppDatabase.getInstance().projectDAO().listenAllProjectChanges().observe(this, new Observer<List<Project>>() {
                 @Override
                 public void onChanged(List<Project> projects) {
-                    if(!paletteIsReady && projects.size() > 0){
+                    if(!paletteIsReady && projects.size() > 0 && isInNetwork){
                         paletteIsReady = true;
                         loadingPallete.setVisibility(View.GONE);
                         paletteSelector.setVisibility(View.VISIBLE);
-                        Toast.makeText(JoinPaletaActivity.this, "Se recontra logró", Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -147,6 +190,26 @@ public class JoinPaletaActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public void applyLayerOption(int option) {
+        pSubOption = option;
+        PaletteState.getInstance().setSubOption(pSubOption);
+        PaletteState.getInstance().setSelectedOption(pSelectedOption);
+        sendSelectedOption(pSelectedOption, pSubOption);
+    }
+
+    @Override
+    public void applyTextOption(String textToSend) {
+        sendSelectedOptionText(pSelectedOption, pSubOption, textToSend);
+    }
+
+    @Override
+    public void applyShapeOption(int option) {
+        pSubOption = option;
+        PaletteState.getInstance().setSubOption(pSubOption);
+        PaletteState.getInstance().setSelectedOption(pSelectedOption);
+        sendSelectedOption(pSelectedOption, pSubOption);
+    }
 
     private void initConnection() {
         loadingScreen = findViewById(R.id.loadingScreen);
@@ -186,6 +249,68 @@ public class JoinPaletaActivity extends AppCompatActivity {
             }
         });
 
+        btnPencil.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 0;
+                pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
+                sendSelectedOption(pSelectedOption, pSubOption);
+            }
+        });
+
+        btnUndo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 1;
+                pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
+                sendSelectedOption(pSelectedOption, pSubOption);
+            }
+        });
+
+        btnLayers.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 2;
+                openLayersDialog();
+            }
+        });
+
+        btnAddText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 3;
+                pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
+                openTextDialog();
+            }
+        });
+
+        btnRotate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 4;
+                pSubOption = -1;
+                PaletteState.getInstance().setSubOption(pSubOption);
+                PaletteState.getInstance().setSelectedOption(pSelectedOption);
+                sendSelectedOption(pSelectedOption, pSubOption);
+            }
+        });
+
+        btnAddShape.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 5;
+                openShapesDialog();
+            }
+        });
+
+
+
 //        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
 //            @Override
 //            public void onChanged(@Nullable Boolean aBoolean) {
@@ -197,6 +322,23 @@ public class JoinPaletaActivity extends AppCompatActivity {
 //                }
 //            }
 //        });
+    }
+
+    private void openTextDialog() {
+        TextDialog textDialog = new TextDialog();
+        textDialog.show(getSupportFragmentManager(), "text");
+    }
+
+    Context context = this;
+
+    public void openLayersDialog() {
+        LayersDialog layersDialog = new LayersDialog();
+        layersDialog.show(getSupportFragmentManager(), "layer");
+    }
+
+    public void openShapesDialog(){
+        ShapesDialog shapesDialog = new ShapesDialog();
+        shapesDialog.show(getSupportFragmentManager(), "shape");
     }
 
     public void connectionToDevice() {
@@ -233,10 +375,50 @@ public class JoinPaletaActivity extends AppCompatActivity {
         addingPalette.setDeviceName(userDeviceName);
         addingPalette.setTargetDeviceName(lastTarget);
         addingPalette.setMacAddress("");
-        addingPalette.setSelectedOption(1);
-        addingPalette.setSubOption(1);
+        addingPalette.setSelectedOption(0);
+        addingPalette.setSubOption(-1);
 
         String json = JsonConverter.getGson().toJson(addingPalette);
+        model.sendMessage(json);
+    }
+
+    private void sendSelectedOption(int selectedOption, int subOption){
+        if(CanvaStateForPalette.getInstance() == null){
+            return;
+        }
+        if(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice() == null){
+            return;
+        }
+        ChangingOption changingOption = new ChangingOption();
+        changingOption.setA1_eventCode(CodeEvent.SELECT_OPTION_PALLETE);
+        changingOption.setDeviceName(userDeviceName);
+        changingOption.setTargetDeviceName(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice());
+        changingOption.setMacAddress("");
+        changingOption.setSelectedOption(selectedOption);
+        changingOption.setSubOption(subOption);
+        changingOption.setTextToInsert("");
+
+        String json = JsonConverter.getGson().toJson(changingOption);
+        model.sendMessage(json);
+    }
+
+    private void sendSelectedOptionText(int selectedOption, int subOption, String textToInsert){
+        if(CanvaStateForPalette.getInstance() == null){
+            return;
+        }
+        if(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice() == null){
+            return;
+        }
+        ChangingOption changingOption = new ChangingOption();
+        changingOption.setA1_eventCode(CodeEvent.SELECT_OPTION_PALLETE);
+        changingOption.setDeviceName(userDeviceName);
+        changingOption.setTargetDeviceName(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice());
+        changingOption.setMacAddress("");
+        changingOption.setSelectedOption(selectedOption);
+        changingOption.setSubOption(subOption);
+        changingOption.setTextToInsert(textToInsert);
+
+        String json = JsonConverter.getGson().toJson(changingOption);
         model.sendMessage(json);
     }
 

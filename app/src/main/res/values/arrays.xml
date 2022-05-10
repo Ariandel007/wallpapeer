@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="layers_array">
+        <item>Traer adelante</item>
+        <item>Enviar atrás</item>
+        <item>Traer al frente</item>
+        <item>Enviar al fondo</item>
+    </string-array>
+    <string-array name="shapes_array">
+        <item>Circulo</item>
+        <item>Cuadrado</item>
+        <item>Triangulo</item>
+    </string-array>
+</resources>
