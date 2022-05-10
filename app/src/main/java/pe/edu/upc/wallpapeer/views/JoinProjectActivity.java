@@ -26,5 +26,6 @@ public class JoinProjectActivity extends AppCompatActivity {
 
         activityJoinProjectBinding.setLoginViewModel(loginViewModel);
 
+
     }
 }
