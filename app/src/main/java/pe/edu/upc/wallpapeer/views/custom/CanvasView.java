@@ -12,11 +12,13 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.view.GestureDetectorCompat;
+import androidx.core.view.ScaleGestureDetectorCompat;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -51,6 +53,7 @@ public class CanvasView  extends View {
     private Project currentProjectEntity;
     private Canva currentCanvaEntity;
     private GestureDetectorCompat mDetector;
+    private ScaleGestureDetector mScaleDetector;
     private ConnectionPeerToPeerViewModel model;
 
     public boolean isPinchLocked = true;
@@ -62,6 +65,7 @@ public class CanvasView  extends View {
         super(context, attributeSet);
         paintList = new ArrayList<>();
         mDetector = new GestureDetectorCompat(context, new MyGestureListener());
+        mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 //        circleList = new ArrayList<>();
         //mPaint.setStyle(Paint.Style.FILL);
     }
@@ -143,6 +147,7 @@ public class CanvasView  extends View {
     @Override
     public boolean onTouchEvent(MotionEvent event){
         mDetector.onTouchEvent(event);
+        mScaleDetector.onTouchEvent(event);
         return true;
     }
 
@@ -281,12 +286,12 @@ public class CanvasView  extends View {
         return Resources.getSystem().getDisplayMetrics().widthPixels;
     }
 
+    List<Element> listFiltered;
+    Element newElement;
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures";
 
-        List<Element> listFiltered;
-        Element newElement;
         @SuppressLint("CheckResult")
         @Override
         public boolean onDown(MotionEvent event) {
@@ -413,6 +418,116 @@ public class CanvasView  extends View {
             return true;
         }
 
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            return super.onScroll(e1, e2, distanceX, distanceY);
+        }
+    }
+
+    public class ScaleListener extends ScaleGestureDetector.SimpleOnScaleGestureListener {
+        private float lastSpanX;
+        private float lastSpanY;
+
+        @Override
+        public boolean onScaleBegin(ScaleGestureDetector scaleGestureDetector) {
+            lastSpanX = scaleGestureDetector.getCurrentSpanX();
+            lastSpanY = scaleGestureDetector.getCurrentSpanY();
+            return true;
+        }
+
+        @SuppressLint("CheckResult")
+        @Override
+        public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+            float spanX = scaleGestureDetector.getCurrentSpanX();
+            float spanY = scaleGestureDetector.getCurrentSpanY();
+
+            float pastSpanX = scaleGestureDetector.getPreviousSpanX();
+            float pastSpanY = scaleGestureDetector.getPreviousSpanY();
+
+            if(pastSpanX == spanX) {
+                return true;
+            }
+
+            if(spanY == pastSpanY) {
+                return true;
+            }
+
+
+            float diffx = spanX - lastSpanX;
+            float diffy = spanY - lastSpanY;
+
+            float absX = Math.abs(diffx);
+            float absY = Math.abs(diffy);
+
+            float max = Math.max(absX, absY);
+            if(max < 30) {
+                return true;
+            }
+
+            if(max > 400) {
+                return true;
+            }
+
+            if (listFiltered.size() > 0){
+                newElement = listFiltered.get(listFiltered.size()-1);
+                if(absX>absY) {
+                    if(absX == 0 || absX == 0.0) {
+                        return true;
+                    }
+                    Log.e("Expansion horizontal", "Expansion horizontal");
+                    int plus = (int) (10*diffx/absX);
+                    if(newElement.getTypeElement().equals("circle_figure")) {
+                        newElement.setWidthElement(newElement.getWidthElement() + plus);
+                        newElement.setHeightElement(newElement.getHeightElement() + plus);
+                    }
+                    if(newElement.getTypeElement().equals("square_figure")) {
+                        newElement.setWidthElement(newElement.getWidthElement() + plus);
+                    }
+                    if(newElement.getTypeElement().equals("triangle_figure")) {
+                        newElement.setWidthElement(newElement.getWidthElement() + plus);
+                        newElement.setHeightElement(newElement.getHeightElement() + plus);
+                    }
+                } else {
+                    if(absY == 0 || absY == 0.0) {
+                        return true;
+                    }
+                    Log.e("Expansion vertical", "Expansion vertical");
+                    int plus = (int) (10*diffy/absY);
+
+                    if(newElement.getTypeElement().equals("circle_figure")) {
+                        newElement.setWidthElement(newElement.getWidthElement() + plus);
+                        newElement.setHeightElement(newElement.getHeightElement() + plus);
+                    }
+                    if(newElement.getTypeElement().equals("square_figure")) {
+                        newElement.setHeightElement(newElement.getHeightElement() + plus);
+                    }
+                    if(newElement.getTypeElement().equals("triangle_figure")) {
+                        newElement.setWidthElement(newElement.getWidthElement() + plus);
+                        newElement.setHeightElement(newElement.getHeightElement() + plus);
+                    }
+                }
+
+                if(newElement.getWidthElement() < 30 || newElement.getHeightElement() < 30) {
+                    return true;
+                }
+
+                if(newElement.getWidthElement() > 200 || newElement.getHeightElement() > 200) {
+                    return true;
+                }
+
+                if(newElement != null) {
+                    ///Informamos a los dispositivos el cambio
+                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                    AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                        Log.i("Se creo","Se creo con exito");
+                    }, throwable -> {
+                        Log.e("Error","Error al crear");
+                    });
+                }
+            }
+            return true;
+        }
 
     }
 

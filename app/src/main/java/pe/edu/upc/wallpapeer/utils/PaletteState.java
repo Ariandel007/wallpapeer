@@ -4,7 +4,7 @@ public class PaletteState {
     private static PaletteState INSTANCE;
 
     private Integer selectedOption = 5;
-    private int subOption = 0;
+    private int subOption = 1;
     private String textToPrint;
 
     public static PaletteState getINSTANCE() {
