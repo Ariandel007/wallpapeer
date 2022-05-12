@@ -346,7 +346,7 @@ public class Server extends IMessenger {
                 palette.setSubOption(addingPalette.getSubOption());
                 palette.setPaletteDeviceName(addingPalette.getTargetDeviceName());
 
-                Toast.makeText(App.getContext(), addingPalette.getDeviceName() + " se unió como paleta", Toast.LENGTH_SHORT).show();
+//                Toast.makeText(App.getContext(), addingPalette.getDeviceName() + " se unió como paleta", Toast.LENGTH_SHORT).show();
                 AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(LastProjectState.getInstance().getDeviceName(), LastProjectState.getInstance().getProjectId())
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
                         subscribe((myDevice)->{

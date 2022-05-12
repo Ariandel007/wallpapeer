@@ -322,7 +322,7 @@ public class CanvasActivity extends AppCompatActivity {
                             Toast.makeText(context1, "Se recibió la opción de texto", Toast.LENGTH_SHORT).show();
                             Log.i("Text Button", "Se recibió la opción de texto");
                             break;
-                        case 4:
+                        case PaletteOption.ROTATE:
                             Toast.makeText(context1, "Se recibió la opción de rotar", Toast.LENGTH_SHORT).show();
                             Log.i("Rotate Button", "Se recibió la opción de rotar");
                             break;
