@@ -12,6 +12,8 @@ import androidx.lifecycle.ViewModelProviders;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -45,6 +47,7 @@ import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
+import yuku.ambilwarna.AmbilWarnaDialog;
 
 public class JoinPaletaActivity extends AppCompatActivity implements LayersDialog.LayersDialogListener, TextDialog.TextDialogListener, ShapesDialog.ShapesDialogListener {
 
@@ -61,15 +64,17 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
     private ConstraintLayout loadingScreen;
     private ConstraintLayout loadingPallete;
     private ConstraintLayout paletteSelector;
+
     private int pSelectedOption = 0;
     private int pSubOption = -1;
     private String lastTarget = "";
     List<String> layerList = new ArrayList<String>();
     private String targetDeviceName = "";
+    private Integer defaultColor = Color.BLUE;
 
 
 
-    Button btnDecodes;
+    Button btnDecodes, btnColor;
     ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape;
     EditText editText;
 
@@ -103,6 +108,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         btnPencil = findViewById(R.id.btnPencil);
         btnRotate = findViewById(R.id.btnRotate);
         btnUndo = findViewById(R.id.btnUndo);
+        btnColor = findViewById(R.id.btnColor);
 
         editText = new EditText(this);
 
@@ -309,6 +315,14 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             }
         });
 
+        btnColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 6;
+                openColorPicker();
+            }
+        });
+
 
 
 //        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
@@ -322,6 +336,22 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 //                }
 //            }
 //        });
+    }
+
+    private void openColorPicker() {
+        AmbilWarnaDialog colorPicker = new AmbilWarnaDialog(this, defaultColor, new AmbilWarnaDialog.OnAmbilWarnaListener() {
+            @Override
+            public void onCancel(AmbilWarnaDialog dialog) {
+            }
+
+            @Override
+            public void onOk(AmbilWarnaDialog dialog, int color) {
+                defaultColor = color;
+                btnColor.setBackgroundColor(defaultColor);
+                sendSelectedOption(pSelectedOption, pSubOption);
+            }
+        });
+        colorPicker.show();
     }
 
     private void openTextDialog() {
@@ -396,6 +426,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         changingOption.setMacAddress("");
         changingOption.setSelectedOption(selectedOption);
         changingOption.setSubOption(subOption);
+        changingOption.setColor(defaultColor);
         changingOption.setTextToInsert("");
 
         String json = JsonConverter.getGson().toJson(changingOption);

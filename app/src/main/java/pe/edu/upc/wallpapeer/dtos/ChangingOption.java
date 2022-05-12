@@ -8,6 +8,7 @@ public class ChangingOption {
     private int selectedOption;
     private int subOption;
     private String textToInsert;
+    private Integer color;
 
     public String getTextToInsert() {
         return textToInsert;
@@ -17,13 +18,14 @@ public class ChangingOption {
         this.textToInsert = textToInsert;
     }
 
-    public ChangingOption(String a1_eventCode, String deviceName, String targetDeviceName, String macAddress, int selectedOption, int subOption) {
+    public ChangingOption(String a1_eventCode, String deviceName, String targetDeviceName, String macAddress, int selectedOption, int subOption, Integer color) {
         this.a1_eventCode = a1_eventCode;
         this.deviceName = deviceName;
         this.targetDeviceName = targetDeviceName;
         this.macAddress = macAddress;
         this.selectedOption = selectedOption;
         this.subOption = subOption;
+        this.color = color;
     }
 
     public ChangingOption() {
@@ -75,5 +77,13 @@ public class ChangingOption {
 
     public void setSubOption(int subOption) {
         this.subOption = subOption;
+    }
+
+    public Integer getColor() {
+        return color;
+    }
+
+    public void setColor(Integer color) {
+        this.color = color;
     }
 }
