@@ -48,6 +48,7 @@ import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
+import pe.edu.upc.wallpapeer.utils.PaletteOption;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
@@ -356,7 +357,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                             Toast.makeText(context1, "Se recibió la opción de rotar", Toast.LENGTH_SHORT).show();
                             Log.i("Rotate Button", "Se recibió la opción de rotar");
                             break;
-                        case 5:
+                        case PaletteOption.SHAPES_OPTION:
                             Toast.makeText(context1, "Se recibió la opción de añadir forma", Toast.LENGTH_SHORT).show();
                             Log.i("Shape Button", "Se recibió la opción de añadir forma");
                             break;

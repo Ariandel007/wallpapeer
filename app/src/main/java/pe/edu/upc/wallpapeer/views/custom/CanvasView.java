@@ -81,7 +81,14 @@ public class CanvasView  extends View {
                 mPaint = new Paint();
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.BLUE);
+                if(element.getRotation() != 0) {
+                    canvas.save();
+                    canvas.rotate(element.getRotation(), element.getPosxElement(), element.getPosyElement());
+                }
                 canvas.drawCircle(element.getPosxElement(),element.getPosyElement(),element.getWidthElement(), mPaint);
+                if(element.getRotation() != 0) {
+                    canvas.restore();
+                }
             }
 
             if(element.getTypeElement().equals("square_figure")) {
@@ -90,7 +97,14 @@ public class CanvasView  extends View {
                 mPaint = new Paint();
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.BLUE);
+                if(element.getRotation() != 0) {
+                    canvas.save();
+                    canvas.rotate(element.getRotation(), element.getPosxElement(), element.getPosyElement());
+                }
                 drawSquare(element.getPosxElement(), element.getPosyElement(), element.getWidthElement(), element.getHeightElement(),canvas, mPaint);
+                if(element.getRotation() != 0) {
+                    canvas.restore();
+                }
             }
 
             if(element.getTypeElement().equals("triangle_figure")) {
@@ -99,7 +113,14 @@ public class CanvasView  extends View {
                 mPaint = new Paint();
                 mPaint.setStyle(Paint.Style.FILL);
                 mPaint.setColor(Color.BLUE);
+                if(element.getRotation() != 0) {
+                    canvas.save();
+                    canvas.rotate(element.getRotation(), element.getPosxElement(), element.getPosyElement());
+                }
                 drawTriangle(element.getPosxElement(), element.getPosyElement(), element.getWidthElement(), canvas, mPaint);
+                if(element.getRotation() != 0) {
+                    canvas.restore();
+                }
             }
         }
 
@@ -380,6 +401,34 @@ public class CanvasView  extends View {
 
         @SuppressLint("CheckResult")
         @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+//            return super.onDoubleTapEvent(e);
+            int move = e.getAction();
+
+            if(PaletteOption.ROTATE == PaletteState.getInstance().getSelectedOption() && move == 1) {
+                if(listFiltered.size() > 0) {
+                    Element element = listFiltered.get(listFiltered.size() - 1);
+                    float newRotation = element.getRotation() + 90;
+                    if(newRotation == 360) {
+                        newRotation = 0;
+                    }
+                    element.setRotation(newRotation);
+                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                    AppDatabase.getInstance().elementDAO().insert(element).subscribeOn(Schedulers.io())
+                            .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                        Log.i("Se creo","Se creo con exito");
+                    }, throwable -> {
+                        Log.e("Error","Error al crear");
+                    });
+                }
+            }
+            Log.e("ex", " " + e.getX());
+            Log.e("ey"," " + e.getY());
+            return true;
+        }
+
+        @SuppressLint("CheckResult")
+        @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2,
                                float velocityX, float velocityY) {
             float xDiff = e2.getX() - e1.getX();
@@ -438,6 +487,8 @@ public class CanvasView  extends View {
         @SuppressLint("CheckResult")
         @Override
         public boolean onScale(ScaleGestureDetector scaleGestureDetector) {
+//            float move = scaleGestureDetector.getCurrentSpan();
+
             float spanX = scaleGestureDetector.getCurrentSpanX();
             float spanY = scaleGestureDetector.getCurrentSpanY();
 
