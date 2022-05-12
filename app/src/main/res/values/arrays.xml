@@ -12,5 +12,19 @@
         <item>Cuadrado</item>
         <item>Triangulo</item>
     </string-array>
+    <array name="colors_array">
+        //BLACK     <item>-16777216</item>
+        //BLUE      <item>-16776961</item>
+        //CYAN      <item>-16711681</item>
+        //DKGray    <item>-12303292</item>
+        //GRAY      <item>-7829368</item>
+        //GREEN     <item>-16711936</item>
+        //LTGRAY    <item>-3355444</item>
+        //MAGENTA   <item>-65281</item>
+        //RED       <item>-65536</item>
+        //TRANSPARENT<item>-0</item>
+        //WHITE     <item>-1</item>
+        //YELLOW    <item>-256</item>
+    </array>
 
 </resources>

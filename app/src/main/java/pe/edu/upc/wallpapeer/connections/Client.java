@@ -421,6 +421,7 @@ public class Client extends IMessenger {
                                         PaletteState.getInstance().setSelectedOption(changingOption.getSelectedOption());
                                         PaletteState.getInstance().setSubOption(changingOption.getSubOption());
                                         PaletteState.getInstance().setTextToPrint(changingOption.getTextToInsert());
+                                        PaletteState.getInstance().setColor(changingOption.getColor());
 
                                         AppDatabase.getInstance().paletteDAO().insert(myPalette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
                                                 subscribe(()->{

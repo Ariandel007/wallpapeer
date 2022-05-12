@@ -6,6 +6,7 @@ public class PaletteState {
     private Integer selectedOption = 0;
     private int subOption = -1;
     private String textToPrint;
+    private Integer color;
 
     public static PaletteState getINSTANCE() {
         return INSTANCE;
@@ -59,5 +60,13 @@ public class PaletteState {
 
     public void setSubOption(int subOption) {
         this.subOption = subOption;
+    }
+
+    public Integer getColor() {
+        return color;
+    }
+
+    public void setColor(Integer color) {
+        this.color = color;
     }
 }
