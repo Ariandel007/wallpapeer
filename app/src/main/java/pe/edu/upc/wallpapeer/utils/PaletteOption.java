@@ -8,5 +8,7 @@ public final class  PaletteOption {
     public static final int SHAPES_OPTION_SQUARE= 1;
     public static final int SHAPES_OPTION_TRIANGLE = 2;
 
+    public static final int COLOR = 6;
+
 
 }

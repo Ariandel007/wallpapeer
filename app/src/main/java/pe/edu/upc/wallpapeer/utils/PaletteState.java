@@ -6,7 +6,7 @@ public class PaletteState {
     private Integer selectedOption = 0;
     private int subOption = -1;
     private String textToPrint;
-    private Integer color;
+    private Integer color = -16776961;
 
     public static PaletteState getINSTANCE() {
         return INSTANCE;
