@@ -313,6 +313,10 @@ public class CanvasActivity extends AppCompatActivity {
                         case 1:
                             Toast.makeText(context1, "Se recibió la opción de deshacer", Toast.LENGTH_SHORT).show();
                             Log.i("Undo Button", "Se recibió la opción de deshacer");
+                            AppDatabase.getInstance().elementDAO().deleteOne().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                Log.i("Undo Button", "Se eliminó el último elemento");
+                                Toast.makeText(context1, "Se eliminó el último elemento insertado", Toast.LENGTH_SHORT).show();
+                            });
                             break;
                         case 2:
                             Toast.makeText(context1, "Se recibió la opción de modificar capa", Toast.LENGTH_SHORT).show();
