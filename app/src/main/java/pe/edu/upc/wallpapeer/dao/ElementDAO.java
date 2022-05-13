@@ -35,7 +35,8 @@ public interface ElementDAO {
     @Query("SELECT * FROM element ")
     LiveData<List<Element>> getAllElementsLiveData();
 
-    @Query("SELECT * FROM element WHERE id_project = :idProject")
+    @Query("SELECT * FROM element WHERE id_project = :idProject " +
+            "ORDER BY z_index ASC, date_creation ")
     LiveData<List<Element>> getAllElementsLiveDataByProject(String idProject);
 
     @Query("SELECT * FROM element")

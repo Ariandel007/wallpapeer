@@ -440,6 +440,35 @@ public class CanvasView  extends View {
                     });
                 }
             }
+            if(PaletteOption.LAYERS == PaletteState.getInstance().getSelectedOption() && move == 1){
+                if(listFiltered.size() > 0){
+                    Element element = listFiltered.get(listFiltered.size() - 1);
+                    if(getElementListCanvas().size() > 0){
+                        switch (PaletteState.getInstance().getSubOption()) {
+                            case PaletteOption.LAYERS_BRING_TO_FRONT:
+                                element.setzIndex(getElementListCanvas().get(getElementListCanvas().size() - 1).getzIndex() + 1);
+                                break;
+                            case PaletteOption.LAYERS_SEND_BACK:
+                                element.setzIndex(element.getzIndex() - 1);
+                                break;
+                            case PaletteOption.LAYERS_BRING_FORWARD:
+                                element.setzIndex(element.getzIndex() + 1);
+                                break;
+                            case PaletteOption.LAYERS_SEND_TO_THE_BACK:
+                                element.setzIndex(getElementListCanvas().get(0).getzIndex() - 1);
+                                break;
+                        }
+                        //Que hace esto? uwu
+                        //getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                        AppDatabase.getInstance().elementDAO().insert(element).subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                            Log.i("Se creo","Se creo con exito");
+                        }, throwable -> {
+                            Log.e("Error","Error al crear");
+                        });
+                    }
+                }
+            }
             Log.e("ex", " " + e.getX());
             Log.e("ey"," " + e.getY());
             return true;
