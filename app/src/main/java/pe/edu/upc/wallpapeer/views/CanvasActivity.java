@@ -330,7 +330,7 @@ public class CanvasActivity extends AppCompatActivity {
                             Toast.makeText(context1, "Se recibió la opción de añadir forma", Toast.LENGTH_SHORT).show();
                             Log.i("Shape Button", "Se recibió la opción de añadir forma");
                             break;
-                        case 6:
+                        case PaletteOption.COLOR:
                             Toast.makeText(context1, "Se recibió la opción de cambiar color", Toast.LENGTH_SHORT).show();
                             Log.i("Shape Button", "Se recibió la opción de cambiar color");
                             break;

@@ -31,6 +31,7 @@ import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.dtos.NewElementInserted;
 import pe.edu.upc.wallpapeer.entities.Canva;
 import pe.edu.upc.wallpapeer.entities.Element;
+import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.model.figures.Circle;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
@@ -75,49 +76,63 @@ public class CanvasView  extends View {
         super.onDraw(canvas);
 
         for(Element element : getElementListCanvas()){
+            float posXelement;
+            float posYelement;
             if(element.getTypeElement().equals("circle_figure")) {
-                element.setPosyElement(element.getPosyElement() - currentCanvaEntity.getPosY());
-                element.setPosxElement(element.getPosxElement() - currentCanvaEntity.getPosX());
+                posYelement = element.getPosyElement() - currentCanvaEntity.getPosY();
+                posXelement = element.getPosxElement() - currentCanvaEntity.getPosX();
                 mPaint = new Paint();
                 mPaint.setStyle(Paint.Style.FILL);
-                mPaint.setColor(Color.BLUE);
+                if(element.getColor() == null) {
+                    mPaint.setColor(Color.BLUE);
+                } else {
+                    mPaint.setColor(Integer.parseInt(element.getColor()));
+                }
                 if(element.getRotation() != 0) {
                     canvas.save();
-                    canvas.rotate(element.getRotation(), element.getPosxElement(), element.getPosyElement());
+                    canvas.rotate(element.getRotation(), posXelement, posYelement);
                 }
-                canvas.drawCircle(element.getPosxElement(),element.getPosyElement(),element.getWidthElement(), mPaint);
+                canvas.drawCircle(posXelement,posYelement,element.getWidthElement(), mPaint);
                 if(element.getRotation() != 0) {
                     canvas.restore();
                 }
             }
 
             if(element.getTypeElement().equals("square_figure")) {
-                element.setPosyElement(element.getPosyElement() - currentCanvaEntity.getPosY());
-                element.setPosxElement(element.getPosxElement() - currentCanvaEntity.getPosX());
+                posYelement = element.getPosyElement() - currentCanvaEntity.getPosY();
+                posXelement = element.getPosxElement() - currentCanvaEntity.getPosX();
                 mPaint = new Paint();
                 mPaint.setStyle(Paint.Style.FILL);
-                mPaint.setColor(Color.BLUE);
+                if(element.getColor() == null) {
+                    mPaint.setColor(Color.BLUE);
+                } else {
+                    mPaint.setColor(Integer.parseInt(element.getColor()));
+                }
                 if(element.getRotation() != 0) {
                     canvas.save();
-                    canvas.rotate(element.getRotation(), element.getPosxElement(), element.getPosyElement());
+                    canvas.rotate(element.getRotation(), posXelement, posYelement);
                 }
-                drawSquare(element.getPosxElement(), element.getPosyElement(), element.getWidthElement(), element.getHeightElement(),canvas, mPaint);
+                drawSquare(posXelement, posYelement, element.getWidthElement(), element.getHeightElement(),canvas, mPaint);
                 if(element.getRotation() != 0) {
                     canvas.restore();
                 }
             }
 
             if(element.getTypeElement().equals("triangle_figure")) {
-                element.setPosyElement(element.getPosyElement() - currentCanvaEntity.getPosY());
-                element.setPosxElement(element.getPosxElement() - currentCanvaEntity.getPosX());
+                posYelement = element.getPosyElement() - currentCanvaEntity.getPosY();
+                posXelement = element.getPosxElement() - currentCanvaEntity.getPosX();
                 mPaint = new Paint();
                 mPaint.setStyle(Paint.Style.FILL);
-                mPaint.setColor(Color.BLUE);
+                if(element.getColor() == null) {
+                    mPaint.setColor(Color.BLUE);
+                } else {
+                    mPaint.setColor(Integer.parseInt(element.getColor()));
+                }
                 if(element.getRotation() != 0) {
                     canvas.save();
-                    canvas.rotate(element.getRotation(), element.getPosxElement(), element.getPosyElement());
+                    canvas.rotate(element.getRotation(), posXelement, posYelement);
                 }
-                drawTriangle(element.getPosxElement(), element.getPosyElement(), element.getWidthElement(), canvas, mPaint);
+                drawTriangle(posXelement, posYelement, element.getWidthElement(), canvas, mPaint);
                 if(element.getRotation() != 0) {
                     canvas.restore();
                 }
@@ -343,6 +358,7 @@ public class CanvasView  extends View {
                             newElement.setWidthElement(200);
                             newElement.setPosxElement(posX);
                             newElement.setPosyElement(posY);
+                            newElement.setColor(PaletteState.getInstance().getColor().toString());
                             newElement.setDateCreation(new Date());
                             newElement.setId_project(currentProjectEntity.id);
                         }
@@ -358,6 +374,7 @@ public class CanvasView  extends View {
                             newElement.setWidthElement(200);
                             newElement.setPosxElement(posX);
                             newElement.setPosyElement(posY);
+                            newElement.setColor(PaletteState.getInstance().getColor().toString());
                             newElement.setDateCreation(new Date());
                             newElement.setId_project(currentProjectEntity.id);
                         }
@@ -373,6 +390,7 @@ public class CanvasView  extends View {
                             newElement.setWidthElement(200);
                             newElement.setPosxElement(posX);
                             newElement.setPosyElement(posY);
+                            newElement.setColor(PaletteState.getInstance().getColor().toString());
                             newElement.setDateCreation(new Date());
                             newElement.setId_project(currentProjectEntity.id);
                         }
