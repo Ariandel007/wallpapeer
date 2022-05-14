@@ -41,6 +41,12 @@ public class Element {
     @ColumnInfo(name = "posy_element")
     public float posyElement;
 
+    @ColumnInfo(name = "posx_element2")
+    public float posxElement2;
+
+    @ColumnInfo(name = "posy_element2")
+    public float posyElement2;
+
     @ColumnInfo(name = "z_index")
     public int zIndex;
 
@@ -70,6 +76,7 @@ public class Element {
         this.heightElement = heightElement;
         this.posxElement = posxElement;
         this.posyElement = posyElement;
+
         this.zIndex = zIndex;
         this.opacity = opacity;
         this.rotation = rotation;
@@ -182,5 +189,21 @@ public class Element {
 
     public void setColor(String color) {
         this.color = color;
+    }
+
+    public float getPosxElement2() {
+        return posxElement2;
+    }
+
+    public void setPosxElement2(float posxElement2) {
+        this.posxElement2 = posxElement2;
+    }
+
+    public float getPosyElement2() {
+        return posyElement2;
+    }
+
+    public void setPosyElement2(float posyElement2) {
+        this.posyElement2 = posyElement2;
     }
 }
