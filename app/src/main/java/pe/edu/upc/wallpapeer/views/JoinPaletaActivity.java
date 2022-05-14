@@ -260,8 +260,6 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             public void onClick(View view) {
                 pSelectedOption = 0;
                 pSubOption = -1;
-                PaletteState.getInstance().setSubOption(pSubOption);
-                PaletteState.getInstance().setSelectedOption(pSelectedOption);
                 sendSelectedOption(pSelectedOption, pSubOption);
             }
         });
@@ -271,8 +269,6 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             public void onClick(View view) {
                 pSelectedOption = 1;
                 pSubOption = -1;
-                PaletteState.getInstance().setSubOption(pSubOption);
-                PaletteState.getInstance().setSelectedOption(pSelectedOption);
                 sendSelectedOption(pSelectedOption, pSubOption);
             }
         });
@@ -290,8 +286,6 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             public void onClick(View view) {
                 pSelectedOption = 3;
                 pSubOption = -1;
-                PaletteState.getInstance().setSubOption(pSubOption);
-                PaletteState.getInstance().setSelectedOption(pSelectedOption);
                 openTextDialog();
             }
         });
@@ -301,8 +295,6 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             public void onClick(View view) {
                 pSelectedOption = 4;
                 pSubOption = -1;
-                PaletteState.getInstance().setSubOption(pSubOption);
-                PaletteState.getInstance().setSelectedOption(pSelectedOption);
                 sendSelectedOption(pSelectedOption, pSubOption);
             }
         });
