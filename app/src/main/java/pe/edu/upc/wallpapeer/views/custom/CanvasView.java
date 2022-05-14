@@ -431,7 +431,7 @@ public class CanvasView  extends View {
                         newRotation = 0;
                     }
                     element.setRotation(newRotation);
-                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element)));
                     AppDatabase.getInstance().elementDAO().insert(element).subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                         Log.i("Se creo","Se creo con exito");
@@ -458,8 +458,7 @@ public class CanvasView  extends View {
                                 element.setzIndex(getElementListCanvas().get(0).getzIndex() - 1);
                                 break;
                         }
-                        //Que hace esto? uwu
-                        //getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                        getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element)));
                         AppDatabase.getInstance().elementDAO().insert(element).subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                             Log.i("Se creo","Se creo con exito");
