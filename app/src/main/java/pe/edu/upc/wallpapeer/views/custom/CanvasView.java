@@ -418,8 +418,8 @@ public class CanvasView  extends View {
                             newElement.setText(PaletteState.getInstance().getTextToPrint());
                             newElement.setRotation(0);
                             newElement.setzIndex(0);
-                            newElement.setHeightElement(15);
-                            newElement.setWidthElement(15);
+                            newElement.setHeightElement(60);
+                            newElement.setWidthElement(60);
                             newElement.setPosxElement(posX);
                             newElement.setPosyElement(posY);
                             newElement.setColor(PaletteState.getInstance().getColor().toString());
