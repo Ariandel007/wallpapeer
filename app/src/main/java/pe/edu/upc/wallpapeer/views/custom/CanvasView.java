@@ -56,6 +56,7 @@ public class CanvasView  extends View {
     private GestureDetectorCompat mDetector;
     private ScaleGestureDetector mScaleDetector;
     private ConnectionPeerToPeerViewModel model;
+    //private List<Path> pathTrazos;
 
     public boolean isPinchLocked = true;
 
@@ -65,6 +66,9 @@ public class CanvasView  extends View {
     public CanvasView(Context context, @Nullable AttributeSet attributeSet) {
         super(context, attributeSet);
         paintList = new ArrayList<>();
+
+        //pathTrazos = new ArrayList<>();
+
         mDetector = new GestureDetectorCompat(context, new MyGestureListener());
         mScaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 //        circleList = new ArrayList<>();
@@ -78,6 +82,48 @@ public class CanvasView  extends View {
         for(Element element : getElementListCanvas()){
             float posXelement;
             float posYelement;
+            //------
+            if(element.getTypeElement().equals("trace")){
+                posYelement = element.getPosyElement() - currentCanvaEntity.getPosY();
+                posXelement = element.getPosxElement() - currentCanvaEntity.getPosX();
+                mPaint = new Paint();
+                mPaint.setStyle(Paint.Style.FILL);
+                if(element.getColor() == null) {
+                    mPaint.setColor(Color.BLUE);
+                } else {
+                    mPaint.setColor(Integer.parseInt(element.getColor()));
+                }
+                if(element.getRotation() != 0) {
+                    canvas.save();
+                    canvas.rotate(element.getRotation(), posXelement, posYelement);
+                }
+                drawPath(posXelement, posYelement, canvas, mPaint);
+                //canvas.drawCircle(posXelement,posYelement,element.getWidthElement(), mPaint);
+                if(element.getRotation() != 0) {
+                    canvas.restore();
+                }
+            }
+            if (element.getText().length() > 0){
+                posYelement = element.getPosyElement() - currentCanvaEntity.getPosY();
+                posXelement = element.getPosxElement() - currentCanvaEntity.getPosX();
+                mPaint = new Paint();
+                mPaint.setStyle(Paint.Style.FILL);
+                if(element.getColor() == null) {
+                    mPaint.setColor(Color.BLUE);
+                } else {
+                    mPaint.setColor(Integer.parseInt(element.getColor()));
+                }
+                if(element.getRotation() != 0) {
+                    canvas.save();
+                    canvas.rotate(element.getRotation(), posXelement, posYelement);
+                }
+                drawText(posXelement, posYelement, element.getText(), canvas, mPaint);
+                //canvas.drawCircle(posXelement,posYelement,element.getWidthElement(), mPaint);
+                if(element.getRotation() != 0) {
+                    canvas.restore();
+                }
+            }
+            //-------
             if(element.getTypeElement().equals("circle_figure")) {
                 posYelement = element.getPosyElement() - currentCanvaEntity.getPosY();
                 posXelement = element.getPosxElement() - currentCanvaEntity.getPosX();
@@ -140,7 +186,17 @@ public class CanvasView  extends View {
         }
 
     }
-
+    //---
+    public void drawPath(float x, float y, Canvas canvas, Paint mPaint){
+        Path path = new Path();
+        path.moveTo(x,y);
+        canvas.drawPath(path,mPaint);
+    }
+    public void drawText (float x, float y, String text , Canvas canvas, Paint mPaint){
+        //Path path = new Path();
+        canvas.drawText(text, x, y, mPaint);
+    }
+    //---
     public void drawSquare(float x, float y, float width, float heigth, Canvas canvas, Paint mPaint) {
         double squareSideHalf = 1 / Math.sqrt(2);
         Rect rectangle = new Rect((int) (x - (squareSideHalf * width)), (int) (y - (squareSideHalf * heigth)), (int) (x + (squareSideHalf * width)), (int) (y + ((squareSideHalf * heigth))));
@@ -347,6 +403,35 @@ public class CanvasView  extends View {
                 case MotionEvent.ACTION_DOWN:
 
                     if(listFiltered.size() == 0) {
+                        if(PaletteState.getInstance().getSelectedOption() == 0){    // trazo
+                            newElement = new Element();
+                            newElement.setId(UUID.randomUUID().toString());
+                            newElement.setTypeElement("trace");
+                            newElement.setRotation(0);
+                            newElement.setzIndex(0);
+                            newElement.setHeightElement(200);
+                            newElement.setWidthElement(200);
+                            newElement.setPosxElement(posX);
+                            newElement.setPosyElement(posY);
+                            newElement.setColor(PaletteState.getInstance().getColor().toString());
+                            newElement.setDateCreation(new Date());
+                            newElement.setId_project(currentProjectEntity.id);
+                        }
+                        if(PaletteState.getInstance().getSelectedOption() == 3){    // texto
+                            newElement = new Element();
+                            newElement.setId(UUID.randomUUID().toString());
+                            //newElement.setTypeElement("trace");
+                            newElement.setText(PaletteState.getInstance().getTextToPrint());
+                            newElement.setRotation(0);
+                            newElement.setzIndex(0);
+                            newElement.setHeightElement(200);
+                            newElement.setWidthElement(200);
+                            newElement.setPosxElement(posX);
+                            newElement.setPosyElement(posY);
+                            newElement.setColor(PaletteState.getInstance().getColor().toString());
+                            newElement.setDateCreation(new Date());
+                            newElement.setId_project(currentProjectEntity.id);
+                        }
                         if(PaletteOption.SHAPES_OPTION == PaletteState.getInstance().getSelectedOption()
                                 && PaletteOption.SHAPES_OPTION_CIRCLE== PaletteState.getInstance().getSubOption()) {
                             newElement = new Element();

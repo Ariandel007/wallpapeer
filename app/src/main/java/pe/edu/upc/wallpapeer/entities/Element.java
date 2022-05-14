@@ -170,8 +170,7 @@ public class Element {
         this.id_project = id_project;
     }
 
-    public String getText() {   return text;
-    }
+    public String getText() {   return text; }
 
     public void setText(String text) {
         this.text = text;
