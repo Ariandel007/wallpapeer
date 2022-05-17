@@ -113,4 +113,18 @@ public class MyLastPinch {
 //    public void setDevice(Device device) {
 //        this.device = device;
 //    }
+
+    @Override
+    public String toString() {
+        return "MyLastPinch{" +
+                "projectId='" + projectId + '\'' +
+                ", canvaId='" + canvaId + '\'' +
+                ", date=" + date +
+                ", pinchX=" + pinchX +
+                ", pinchY=" + pinchY +
+                ", direction='" + direction + '\'' +
+                ", canva=" + canva +
+                ", project=" + project +
+                '}';
+    }
 }

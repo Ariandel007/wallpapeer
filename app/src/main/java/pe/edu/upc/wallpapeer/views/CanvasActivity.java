@@ -71,6 +71,7 @@ public class CanvasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_canvas);
 
         model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
+        model.isMainCanvas = true;
 
         btnQr = findViewById(R.id.btn_qr);
         btnLockPinch = findViewById(R.id.btn_lock_pinch);

@@ -29,6 +29,7 @@ import pe.edu.upc.wallpapeer.WiFiDirectBroadcastReceiver;
 import pe.edu.upc.wallpapeer.connections.Client;
 import pe.edu.upc.wallpapeer.connections.IMessenger;
 import pe.edu.upc.wallpapeer.connections.Server;
+import pe.edu.upc.wallpapeer.connections.Server2;
 import pe.edu.upc.wallpapeer.connections.WIFIDirectConnections;
 import pe.edu.upc.wallpapeer.model.figures.Circle;
 
@@ -58,6 +59,8 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
 //  private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
 
     private boolean isConnected = false;
+
+    public boolean isMainCanvas = false;
 //
     public final ObservableInt backgroundFill = new ObservableInt();
     @Bindable
@@ -79,12 +82,20 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
                 Log.d("new connection", info.toString());
                 final InetAddress address = info.groupOwnerAddress;
                 if (info.isGroupOwner) {
-                    Server server = new Server(ConnectionPeerToPeerViewModel.this, socketIsReady);
+//                    Server server = new Server(ConnectionPeerToPeerViewModel.this, socketIsReady);
+//                    server.start();
+//                    messenger = server;
+//                    if(messenger != null) {
+//                        socketIsReady.setValue(true);
+//                    }
+                    Server2 server = new Server2(ConnectionPeerToPeerViewModel.this, socketIsReady);
                     server.start();
                     messenger = server;
                     if(messenger != null) {
                         socketIsReady.setValue(true);
                     }
+
+
                 } else {
                     Client client = new Client(address.getHostAddress(), ConnectionPeerToPeerViewModel.this, socketIsReady);
                     client.start();
@@ -204,6 +215,11 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        if(isMainCanvas) {
+            config.groupOwnerIntent = 15;
+        } else {
+            config.groupOwnerIntent = 0;
+        }
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -222,6 +238,7 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         if(messenger != null){
             messenger.send(text, true);
         }
+
     }
 
     //El propietario del grupo elimina el grupo. Cierra el socket
@@ -263,6 +280,7 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         if (messenger != null) {
             messenger.DestroySocket();
         }
+
         if(isConnected)
             chatClosed.postValue(true);
     }

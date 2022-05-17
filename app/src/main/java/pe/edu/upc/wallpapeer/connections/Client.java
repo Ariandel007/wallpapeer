@@ -74,23 +74,9 @@ public class Client extends IMessenger {
                 ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
                 String messageText = (String) inputStream.readObject();
                 if (messageText != null) {
-                    if (isAddresseeSet) {
+                    if (messageText.length() > 20) {
                         String eventCode = messageText.substring(17,22);
                         deserializeBasedOnEventCode(eventCode,messageText);
-                        //EJEMPLO, Tomar con pinzas uwu
-//                        String obtenerEvent = messageText.substring(7,14);
-//                        switch (obtenerEvent) {
-//                            case CodeEvent.PINCH_EVENT:
-//                                //haz cosas
-//                                break;
-//                        }
-
-                        // Si llega un nuevo mensaje, lo guardaremos directamente en la base de datos.
-                        // Es el objeto de esta base de datos el que es activado por la actividad correspondiente al objeto leído
-                        // Ya no tenemos que enviar a Active
-                        Date c = Calendar.getInstance().getTime();
-//                        MessageEntity message = new MessageEntity(messageText, c, peerName, false);
-//                        MessageRepository.getInstance().insert(message);
                     } else {
                         // El primer mensaje que leemos es el nombre del par y luego chateamos.
                         isAddresseeSet = true;

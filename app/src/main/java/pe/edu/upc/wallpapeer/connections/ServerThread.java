@@ -1,18 +1,16 @@
 package pe.edu.upc.wallpapeer.connections;
 
 import android.annotation.SuppressLint;
-import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.lifecycle.MutableLiveData;
-
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
+import java.io.PrintWriter;
 import java.net.Socket;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -20,7 +18,6 @@ import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import pe.edu.upc.wallpapeer.App;
 import pe.edu.upc.wallpapeer.LocalDevice;
 import pe.edu.upc.wallpapeer.dtos.AcceptingPalette;
 import pe.edu.upc.wallpapeer.dtos.AddingPalette;
@@ -42,79 +39,82 @@ import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
-public class Server extends IMessenger {
+public class ServerThread  extends Thread {
     private Socket socket;
-    private ServerSocket serverSocket;
-    private String peerName;
-    private MutableLiveData<Boolean> isConnected;
+    private ArrayList<ServerThread> threadList;
+    private PrintWriter output;
     private ConnectionPeerToPeerViewModel model;
 
-    public Server(ConnectionPeerToPeerViewModel model, MutableLiveData<Boolean> isConnected) {
+    public ServerThread(Socket socket, ArrayList<ServerThread> threads, ConnectionPeerToPeerViewModel model){
+        this.socket = socket;
+        this.threadList = threads;
+
         this.model = model;
-        this.isConnected = isConnected;
+
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
     }
 
     @Override
     public void run() {
         try {
-//            serverSocket = new ServerSocket();
-//            serverSocket.setReuseAddress(true);
-//            serverSocket.bind(new InetSocketAddress(8888));
-//            socket = serverSocket.accept();
-            serverSocket = new ServerSocket(8888);
-            socket = serverSocket.accept();
+            // Tras conectar, enviamos el nombre de nuestro dispositivo como primer mensaje
+            //send(LocalDevice.getInstance().getDevice().deviceName, false);
 
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Tras conectar, enviamos el nombre de nuestro dispositivo como primer mensaje
-        send(LocalDevice.getInstance().getDevice().deviceName, false);
-
-        // Ya he leído el nombre del compañero
-        boolean isAddresseeSet = false;
-
-        while (socket != null) {
-            try {
-                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-                String messageText = (String) inputStream.readObject();
-                if (messageText != null) {
-                    if (isAddresseeSet) {
-                        String eventCode = messageText.substring(17,22);
-                        deserializeBasedOnEventCode(eventCode,messageText);
-                        //EJEMPLO, Tomar con pinzas uwu
-//                        String obtenerEvent = messageText.substring(7,14);
-//                        switch (obtenerEvent) {
-//                            case CodeEvent.PINCH_EVENT:
-//                                //haz cosas
-//                                break;
-//                        }
-                        // Si llega un nuevo mensaje lo guardamos directamente en la base de datos
-                        // Es el objeto de esta base de datos el que es activado por la actividad correspondiente al objeto leído
-                        // Ya no tenemos que enviar a Active
-                        Date c = Calendar.getInstance().getTime();
-//                        MessageEntity message = new MessageEntity(messageText, c, peerName, false);
-//                        MessageRepository.getInstance().insert(message);
-                    } else {
-                        // El primer mensaje que leemos es el nombre del par y luego chateamos.
-                        isAddresseeSet = true;
-                        peerName = messageText;
-                        model.setAddressee(messageText);
-                        isConnected.postValue(true);
+            while (socket != null) {
+                try {
+                    ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                    String messageText = (String) inputStream.readObject();
+                    if (messageText != null) {
+                        if (messageText.length() > 20) {
+                            String eventCode = messageText.substring(17,22);
+                            deserializeBasedOnEventCode(eventCode,messageText);
+                        } else {
+                            // El primer mensaje que leemos es el nombre del par y luego chateamos.
+//                            isAddresseeSet = true;
+//                            peerName = messageText;
+//                            model.setAddressee(messageText);
+//                            isConnected.postValue(true);
+                        }
                     }
+                } catch (ClassNotFoundException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    // Si el socket está cerrado desde el otro lado, también cerramos la ventana de chat.
+                    model.closeChat();
                 }
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                // Si el socket está cerrado desde el otro lado, también cerramos la ventana de chat.
-                model.closeChat();
             }
-        }
 
+
+            //Leyendo el input del cliente
+            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+            //retornando el outpur al cliente : true es para levantar el buffer de otro se haria manualmente
+            output = new PrintWriter(socket.getOutputStream());
+
+            //loop infinito para el servidor
+            while (true) {
+                String outputString = input.readLine();
+                // si el usuario sale
+                if(outputString.equals("exit")){
+                    break;
+                }
+                System.out.println("Server recibio " + outputString);
+            }
+
+
+        } catch (Exception e) {
+            System.out.println("Server received ");
+        }
     }
 
-    @Override
     public void send(final String text, final boolean isMessage) {
-
         new Thread() {
             @Override
             public void run() {
@@ -123,38 +123,15 @@ public class Server extends IMessenger {
                     ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
                     outputStream.writeObject(text);
                     outputStream.flush();
-                    if (isMessage) {
-                        // Si no es el primer mensaje, es decir no enviamos el nombre
-                        // Luego tenemos que almacenarlo en la base de datos también
-                        Date c = Calendar.getInstance().getTime();
-//                        MessageEntity message = new MessageEntity(text, c, peerName, true);
-//                        MessageRepository.getInstance().insert(message);
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }.start();
-
     }
 
-    @Override
     public void DestroySocket() {
-        if (socket != null) {
-            try {
-                socket.close();
-                socket = null;
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (serverSocket != null) {
-            try {
-                serverSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+
     }
 
     @SuppressLint("CheckResult")
@@ -164,6 +141,8 @@ public class Server extends IMessenger {
         switch(eventCode) {
             case CodeEvent.PINCH_EVENT:
                 Log.i("EVENT", "PINCH_EVENT");
+                Log.i("MyLastPinch", MyLastPinch.getInstance().toString());
+
                 if(MyLastPinch.getInstance().getProjectId() != null && MyLastPinch.getInstance().getCanva() != null && MyLastPinch.getInstance().getDate() != null) {
                     EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMessage, EngagePinchEvent.class);
                     //Comprobar si entra en el rango de tiempo
