@@ -22,7 +22,7 @@ public class Server3 extends SimpleMessenger{
                     System.out.println("Waiting for clients to connect...");
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
-                        ClientTask clientTask = new ClientTask(clientSocket);
+                        ClientTask clientTask = new ClientTask(clientSocket, clientTasks);
                         clientTasks.add(clientTask);
                         clientProcessingPool.submit(clientTask);
                     }

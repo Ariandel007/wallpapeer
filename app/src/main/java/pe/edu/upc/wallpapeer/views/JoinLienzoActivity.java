@@ -79,6 +79,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
     Button btnDecodes;
 
     private String targetDeviceName = "";
+    private String lastTargetDeviceName = "";
 
     //para el pinch
     private Boolean waitToJoinLienzo = true;
@@ -86,6 +87,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
     SwipeListener swipeListener;
     CoordinatorLayout mainScreenJoinLienzo;
     //
+    private String trulyClientTargetDevice = "";
+
 
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -93,7 +96,10 @@ public class JoinLienzoActivity extends AppCompatActivity {
                 if(result.getContents() == null) {
                     Toast.makeText(JoinLienzoActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 } else {
-                    targetDeviceName = result.getContents();
+                    QrMessage qrMessage = JsonConverter.getGson().fromJson(result.getContents(), QrMessage.class);
+                    targetDeviceName = qrMessage.getOwnername();
+                    lastTargetDeviceName = qrMessage.getOwnername();
+                    trulyClientTargetDevice = qrMessage.getMyName();
                     Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }
@@ -208,8 +214,11 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         imgQrShowed = !imgQrShowed;
                     } else {
                         constraintLayout.setVisibility(View.VISIBLE);
+                        //Enviar esto al json:
+                        QrMessage qrMessage = new QrMessage(lastTargetDeviceName, userDeviceName);
+                        String qrMessageJson = JsonConverter.getGson().toJson(qrMessage);
                         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                        Bitmap bitmap = barcodeEncoder.encodeBitmap(userDeviceName, BarcodeFormat.QR_CODE, 300, 300);
+                        Bitmap bitmap = barcodeEncoder.encodeBitmap(qrMessageJson, BarcodeFormat.QR_CODE, 300, 300);
                         imgQr.setImageBitmap(bitmap);
                         imgQrShowed = !imgQrShowed;
                     }

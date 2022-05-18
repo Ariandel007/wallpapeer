@@ -39,9 +39,11 @@ import pe.edu.upc.wallpapeer.utils.PaletteState;
 
 public class ClientTask implements Runnable {
     private final Socket clientSocket;
+    public List<ClientTask> clientTasks;
 
-    ClientTask(Socket clientSocket) {
+    ClientTask(Socket clientSocket, List<ClientTask> clientTasks) {
         this.clientSocket = clientSocket;
+        this.clientTasks = clientTasks;
     }
 
     @Override
@@ -91,6 +93,12 @@ public class ClientTask implements Runnable {
                 }
             }
         }.start();
+    }
+
+    public void sendAll(final String text, final boolean isMessage) {
+        for (ClientTask clientTask : clientTasks ) {
+            clientTask.send(text, isMessage);
+        }
     }
 
     public void DestroySocket() {
