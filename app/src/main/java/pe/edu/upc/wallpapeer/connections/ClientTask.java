@@ -10,7 +10,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,80 +36,44 @@ import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
-import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
-public class ServerThread  extends Thread {
-    private Socket socket;
-    private ArrayList<ServerThread> threadList;
-    private PrintWriter output;
-    private ConnectionPeerToPeerViewModel model;
+public class ClientTask implements Runnable {
+    private final Socket clientSocket;
 
-    public ServerThread(Socket socket, ArrayList<ServerThread> threads, ConnectionPeerToPeerViewModel model){
-        this.socket = socket;
-        this.threadList = threads;
-
-        this.model = model;
-
-    }
-
-    public Socket getSocket() {
-        return socket;
-    }
-
-    public void setSocket(Socket socket) {
-        this.socket = socket;
+    ClientTask(Socket clientSocket) {
+        this.clientSocket = clientSocket;
     }
 
     @Override
     public void run() {
-        try {
-            // Tras conectar, enviamos el nombre de nuestro dispositivo como primer mensaje
-            //send(LocalDevice.getInstance().getDevice().deviceName, false);
+// Tras conectar, enviamos el nombre de nuestro dispositivo como primer mensaje
+        send(LocalDevice.getInstance().getDevice().deviceName, false);
 
-            while (socket != null) {
-                try {
-                    ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
-                    String messageText = (String) inputStream.readObject();
-                    if (messageText != null) {
-                        if (messageText.length() > 20) {
-                            String eventCode = messageText.substring(17,22);
-                            deserializeBasedOnEventCode(eventCode,messageText);
-                        } else {
-                            // El primer mensaje que leemos es el nombre del par y luego chateamos.
-//                            isAddresseeSet = true;
-//                            peerName = messageText;
-//                            model.setAddressee(messageText);
-//                            isConnected.postValue(true);
-                        }
+        // Ya he leído el nombre del compañero
+        boolean isAddresseeSet = false;
+
+        while (clientSocket != null) {
+            try {
+                ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
+                String messageText = (String) inputStream.readObject();
+                if (messageText != null) {
+                    if (isAddresseeSet) {
+                        String eventCode = messageText.substring(17,22);
+                        deserializeBasedOnEventCode(eventCode,messageText);
+                    } else {
+                        // El primer mensaje que leemos es el nombre del par y luego chateamos.
+                        isAddresseeSet = true;
+//                        peerName = messageText;
+//                        model.setAddressee(messageText);
+//                        isConnected.postValue(true);
                     }
-                } catch (ClassNotFoundException e) {
-                    e.printStackTrace();
-                } catch (IOException e) {
-                    // Si el socket está cerrado desde el otro lado, también cerramos la ventana de chat.
-                    model.closeChat();
                 }
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                // Si el socket está cerrado desde el otro lado, también cerramos la ventana de chat.
+//                model.closeChat();
             }
-
-
-            //Leyendo el input del cliente
-            BufferedReader input = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-
-            //retornando el outpur al cliente : true es para levantar el buffer de otro se haria manualmente
-            output = new PrintWriter(socket.getOutputStream());
-
-            //loop infinito para el servidor
-            while (true) {
-                String outputString = input.readLine();
-                // si el usuario sale
-                if(outputString.equals("exit")){
-                    break;
-                }
-                System.out.println("Server recibio " + outputString);
-            }
-
-
-        } catch (Exception e) {
-            System.out.println("Server received ");
         }
     }
 
@@ -118,9 +81,9 @@ public class ServerThread  extends Thread {
         new Thread() {
             @Override
             public void run() {
-                if (socket == null) return;
+                if (clientSocket == null) return;
                 try {
-                    ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                    ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
                     outputStream.writeObject(text);
                     outputStream.flush();
                 } catch (IOException e) {
@@ -131,7 +94,20 @@ public class ServerThread  extends Thread {
     }
 
     public void DestroySocket() {
-
+        if (clientSocket != null) {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (clientSocket != null) {
+            try {
+                clientSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     @SuppressLint("CheckResult")
@@ -614,4 +590,5 @@ public class ServerThread  extends Thread {
                     Log.e("Error",throwable.getMessage());
                 });
     }
+
 }

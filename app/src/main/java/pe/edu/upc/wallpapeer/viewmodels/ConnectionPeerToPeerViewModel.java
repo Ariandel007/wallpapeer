@@ -28,8 +28,8 @@ import java.util.List;
 import pe.edu.upc.wallpapeer.WiFiDirectBroadcastReceiver;
 import pe.edu.upc.wallpapeer.connections.Client;
 import pe.edu.upc.wallpapeer.connections.IMessenger;
-import pe.edu.upc.wallpapeer.connections.Server;
-import pe.edu.upc.wallpapeer.connections.Server2;
+import pe.edu.upc.wallpapeer.connections.Server3;
+import pe.edu.upc.wallpapeer.connections.SimpleMessenger;
 import pe.edu.upc.wallpapeer.connections.WIFIDirectConnections;
 import pe.edu.upc.wallpapeer.model.figures.Circle;
 
@@ -42,6 +42,7 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
     private IntentFilter intentFilter;
     private WIFIDirectConnections connections;
     private IMessenger messenger;
+    private SimpleMessenger simpleMessenger;
     private String addressee;
 
 //    private MessageRepository repository;
@@ -88,13 +89,19 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
 //                    if(messenger != null) {
 //                        socketIsReady.setValue(true);
 //                    }
-                    Server2 server = new Server2(ConnectionPeerToPeerViewModel.this, socketIsReady);
+//                    Server2 server = new Server2(ConnectionPeerToPeerViewModel.this, socketIsReady);
+//                    server.start();
+//                    messenger = server;
+//                    if(messenger != null) {
+//                        socketIsReady.setValue(true);
+//                    }
+
+                    Server3 server = new Server3();
                     server.start();
-                    messenger = server;
-                    if(messenger != null) {
+                    simpleMessenger = server;
+                    if(simpleMessenger != null) {
                         socketIsReady.setValue(true);
                     }
-
 
                 } else {
                     Client client = new Client(address.getHostAddress(), ConnectionPeerToPeerViewModel.this, socketIsReady);
@@ -238,6 +245,9 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         if(messenger != null){
             messenger.send(text, true);
         }
+        if(simpleMessenger != null) {
+            simpleMessenger.send(text, true);
+        }
 
     }
 
@@ -279,6 +289,10 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
 
         if (messenger != null) {
             messenger.DestroySocket();
+        }
+
+        if (simpleMessenger != null) {
+            simpleMessenger.DestroySocket();
         }
 
         if(isConnected)
