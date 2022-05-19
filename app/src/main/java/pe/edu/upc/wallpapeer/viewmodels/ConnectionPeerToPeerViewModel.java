@@ -95,12 +95,13 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
 //                    if(messenger != null) {
 //                        socketIsReady.setValue(true);
 //                    }
-
-                    Server3 server = new Server3();
-                    server.start();
-                    simpleMessenger = server;
-                    if(simpleMessenger != null) {
-                        socketIsReady.setValue(true);
+                    if(simpleMessenger == null) {
+                        Server3 server = new Server3();
+                        server.start();
+                        simpleMessenger = server;
+                        if(simpleMessenger != null) {
+                            socketIsReady.setValue(true);
+                        }
                     }
 
                 } else {

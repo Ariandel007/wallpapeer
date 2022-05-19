@@ -161,7 +161,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     if (aBoolean != null && aBoolean) {
                         Toast.makeText(JoinLienzoActivity.this, "Conexion realizada con dispositivo!!", Toast.LENGTH_SHORT).show();
                         loadingScreen.setVisibility(View.GONE);
-                        pinchScreen.setVisibility(View.VISIBLE);
+                        //para probar
+//                        pinchScreen.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -386,7 +387,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
         loadingScreen = findViewById(R.id.loadingScreen);
         loadingScreen.setVisibility(View.GONE);
         pinchScreen = findViewById(R.id.PinchScreen);
-        pinchScreen.setVisibility(View.GONE);
+//        pinchScreen.setVisibility(View.GONE);
 
 
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
@@ -484,6 +485,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
                     engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
                     engagePinchEvent.setDatePinch(new Date());
+                    engagePinchEvent.setOriginalSender(LastProjectState.getInstance().getDeviceName());
+                    engagePinchEvent.setTrueTargetDevice(trulyClientTargetDevice);
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
@@ -502,6 +505,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
                     engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
                     engagePinchEvent.setDatePinch(new Date());
+                    engagePinchEvent.setOriginalSender(LastProjectState.getInstance().getDeviceName());
+                    engagePinchEvent.setTrueTargetDevice(trulyClientTargetDevice);
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
@@ -525,6 +530,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
                     engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
                     engagePinchEvent.setDatePinch(new Date());
+                    engagePinchEvent.setOriginalSender(LastProjectState.getInstance().getDeviceName());
+                    engagePinchEvent.setTrueTargetDevice(trulyClientTargetDevice);
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
@@ -543,6 +550,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     engagePinchEvent.setWidthScreenPinch((float) getWidthDevice());
                     engagePinchEvent.setHeightScreenPinch((float) getHeigthDevice());
                     engagePinchEvent.setDatePinch(new Date());
+                    engagePinchEvent.setOriginalSender(LastProjectState.getInstance().getDeviceName());
+                    engagePinchEvent.setTrueTargetDevice(trulyClientTargetDevice);
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);

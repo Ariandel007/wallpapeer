@@ -403,6 +403,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         addingPalette.setMacAddress("");
         addingPalette.setSelectedOption(0);
         addingPalette.setSubOption(-1);
+        addingPalette.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
         String json = JsonConverter.getGson().toJson(addingPalette);
         model.sendMessage(json);
@@ -424,6 +425,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         changingOption.setSubOption(subOption);
         changingOption.setColor(defaultColor);
         changingOption.setTextToInsert("");
+        changingOption.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
         String json = JsonConverter.getGson().toJson(changingOption);
         model.sendMessage(json);
@@ -444,6 +446,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         changingOption.setSelectedOption(selectedOption);
         changingOption.setSubOption(subOption);
         changingOption.setTextToInsert(textToInsert);
+        changingOption.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
         String json = JsonConverter.getGson().toJson(changingOption);
         model.sendMessage(json);

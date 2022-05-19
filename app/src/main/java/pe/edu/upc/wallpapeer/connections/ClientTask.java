@@ -58,8 +58,9 @@ public class ClientTask implements Runnable {
             try {
                 ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
                 String messageText = (String) inputStream.readObject();
+                sendAll(messageText, true);
                 if (messageText != null) {
-                    if (isAddresseeSet) {
+                    if (isAddresseeSet && messageText.length() >= 22) {
                         String eventCode = messageText.substring(17,22);
                         deserializeBasedOnEventCode(eventCode,messageText);
                     } else {
@@ -125,10 +126,14 @@ public class ClientTask implements Runnable {
         switch(eventCode) {
             case CodeEvent.PINCH_EVENT:
                 Log.i("EVENT", "PINCH_EVENT");
-                Log.i("MyLastPinch", MyLastPinch.getInstance().toString());
-
                 if(MyLastPinch.getInstance().getProjectId() != null && MyLastPinch.getInstance().getCanva() != null && MyLastPinch.getInstance().getDate() != null) {
                     EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMessage, EngagePinchEvent.class);
+                    if(engagePinchEvent.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                        return;
+                    }
+                    if(!engagePinchEvent.getTrueTargetDevice().equals(LastProjectState.getInstance().getDeviceName())) {
+                        return;
+                    }
                     //Comprobar si entra en el rango de tiempo
                     if(currentMls - engagePinchEvent.getDatePinch().getTime() > 5000) {
                         return;
@@ -169,6 +174,7 @@ public class ClientTask implements Runnable {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -210,6 +216,7 @@ public class ClientTask implements Runnable {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -250,6 +257,7 @@ public class ClientTask implements Runnable {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -289,6 +297,7 @@ public class ClientTask implements Runnable {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -302,6 +311,9 @@ public class ClientTask implements Runnable {
                 }
                 Log.i("EVENT", "ADDING_PALLETE_TO_DEVICE");
                 AddingPalette addingPalette = JsonConverter.getGson().fromJson(jsonMessage, AddingPalette.class);
+                if(addingPalette.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
@@ -363,6 +375,8 @@ public class ClientTask implements Runnable {
                                                             });
                                                 });
                                     });
+                        }, throwable -> {
+
                         });
 
 
@@ -372,14 +386,15 @@ public class ClientTask implements Runnable {
             case CodeEvent.SELECT_OPTION_PALLETE:
                 Log.i("EVENT", "SELECT_OPTION_PALLETE");
                 ChangingOption changingOption = JsonConverter.getGson().fromJson(jsonMessage, ChangingOption.class);
+                if(changingOption.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
                 if(!changingOption.getTargetDeviceName().equals(LastProjectState.getInstance().getDeviceName())){
                     return;
                 }
-
-
                 AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(LastProjectState.getInstance().getDeviceName(), LastProjectState.getInstance().getProjectId())
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
                         subscribe((myDevice)->{
@@ -397,7 +412,7 @@ public class ClientTask implements Runnable {
                                         PaletteState.getInstance().setTextToPrint(changingOption.getTextToInsert());
                                         PaletteState.getInstance().setColor(changingOption.getColor());
 
-                                        AppDatabase.getInstance().paletteDAO().update(myPalette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                        AppDatabase.getInstance().paletteDAO().insert(myPalette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
                                                 subscribe(()->{
                                                     Log.i("Update Palette", "Se actualizó la paleta");
                                                 });
@@ -407,6 +422,7 @@ public class ClientTask implements Runnable {
                         }, throwable -> {
 
                         });
+
                 break;
             case CodeEvent.ACCEPTED_PALETTE:
                 AcceptingPalette acceptingPalette = JsonConverter.getGson().fromJson(jsonMessage, AcceptingPalette.class);
@@ -423,7 +439,6 @@ public class ClientTask implements Runnable {
 //                palette1.setSelectedOption(1);
 //                palette1.setSubOption(-1);
 //                palette1.setName(acceptingPalette.getPaletteDeviceName());
-
 //                PaletteState.getInstance().setMyDeviceName(acceptingPalette.getPaletteDeviceName());
 //                PaletteState.getInstance().setTargetDeviceName(acceptingPalette.getLinkedDevice());
 //                PaletteState.getInstance().setSelectedOption(0);
@@ -433,11 +448,10 @@ public class ClientTask implements Runnable {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(()->{
                             Log.i("Proyecto creado", "Se creó el proyecto");
+
 //                            AppDatabase.getInstance().paletteDAO().insert(palette1).subscribeOn(Schedulers.io())
 //                                    .observeOn(AndroidSchedulers.mainThread())
-//                                    .subscribe(()->{
-//                                        Log.i("Paleta creado", "Se creó la paleta");
-//                                    });
+//                                    .subscribe();
                         });
                 break;
             case CodeEvent.INSERT_NEW_ELEMENT:
@@ -447,6 +461,9 @@ public class ClientTask implements Runnable {
                 }
 
                 NewElementInserted newElementInserted = JsonConverter.getGson().fromJson(jsonMessage, NewElementInserted.class);
+                if(newElementInserted.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId().equals(newElementInserted.getElement().getId_project())) {
 
                     AppDatabase.getInstance().elementDAO().insert(newElementInserted.getElement())
@@ -460,6 +477,9 @@ public class ClientTask implements Runnable {
             case CodeEvent.PINCH_EVENT_RESPONSE:
                 Log.i("EVENT", "PINCH_EVENT_RESPONSE");
                 PinchEventResponse pinchEventResponse = JsonConverter.getGson().fromJson(jsonMessage, PinchEventResponse.class);
+                if(pinchEventResponse.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 //Comprobar si somos el target device
                 if(!LastProjectState.getInstance().getDeviceName().equals(pinchEventResponse.getDeviceName())) {
                     return;

@@ -12,6 +12,8 @@ public class EngagePinchEvent {
     private Float widthScreenPinch;
     private Float heightScreenPinch;
     private Date datePinch;
+    private String originalSender;
+    private String trueTargetDevice;
 
     public EngagePinchEvent() {}
 
@@ -97,5 +99,21 @@ public class EngagePinchEvent {
 
     public void setDatePinch(Date datePinch) {
         this.datePinch = datePinch;
+    }
+
+    public String getOriginalSender() {
+        return originalSender;
+    }
+
+    public void setOriginalSender(String originalSender) {
+        this.originalSender = originalSender;
+    }
+
+    public String getTrueTargetDevice() {
+        return trueTargetDevice;
+    }
+
+    public void setTrueTargetDevice(String trueTargetDevice) {
+        this.trueTargetDevice = trueTargetDevice;
     }
 }
