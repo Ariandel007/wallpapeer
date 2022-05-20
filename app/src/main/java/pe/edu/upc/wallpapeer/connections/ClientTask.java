@@ -1,17 +1,14 @@
 package pe.edu.upc.wallpapeer.connections;
 
 import android.annotation.SuppressLint;
-import android.provider.Settings;
 import android.util.Log;
-import android.widget.Toast;
 
-import androidx.lifecycle.MutableLiveData;
-
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
+import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Calendar;
 import java.util.Date;
@@ -20,7 +17,6 @@ import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import pe.edu.upc.wallpapeer.App;
 import pe.edu.upc.wallpapeer.LocalDevice;
 import pe.edu.upc.wallpapeer.dtos.AcceptingPalette;
 import pe.edu.upc.wallpapeer.dtos.AddingPalette;
@@ -40,117 +36,83 @@ import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
-import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
-public class Server extends IMessenger {
-    private Socket socket;
-    private ServerSocket serverSocket;
-    private String peerName;
-    private MutableLiveData<Boolean> isConnected;
-    private ConnectionPeerToPeerViewModel model;
+public class ClientTask implements Runnable {
+    private final Socket clientSocket;
+    public List<ClientTask> clientTasks;
 
-    public Server(ConnectionPeerToPeerViewModel model, MutableLiveData<Boolean> isConnected) {
-        this.model = model;
-        this.isConnected = isConnected;
+    ClientTask(Socket clientSocket, List<ClientTask> clientTasks) {
+        this.clientSocket = clientSocket;
+        this.clientTasks = clientTasks;
     }
 
     @Override
     public void run() {
-        try {
-//            serverSocket = new ServerSocket();
-//            serverSocket.setReuseAddress(true);
-//            serverSocket.bind(new InetSocketAddress(8888));
-//            socket = serverSocket.accept();
-            serverSocket = new ServerSocket(8888);
-            socket = serverSocket.accept();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        // Tras conectar, enviamos el nombre de nuestro dispositivo como primer mensaje
+// Tras conectar, enviamos el nombre de nuestro dispositivo como primer mensaje
         send(LocalDevice.getInstance().getDevice().deviceName, false);
 
         // Ya he leído el nombre del compañero
         boolean isAddresseeSet = false;
 
-        while (socket != null) {
+        while (clientSocket != null) {
             try {
-                ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
+                ObjectInputStream inputStream = new ObjectInputStream(clientSocket.getInputStream());
                 String messageText = (String) inputStream.readObject();
+                sendAll(messageText, true);
                 if (messageText != null) {
-                    if (isAddresseeSet) {
+                    if (isAddresseeSet && messageText.length() >= 22) {
                         String eventCode = messageText.substring(17,22);
                         deserializeBasedOnEventCode(eventCode,messageText);
-                        //EJEMPLO, Tomar con pinzas uwu
-//                        String obtenerEvent = messageText.substring(7,14);
-//                        switch (obtenerEvent) {
-//                            case CodeEvent.PINCH_EVENT:
-//                                //haz cosas
-//                                break;
-//                        }
-                        // Si llega un nuevo mensaje lo guardamos directamente en la base de datos
-                        // Es el objeto de esta base de datos el que es activado por la actividad correspondiente al objeto leído
-                        // Ya no tenemos que enviar a Active
-                        Date c = Calendar.getInstance().getTime();
-//                        MessageEntity message = new MessageEntity(messageText, c, peerName, false);
-//                        MessageRepository.getInstance().insert(message);
                     } else {
                         // El primer mensaje que leemos es el nombre del par y luego chateamos.
                         isAddresseeSet = true;
-                        peerName = messageText;
-                        model.setAddressee(messageText);
-                        isConnected.postValue(true);
+//                        peerName = messageText;
+//                        model.setAddressee(messageText);
+//                        isConnected.postValue(true);
                     }
                 }
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 // Si el socket está cerrado desde el otro lado, también cerramos la ventana de chat.
-                model.closeChat();
+//                model.closeChat();
             }
         }
-
     }
 
-    @Override
     public void send(final String text, final boolean isMessage) {
-
         new Thread() {
             @Override
             public void run() {
-                if (socket == null) return;
+                if (clientSocket == null) return;
                 try {
-                    ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+                    ObjectOutputStream outputStream = new ObjectOutputStream(clientSocket.getOutputStream());
                     outputStream.writeObject(text);
                     outputStream.flush();
-                    if (isMessage) {
-                        // Si no es el primer mensaje, es decir no enviamos el nombre
-                        // Luego tenemos que almacenarlo en la base de datos también
-                        Date c = Calendar.getInstance().getTime();
-//                        MessageEntity message = new MessageEntity(text, c, peerName, true);
-//                        MessageRepository.getInstance().insert(message);
-                    }
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             }
         }.start();
-
     }
 
-    @Override
+    public void sendAll(final String text, final boolean isMessage) {
+        for (ClientTask clientTask : clientTasks ) {
+            clientTask.send(text, isMessage);
+        }
+    }
+
     public void DestroySocket() {
-        if (socket != null) {
+        if (clientSocket != null) {
             try {
-                socket.close();
-                socket = null;
+                clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
-        if (serverSocket != null) {
+        if (clientSocket != null) {
             try {
-                serverSocket.close();
+                clientSocket.close();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -166,6 +128,12 @@ public class Server extends IMessenger {
                 Log.i("EVENT", "PINCH_EVENT");
                 if(MyLastPinch.getInstance().getProjectId() != null && MyLastPinch.getInstance().getCanva() != null && MyLastPinch.getInstance().getDate() != null) {
                     EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMessage, EngagePinchEvent.class);
+                    if(engagePinchEvent.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                        return;
+                    }
+                    if(!engagePinchEvent.getTrueTargetDevice().equals(LastProjectState.getInstance().getDeviceName())) {
+                        return;
+                    }
                     //Comprobar si entra en el rango de tiempo
                     if(currentMls - engagePinchEvent.getDatePinch().getTime() > 5000) {
                         return;
@@ -206,6 +174,7 @@ public class Server extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -247,6 +216,7 @@ public class Server extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -287,6 +257,7 @@ public class Server extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -326,6 +297,7 @@ public class Server extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -339,6 +311,9 @@ public class Server extends IMessenger {
                 }
                 Log.i("EVENT", "ADDING_PALLETE_TO_DEVICE");
                 AddingPalette addingPalette = JsonConverter.getGson().fromJson(jsonMessage, AddingPalette.class);
+                if(addingPalette.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
@@ -400,6 +375,8 @@ public class Server extends IMessenger {
                                                             });
                                                 });
                                     });
+                        }, throwable -> {
+
                         });
 
 
@@ -409,14 +386,15 @@ public class Server extends IMessenger {
             case CodeEvent.SELECT_OPTION_PALLETE:
                 Log.i("EVENT", "SELECT_OPTION_PALLETE");
                 ChangingOption changingOption = JsonConverter.getGson().fromJson(jsonMessage, ChangingOption.class);
+                if(changingOption.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
                 if(!changingOption.getTargetDeviceName().equals(LastProjectState.getInstance().getDeviceName())){
                     return;
                 }
-
-
                 AppDatabase.getInstance().deviceDAO().getDeviceByDeviceNameAndProject(LastProjectState.getInstance().getDeviceName(), LastProjectState.getInstance().getProjectId())
                         .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
                         subscribe((myDevice)->{
@@ -434,7 +412,7 @@ public class Server extends IMessenger {
                                         PaletteState.getInstance().setTextToPrint(changingOption.getTextToInsert());
                                         PaletteState.getInstance().setColor(changingOption.getColor());
 
-                                        AppDatabase.getInstance().paletteDAO().update(myPalette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
+                                        AppDatabase.getInstance().paletteDAO().insert(myPalette).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).
                                                 subscribe(()->{
                                                     Log.i("Update Palette", "Se actualizó la paleta");
                                                 });
@@ -444,6 +422,7 @@ public class Server extends IMessenger {
                         }, throwable -> {
 
                         });
+
                 break;
             case CodeEvent.ACCEPTED_PALETTE:
                 AcceptingPalette acceptingPalette = JsonConverter.getGson().fromJson(jsonMessage, AcceptingPalette.class);
@@ -460,7 +439,6 @@ public class Server extends IMessenger {
 //                palette1.setSelectedOption(1);
 //                palette1.setSubOption(-1);
 //                palette1.setName(acceptingPalette.getPaletteDeviceName());
-
 //                PaletteState.getInstance().setMyDeviceName(acceptingPalette.getPaletteDeviceName());
 //                PaletteState.getInstance().setTargetDeviceName(acceptingPalette.getLinkedDevice());
 //                PaletteState.getInstance().setSelectedOption(0);
@@ -470,11 +448,10 @@ public class Server extends IMessenger {
                         .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(()->{
                             Log.i("Proyecto creado", "Se creó el proyecto");
+
 //                            AppDatabase.getInstance().paletteDAO().insert(palette1).subscribeOn(Schedulers.io())
 //                                    .observeOn(AndroidSchedulers.mainThread())
-//                                    .subscribe(()->{
-//                                        Log.i("Paleta creado", "Se creó la paleta");
-//                                    });
+//                                    .subscribe();
                         });
                 break;
             case CodeEvent.INSERT_NEW_ELEMENT:
@@ -484,6 +461,9 @@ public class Server extends IMessenger {
                 }
 
                 NewElementInserted newElementInserted = JsonConverter.getGson().fromJson(jsonMessage, NewElementInserted.class);
+                if(newElementInserted.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId().equals(newElementInserted.getElement().getId_project())) {
 
                     AppDatabase.getInstance().elementDAO().insert(newElementInserted.getElement())
@@ -497,6 +477,9 @@ public class Server extends IMessenger {
             case CodeEvent.PINCH_EVENT_RESPONSE:
                 Log.i("EVENT", "PINCH_EVENT_RESPONSE");
                 PinchEventResponse pinchEventResponse = JsonConverter.getGson().fromJson(jsonMessage, PinchEventResponse.class);
+                if(pinchEventResponse.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 //Comprobar si somos el target device
                 if(!LastProjectState.getInstance().getDeviceName().equals(pinchEventResponse.getDeviceName())) {
                     return;
@@ -635,4 +618,5 @@ public class Server extends IMessenger {
                     Log.e("Error",throwable.getMessage());
                 });
     }
+
 }

@@ -9,6 +9,7 @@ public class ChangingOption {
     private int subOption;
     private String textToInsert;
     private Integer color;
+    private String originalSender;
 
     public String getTextToInsert() {
         return textToInsert;
@@ -85,5 +86,13 @@ public class ChangingOption {
 
     public void setColor(Integer color) {
         this.color = color;
+    }
+
+    public String getOriginalSender() {
+        return originalSender;
+    }
+
+    public void setOriginalSender(String originalSender) {
+        this.originalSender = originalSender;
     }
 }

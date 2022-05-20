@@ -3,8 +3,8 @@ package pe.edu.upc.wallpapeer.utils;
 public class PaletteState {
     private static PaletteState INSTANCE;
 
-    private Integer selectedOption = 0;
-    private int subOption = -1;
+    private Integer selectedOption = 5;
+    private int subOption = 0;
     private String textToPrint;
     private Integer color = -16776961;
 

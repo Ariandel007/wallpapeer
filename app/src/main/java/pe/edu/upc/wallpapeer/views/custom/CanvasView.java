@@ -37,6 +37,7 @@ import pe.edu.upc.wallpapeer.model.figures.Circle;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
+import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.utils.PaletteOption;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
@@ -484,7 +485,7 @@ public class CanvasView  extends View {
             //ACA SE GUARDA, ENVIA y LLAMA AL OBSERVABLE PARA PINTAR EL ELEMENTO
             if(newElement != null) {
                 ///Informamos a los dispositivos el cambio
-                getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement, LastProjectState.getInstance().getDeviceName())));
                 AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                     Log.i("Se creo","Se creo con exito");
@@ -510,7 +511,7 @@ public class CanvasView  extends View {
                         newRotation = 0;
                     }
                     element.setRotation(newRotation);
-                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element)));
+                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element, LastProjectState.getInstance().getDeviceName())));
                     AppDatabase.getInstance().elementDAO().insert(element).subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                         Log.i("Se creo","Se creo con exito");
@@ -537,7 +538,7 @@ public class CanvasView  extends View {
                                 element.setzIndex(getElementListCanvas().get(0).getzIndex() - 1);
                                 break;
                         }
-                        getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element)));
+                        getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element, LastProjectState.getInstance().getDeviceName())));
                         AppDatabase.getInstance().elementDAO().insert(element).subscribeOn(Schedulers.io())
                                 .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                             Log.i("Se creo","Se creo con exito");
@@ -573,7 +574,7 @@ public class CanvasView  extends View {
 
                         if(newElement != null) {
                             ///Informamos a los dispositivos el cambio
-                            getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                            getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement, LastProjectState.getInstance().getDeviceName())));
                             AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
                                     .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                                 Log.i("Se creo","Se creo con exito");
@@ -600,7 +601,7 @@ public class CanvasView  extends View {
                             newElement.setId_project(currentProjectEntity.id);
                             if(newElement != null) {
                                 ///Informamos a los dispositivos el cambio
-                                getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                                getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement, LastProjectState.getInstance().getDeviceName())));
                                 AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
                                         .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                                             Log.i("Se creo","Se creo con exito");
@@ -672,6 +673,10 @@ public class CanvasView  extends View {
                 return true;
             }
 
+            if(listFiltered == null) {
+                return true;
+            }
+
             if (listFiltered.size() > 0){
                 newElement = listFiltered.get(listFiltered.size()-1);
                 if(absX>absY) {
@@ -721,7 +726,7 @@ public class CanvasView  extends View {
 
                 if(newElement != null) {
                     ///Informamos a los dispositivos el cambio
-                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement)));
+                    getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, newElement, LastProjectState.getInstance().getDeviceName())));
                     AppDatabase.getInstance().elementDAO().insert(newElement).subscribeOn(Schedulers.io())
                             .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
                         Log.i("Se creo","Se creo con exito");

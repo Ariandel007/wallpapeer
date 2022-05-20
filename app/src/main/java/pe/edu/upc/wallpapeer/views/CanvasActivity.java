@@ -39,10 +39,12 @@ import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.utils.PaletteOption;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
+import pe.edu.upc.wallpapeer.utils.QrMessage;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import pe.edu.upc.wallpapeer.views.custom.CanvasView;
 
@@ -71,6 +73,7 @@ public class CanvasActivity extends AppCompatActivity {
         setContentView(R.layout.activity_canvas);
 
         model = ViewModelProviders.of(this).get(ConnectionPeerToPeerViewModel.class);
+        model.isMainCanvas = true;
 
         btnQr = findViewById(R.id.btn_qr);
         btnLockPinch = findViewById(R.id.btn_lock_pinch);
@@ -165,8 +168,11 @@ public class CanvasActivity extends AppCompatActivity {
                         imgQrShowed = !imgQrShowed;
                     } else {
                         constraintLayout.setVisibility(View.VISIBLE);
+                        //Enviar esto al json:
+                        QrMessage qrMessage = new QrMessage(userDeviceName, userDeviceName);
+                        String qrMessageJson = JsonConverter.getGson().toJson(qrMessage);
                         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-                        Bitmap bitmap = barcodeEncoder.encodeBitmap(userDeviceName, BarcodeFormat.QR_CODE, 300, 300);
+                        Bitmap bitmap = barcodeEncoder.encodeBitmap(qrMessageJson, BarcodeFormat.QR_CODE, 300, 300);
                         imgQr.setImageBitmap(bitmap);
                         imgQrShowed = !imgQrShowed;
                     }

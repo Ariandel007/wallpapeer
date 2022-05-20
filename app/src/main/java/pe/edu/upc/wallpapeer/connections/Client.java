@@ -74,23 +74,9 @@ public class Client extends IMessenger {
                 ObjectInputStream inputStream = new ObjectInputStream(socket.getInputStream());
                 String messageText = (String) inputStream.readObject();
                 if (messageText != null) {
-                    if (isAddresseeSet) {
+                    if (isAddresseeSet && messageText.length() >= 22) {
                         String eventCode = messageText.substring(17,22);
                         deserializeBasedOnEventCode(eventCode,messageText);
-                        //EJEMPLO, Tomar con pinzas uwu
-//                        String obtenerEvent = messageText.substring(7,14);
-//                        switch (obtenerEvent) {
-//                            case CodeEvent.PINCH_EVENT:
-//                                //haz cosas
-//                                break;
-//                        }
-
-                        // Si llega un nuevo mensaje, lo guardaremos directamente en la base de datos.
-                        // Es el objeto de esta base de datos el que es activado por la actividad correspondiente al objeto leído
-                        // Ya no tenemos que enviar a Active
-                        Date c = Calendar.getInstance().getTime();
-//                        MessageEntity message = new MessageEntity(messageText, c, peerName, false);
-//                        MessageRepository.getInstance().insert(message);
                     } else {
                         // El primer mensaje que leemos es el nombre del par y luego chateamos.
                         isAddresseeSet = true;
@@ -155,6 +141,12 @@ public class Client extends IMessenger {
                 Log.i("EVENT", "PINCH_EVENT");
                 if(MyLastPinch.getInstance().getProjectId() != null && MyLastPinch.getInstance().getCanva() != null && MyLastPinch.getInstance().getDate() != null) {
                     EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMessage, EngagePinchEvent.class);
+                    if(engagePinchEvent.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                        return;
+                    }
+                    if(!engagePinchEvent.getTrueTargetDevice().equals(LastProjectState.getInstance().getDeviceName())) {
+                        return;
+                    }
                     //Comprobar si entra en el rango de tiempo
                     if(currentMls - engagePinchEvent.getDatePinch().getTime() > 5000) {
                         return;
@@ -195,6 +187,7 @@ public class Client extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -236,6 +229,7 @@ public class Client extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -276,6 +270,7 @@ public class Client extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -315,6 +310,7 @@ public class Client extends IMessenger {
                         pinchEventResponse.setProject(MyLastPinch.getInstance().getProject());
                         pinchEventResponse.setDevice(newDevice);
                         pinchEventResponse.setCanva(newCanva);
+                        pinchEventResponse.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
                         onPinchEvent( pinchEventResponse,  engagePinchEvent,  newCanva,  newDevice,  posXnewCanva,  posYnewCanva);
                     }
@@ -328,6 +324,9 @@ public class Client extends IMessenger {
                 }
                 Log.i("EVENT", "ADDING_PALLETE_TO_DEVICE");
                 AddingPalette addingPalette = JsonConverter.getGson().fromJson(jsonMessage, AddingPalette.class);
+                if(addingPalette.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
@@ -400,6 +399,9 @@ public class Client extends IMessenger {
             case CodeEvent.SELECT_OPTION_PALLETE:
                 Log.i("EVENT", "SELECT_OPTION_PALLETE");
                 ChangingOption changingOption = JsonConverter.getGson().fromJson(jsonMessage, ChangingOption.class);
+                if(changingOption.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
@@ -472,6 +474,9 @@ public class Client extends IMessenger {
                 }
 
                 NewElementInserted newElementInserted = JsonConverter.getGson().fromJson(jsonMessage, NewElementInserted.class);
+                if(newElementInserted.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 if(LastProjectState.getInstance().getProjectId().equals(newElementInserted.getElement().getId_project())) {
 
                     AppDatabase.getInstance().elementDAO().insert(newElementInserted.getElement())
@@ -485,6 +490,9 @@ public class Client extends IMessenger {
             case CodeEvent.PINCH_EVENT_RESPONSE:
                 Log.i("EVENT", "PINCH_EVENT_RESPONSE");
                 PinchEventResponse pinchEventResponse = JsonConverter.getGson().fromJson(jsonMessage, PinchEventResponse.class);
+                if(pinchEventResponse.getOriginalSender().equals(LastProjectState.getInstance().getDeviceName())) {
+                    return;
+                }
                 //Comprobar si somos el target device
                 if(!LastProjectState.getInstance().getDeviceName().equals(pinchEventResponse.getDeviceName())) {
                     return;

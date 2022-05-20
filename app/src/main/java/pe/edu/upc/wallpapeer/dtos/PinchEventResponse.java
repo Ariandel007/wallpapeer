@@ -17,6 +17,7 @@ public class PinchEventResponse {
     private Device device;
     private Canva canva;
     private List<Element> elements;
+    private String originalSender;
 
     public PinchEventResponse(String a1_eventCode, String direction, String deviceName, String macAddress, Project project, Device device, Canva canva, List<Element> elements) {
         this.a1_eventCode = a1_eventCode;
@@ -92,5 +93,13 @@ public class PinchEventResponse {
 
     public void setElements(List<Element> elements) {
         this.elements = elements;
+    }
+
+    public String getOriginalSender() {
+        return originalSender;
+    }
+
+    public void setOriginalSender(String originalSender) {
+        this.originalSender = originalSender;
     }
 }
