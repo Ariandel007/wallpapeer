@@ -46,6 +46,7 @@ import pe.edu.upc.wallpapeer.utils.CodeEvent;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
+import pe.edu.upc.wallpapeer.utils.QrMessage;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
@@ -72,6 +73,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
     private String targetDeviceName = "";
     private Integer defaultColor = Color.BLUE;
 
+    private String trulyClientTargetDevice = "";
 
 
     Button btnDecodes, btnColor;
@@ -83,8 +85,10 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
                 if(result.getContents() == null) {
                     Toast.makeText(JoinPaletaActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 } else {
-                    targetDeviceName = result.getContents();
-                    lastTarget = result.getContents();
+                    QrMessage qrMessage = JsonConverter.getGson().fromJson(result.getContents(), QrMessage.class);
+                    targetDeviceName = qrMessage.getOwnername();
+                    lastTarget = qrMessage.getOwnername();
+                    trulyClientTargetDevice = qrMessage.getMyName();
                     Toast.makeText(JoinPaletaActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }
@@ -399,6 +403,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         addingPalette.setMacAddress("");
         addingPalette.setSelectedOption(0);
         addingPalette.setSubOption(-1);
+        addingPalette.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
         String json = JsonConverter.getGson().toJson(addingPalette);
         model.sendMessage(json);
@@ -420,6 +425,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         changingOption.setSubOption(subOption);
         changingOption.setColor(defaultColor);
         changingOption.setTextToInsert("");
+        changingOption.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
         String json = JsonConverter.getGson().toJson(changingOption);
         model.sendMessage(json);
@@ -440,6 +446,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         changingOption.setSelectedOption(selectedOption);
         changingOption.setSubOption(subOption);
         changingOption.setTextToInsert(textToInsert);
+        changingOption.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
         String json = JsonConverter.getGson().toJson(changingOption);
         model.sendMessage(json);
