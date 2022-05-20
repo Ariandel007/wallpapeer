@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string-array name="layers_array">
         <item>Traer adelante</item>
         <item>Enviar atrás</item>
@@ -26,5 +25,8 @@
         //WHITE     <item>-1</item>
         //YELLOW    <item>-256</item>
     </array>
+    <integer-array name="images_array">
+        <item> @drawable/project_image</item>
+    </integer-array>
 
 </resources>
