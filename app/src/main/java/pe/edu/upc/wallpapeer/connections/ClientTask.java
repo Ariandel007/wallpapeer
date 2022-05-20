@@ -38,7 +38,7 @@ import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
 
 public class ClientTask implements Runnable {
-    private final Socket clientSocket;
+    private Socket clientSocket;
     public List<ClientTask> clientTasks;
 
     ClientTask(Socket clientSocket, List<ClientTask> clientTasks) {
@@ -106,13 +106,7 @@ public class ClientTask implements Runnable {
         if (clientSocket != null) {
             try {
                 clientSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (clientSocket != null) {
-            try {
-                clientSocket.close();
+                clientSocket = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }

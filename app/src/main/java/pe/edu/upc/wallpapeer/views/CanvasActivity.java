@@ -310,7 +310,7 @@ public class CanvasActivity extends AppCompatActivity {
             @Override
             public void onChanged(Palette palette) {
                 if(PaletteState.getInstance() != null){
-                    Toast.makeText(CanvasActivity.this, "Se recontra logró", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(CanvasActivity.this, "Se recontra logró", Toast.LENGTH_SHORT).show();
                     switch (PaletteState.getInstance().getSelectedOption()){
                         case 0:
                             Toast.makeText(context1, "Se recibió la opción de trazo", Toast.LENGTH_SHORT).show();

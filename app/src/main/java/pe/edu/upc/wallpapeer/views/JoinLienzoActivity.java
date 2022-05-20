@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -151,8 +152,11 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
         } else {
             loadingScreen.setVisibility(View.VISIBLE);
-            btnDecodes.setVisibility(View.VISIBLE);
-
+//            btnDecodes.setVisibility(View.VISIBLE);
+            new android.os.Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                public void run() {
+                    btnDecodes.setVisibility(View.VISIBLE);
+                }}, 5000);
 
             model.startSearch();
             model.socketIsReady().observe(this, new Observer<Boolean>() {
@@ -346,7 +350,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
             @Override
             public void onChanged(Palette palette) {
                 if(PaletteState.getInstance() != null){
-                    Toast.makeText(JoinLienzoActivity.this, "Se recontra logró", Toast.LENGTH_SHORT).show();
+//                    Toast.makeText(JoinLienzoActivity.this, "Se recontra logró", Toast.LENGTH_SHORT).show();
                     switch (PaletteState.getInstance().getSelectedOption()){
                         case 0:
                             Toast.makeText(context1, "Se recibió la opción de trazo", Toast.LENGTH_SHORT).show();
@@ -355,6 +359,10 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         case 1:
                             Toast.makeText(context1, "Se recibió la opción de deshacer", Toast.LENGTH_SHORT).show();
                             Log.i("Undo Button", "Se recibió la opción de deshacer");
+                            AppDatabase.getInstance().elementDAO().deleteOne().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                                Log.i("Undo Button", "Se eliminó el último elemento");
+                                Toast.makeText(context1, "Se eliminó el último elemento insertado", Toast.LENGTH_SHORT).show();
+                            });
                             break;
                         case 2:
                             Toast.makeText(context1, "Se recibió la opción de modificar capa", Toast.LENGTH_SHORT).show();
