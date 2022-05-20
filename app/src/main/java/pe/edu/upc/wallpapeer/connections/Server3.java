@@ -8,9 +8,17 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
+
 public class Server3 extends SimpleMessenger{
     public List<ClientTask> clientTasks = new ArrayList<>();
     public ServerSocket serverSocket;
+    private ConnectionPeerToPeerViewModel model;
+
+    public Server3(ConnectionPeerToPeerViewModel model) {
+        this.model = model;
+    }
+
     public void start() {
         final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 
@@ -22,7 +30,7 @@ public class Server3 extends SimpleMessenger{
                     System.out.println("Waiting for clients to connect...");
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
-                        ClientTask clientTask = new ClientTask(clientSocket, clientTasks);
+                        ClientTask clientTask = new ClientTask(clientSocket, clientTasks, model);
                         clientTasks.add(clientTask);
                         clientProcessingPool.submit(clientTask);
                     }
