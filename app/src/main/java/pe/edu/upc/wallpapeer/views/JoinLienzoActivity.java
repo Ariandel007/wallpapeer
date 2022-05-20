@@ -14,6 +14,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -151,8 +152,11 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
         } else {
             loadingScreen.setVisibility(View.VISIBLE);
-            btnDecodes.setVisibility(View.VISIBLE);
-
+//            btnDecodes.setVisibility(View.VISIBLE);
+            new android.os.Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                public void run() {
+                    btnDecodes.setVisibility(View.VISIBLE);
+                }}, 5000);
 
             model.startSearch();
             model.socketIsReady().observe(this, new Observer<Boolean>() {
