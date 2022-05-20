@@ -10,7 +10,7 @@ import java.util.concurrent.Executors;
 
 public class Server3 extends SimpleMessenger{
     public List<ClientTask> clientTasks = new ArrayList<>();
-
+    public ServerSocket serverSocket;
     public void start() {
         final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 
@@ -18,7 +18,7 @@ public class Server3 extends SimpleMessenger{
             @Override
             public void run() {
                 try {
-                    ServerSocket serverSocket = new ServerSocket(8888);
+                    serverSocket = new ServerSocket(8888);
                     System.out.println("Waiting for clients to connect...");
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
@@ -48,6 +48,14 @@ public class Server3 extends SimpleMessenger{
     public void DestroySocket() {
         for (ClientTask clientTask : clientTasks ) {
             clientTask.DestroySocket();
+        }
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+                serverSocket = null;
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 }
