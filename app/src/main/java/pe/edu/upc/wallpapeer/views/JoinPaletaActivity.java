@@ -43,6 +43,7 @@ import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CanvaStateForPalette;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.JoinPaletaTarget;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
@@ -67,7 +68,6 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
     private int pSelectedOption = 0;
     private int pSubOption = -1;
-    private String lastTarget = "";
     List<String> layerList = new ArrayList<String>();
     private String targetDeviceName = "";
     private Integer defaultColor = Color.BLUE;
@@ -84,7 +84,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
                     Toast.makeText(JoinPaletaActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 } else {
                     targetDeviceName = result.getContents();
-                    lastTarget = result.getContents();
+                    JoinPaletaTarget.getInstance().setLastTarget(result.getContents());
                     Toast.makeText(JoinPaletaActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }
@@ -136,11 +136,10 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
                         loadingScreen.setVisibility(View.GONE);
                         loadingPallete.setVisibility(View.VISIBLE);
                         isInNetwork = true;
-                        if(lastTarget.equals("")){
+                        if(JoinPaletaTarget.getInstance().getLastTarget().equals("")){
                             return;
                         }
                         sendPaletteRequest();
-
                     }
                 }
             });
@@ -165,6 +164,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
                     if(peersFindedWithTargetDeviceName.size() == 0) {
                         return;
                     }
+                    JoinPaletaTarget.getInstance().setLastTarget(targetDeviceName);
                     WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
 
                     model.connectToPeer(peerFindedInQR);
@@ -385,6 +385,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             Toast.makeText(JoinPaletaActivity.this, "No se leyo a ningun dispòsitivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
             return;
         }
+        JoinPaletaTarget.getInstance().setLastTarget(targetDeviceName);
         WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
 
         model.connectToPeer(peerFindedInQR);
@@ -395,7 +396,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         AddingPalette addingPalette = new AddingPalette();
         addingPalette.setA1_eventCode(CodeEvent.ADDING_PALLETE_TO_DEVICE);
         addingPalette.setDeviceName(userDeviceName);
-        addingPalette.setTargetDeviceName(lastTarget);
+        addingPalette.setTargetDeviceName(JoinPaletaTarget.getInstance().getLastTarget());
         addingPalette.setMacAddress("");
         addingPalette.setSelectedOption(0);
         addingPalette.setSubOption(-1);

@@ -45,6 +45,7 @@ import pe.edu.upc.wallpapeer.entities.Palette;
 import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.JoinLienzoTarget;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
@@ -93,6 +94,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     Toast.makeText(JoinLienzoActivity.this, "Cancelled", Toast.LENGTH_LONG).show();
                 } else {
                     targetDeviceName = result.getContents();
+                    JoinLienzoTarget.getInstance().setLastTarget(result.getContents());
                     Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }
@@ -179,6 +181,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     if(peersFindedWithTargetDeviceName.size() == 0) {
                         return;
                     }
+                    JoinLienzoTarget.getInstance().setLastTarget(targetDeviceName);
                     WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
 
                     model.connectToPeer(peerFindedInQR);
@@ -424,6 +427,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
             Toast.makeText(JoinLienzoActivity.this, "No se leyo a ningun dispòsitivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
             return;
         }
+        JoinLienzoTarget.getInstance().setLastTarget(targetDeviceName);
         WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
 
         model.connectToPeer(peerFindedInQR);
