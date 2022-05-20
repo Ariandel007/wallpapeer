@@ -330,7 +330,7 @@ public class Client extends IMessenger {
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
-                if(!addingPalette.getTargetDeviceName().equals(LastProjectState.getInstance().getDeviceName())){
+                if(!addingPalette.getTrueTargetDevice().equals(LastProjectState.getInstance().getDeviceName())){
                     return;
                 }
                 Palette palette = new Palette();

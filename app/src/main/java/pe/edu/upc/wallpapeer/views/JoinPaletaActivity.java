@@ -404,6 +404,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         addingPalette.setSelectedOption(0);
         addingPalette.setSubOption(-1);
         addingPalette.setOriginalSender(LastProjectState.getInstance().getDeviceName());
+        addingPalette.setTrueTargetDevice(trulyClientTargetDevice);
 
         String json = JsonConverter.getGson().toJson(addingPalette);
         model.sendMessage(json);
@@ -419,7 +420,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         ChangingOption changingOption = new ChangingOption();
         changingOption.setA1_eventCode(CodeEvent.SELECT_OPTION_PALLETE);
         changingOption.setDeviceName(userDeviceName);
-        changingOption.setTargetDeviceName(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice());
+        changingOption.setTargetDeviceName(trulyClientTargetDevice);
         changingOption.setMacAddress("");
         changingOption.setSelectedOption(selectedOption);
         changingOption.setSubOption(subOption);
@@ -441,7 +442,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         ChangingOption changingOption = new ChangingOption();
         changingOption.setA1_eventCode(CodeEvent.SELECT_OPTION_PALLETE);
         changingOption.setDeviceName(userDeviceName);
-        changingOption.setTargetDeviceName(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice());
+        changingOption.setTargetDeviceName(trulyClientTargetDevice);
         changingOption.setMacAddress("");
         changingOption.setSelectedOption(selectedOption);
         changingOption.setSubOption(subOption);

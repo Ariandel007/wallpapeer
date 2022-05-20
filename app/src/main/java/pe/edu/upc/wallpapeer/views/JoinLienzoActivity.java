@@ -162,7 +162,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         Toast.makeText(JoinLienzoActivity.this, "Conexion realizada con dispositivo!!", Toast.LENGTH_SHORT).show();
                         loadingScreen.setVisibility(View.GONE);
                         //para probar
-//                        pinchScreen.setVisibility(View.VISIBLE);
+                        pinchScreen.setVisibility(View.VISIBLE);
                     }
                 }
             });
@@ -387,7 +387,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
         loadingScreen = findViewById(R.id.loadingScreen);
         loadingScreen.setVisibility(View.GONE);
         pinchScreen = findViewById(R.id.PinchScreen);
-//        pinchScreen.setVisibility(View.GONE);
+        pinchScreen.setVisibility(View.GONE);
 
 
         isOffline = getIntent().getBooleanExtra(Constants.IS_OFFLINE, false);
