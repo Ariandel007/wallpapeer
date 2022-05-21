@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import pe.edu.upc.wallpapeer.utils.RememberSocketsAddress;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class Server3 extends SimpleMessenger{
@@ -22,6 +23,8 @@ public class Server3 extends SimpleMessenger{
     public void start() {
         final ExecutorService clientProcessingPool = Executors.newFixedThreadPool(10);
 
+        clientTasks = RememberSocketsAddress.getInstance().getClientTasks();
+
         Runnable serverTask = new Runnable() {
             @Override
             public void run() {
@@ -31,7 +34,12 @@ public class Server3 extends SimpleMessenger{
                     while (true) {
                         Socket clientSocket = serverSocket.accept();
                         ClientTask clientTask = new ClientTask(clientSocket, clientTasks, model);
-                        clientTasks.add(clientTask);
+                        String fullAddress = clientSocket.getRemoteSocketAddress().toString();
+                        String ipSocket = fullAddress.substring(0,fullAddress.indexOf(":")-1);
+                        if(!RememberSocketsAddress.getInstance().getSocketsAddress().contains(ipSocket)) {
+                            clientTasks.add(clientTask);
+                            RememberSocketsAddress.getInstance().addAddressToSet(ipSocket);
+                        }
                         clientProcessingPool.submit(clientTask);
                     }
                 } catch (IOException e) {

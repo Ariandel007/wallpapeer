@@ -26,6 +26,7 @@ import pe.edu.upc.wallpapeer.databinding.ActivityMainBinding;
 import pe.edu.upc.wallpapeer.model.User;
 import pe.edu.upc.wallpapeer.utils.GalleryMap;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
+import pe.edu.upc.wallpapeer.utils.RememberSocketsAddress;
 import pe.edu.upc.wallpapeer.viewmodels.LoginViewModel;
 import pe.edu.upc.wallpapeer.viewmodels.factory.LoginViewModelFactory;
 
@@ -57,6 +58,7 @@ public class LoginActivity extends AppCompatActivity {
         LastProjectState.getInstance().setDeviceName(deviceName);
 
         GalleryMap.getInstance();
+        RememberSocketsAddress.getInstance();
     }
 
 //    private void setUpViewModel() {

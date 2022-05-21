@@ -116,6 +116,14 @@ public class ClientTask implements Runnable {
         }
     }
 
+    public Socket getClientSocket() {
+        return clientSocket;
+    }
+
+    public void setClientSocket(Socket clientSocket) {
+        this.clientSocket = clientSocket;
+    }
+
     @SuppressLint("CheckResult")
     private void deserializeBasedOnEventCode(String eventCode, String jsonMessage) {
         long currentMls = new Date().getTime();
