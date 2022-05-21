@@ -83,6 +83,7 @@ public class Client extends IMessenger {
                         peerName = messageText;
                         model.setAddressee(messageText);
                         isConnected.postValue(true);
+                        model.socketIsReady().postValue(true);
                     }
                 }
             } catch (ClassNotFoundException e) {
@@ -113,6 +114,7 @@ public class Client extends IMessenger {
                     }
                 } catch (IOException e) {
                     e.printStackTrace();
+//                    model.closeChat();
                 }
             }
         }.start();

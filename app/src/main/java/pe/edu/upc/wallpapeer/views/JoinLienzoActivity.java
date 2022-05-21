@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModelProviders;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.net.wifi.p2p.WifiP2pDevice;
@@ -83,14 +84,16 @@ public class JoinLienzoActivity extends AppCompatActivity {
     private String lastTargetDeviceName = "";
 
     //para el pinch
-    private Boolean waitToJoinLienzo = true;
+    private Boolean waitToJoinLienzo = false;
 //    boolean isPinchActivate = true;
     SwipeListener swipeListener;
     CoordinatorLayout mainScreenJoinLienzo;
     //
     private String trulyClientTargetDevice = "";
 
+    private boolean scanIsDone = false;
 
+    SharedPreferences sharedPreferences;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
             result -> {
@@ -101,6 +104,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     targetDeviceName = qrMessage.getOwnername();
                     lastTargetDeviceName = qrMessage.getOwnername();
                     trulyClientTargetDevice = qrMessage.getMyName();
+                    scanIsDone = true;
+                    waitToJoinLienzo = true;
                     Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }
@@ -113,9 +118,13 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
         btnDecodes = findViewById(R.id.btnScanQr);
 
+        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+
         userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
         if (userDeviceName == null)
             userDeviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
+
+        Context context = this;
 
         initConnection();
 
@@ -167,6 +176,18 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         loadingScreen.setVisibility(View.GONE);
                         //para probar
                         pinchScreen.setVisibility(View.VISIBLE);
+                        if(!scanIsDone) {
+                            //MEJORAR EVENTO
+                            String jsonMyLastEngage = sharedPreferences.getString("sendMessagePinchLastproject","");
+                            if(!jsonMyLastEngage.equals("")) {
+                                scanIsDone = true;
+                                waitToJoinLienzo = true;
+                                EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMyLastEngage, EngagePinchEvent.class);
+                                engagePinchEvent.setDatePinch(new Date());
+                                model.sendMessage(JsonConverter.getGson().toJson(engagePinchEvent));
+                            }
+
+                        }
                     }
                 }
             });
@@ -237,7 +258,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
         mainScreenJoinLienzo = findViewById(R.id.mainScreenJoinLienzo);
         swipeListener = new SwipeListener(mainScreenJoinLienzo);
 
-        Context context = this;
         //listen change in Canva
         AppDatabase.getInstance().canvaDAO().listenAllCanvasChanges().observe(this, new Observer<List<Canva>>() {
             @Override
@@ -248,6 +268,8 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     canvaId = LastProjectState.getInstance().getCanvaId();
                     //Traer data
                     LastProjectState.getInstance().setProjectId(projetcId);
+
+
                     loadExistingProject(context);
                 }
             }
@@ -272,10 +294,10 @@ public class JoinLienzoActivity extends AppCompatActivity {
             @Override
             public void onChanged(@Nullable Boolean aBoolean) {
                 if (aBoolean != null && aBoolean) {
-                    pinchScreen.setVisibility(View.GONE);
-                    btnQr.setVisibility(View.VISIBLE);
-                    btnLockPinch.setVisibility(View.VISIBLE);
-                    canvasView.setVisibility(View.VISIBLE);
+//                    pinchScreen.setVisibility(View.GONE);
+//                    btnQr.setVisibility(View.VISIBLE);
+//                    btnLockPinch.setVisibility(View.VISIBLE);
+//                    canvasView.setVisibility(View.VISIBLE);
                 }
             }
         });
@@ -310,6 +332,12 @@ public class JoinLienzoActivity extends AppCompatActivity {
                                     startPaletteObservable(contextCanvas);
 
                                     waitToJoinLienzo = false;
+
+                                    pinchScreen.setVisibility(View.GONE);
+                                    btnQr.setVisibility(View.VISIBLE);
+                                    btnLockPinch.setVisibility(View.VISIBLE);
+                                    canvasView.setVisibility(View.VISIBLE);
+
 
                                     // Se inicializa observable del proyecto
                                     startElementObservable(contextCanvas);
@@ -449,6 +477,12 @@ public class JoinLienzoActivity extends AppCompatActivity {
         targetDeviceName = "";
     }
 
+    private void storeMessage(String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("sendMessagePinchLastproject", value);
+        editor.apply();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -498,7 +532,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
-
+                    storeMessage(json);
 
                 } else {
                     Log.i("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
@@ -518,7 +552,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
-
+                    storeMessage(json);
 
                 }
             }
@@ -543,6 +577,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
+                    storeMessage(json);
 
                 } else {
                     //UP
@@ -563,6 +598,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
+                    storeMessage(json);
 
                 }
 
