@@ -73,6 +73,7 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         app = application;
         wifiP2pManager = (WifiP2pManager) app.getApplicationContext().getSystemService(Context.WIFI_P2P_SERVICE);
         channel = wifiP2pManager.initialize(app.getApplicationContext(), app.getMainLooper(), null);
+
         WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
             @Override
             public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -83,20 +84,9 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
                 Log.d("new connection", info.toString());
                 final InetAddress address = info.groupOwnerAddress;
                 if (info.isGroupOwner) {
-//                    Server server = new Server(ConnectionPeerToPeerViewModel.this, socketIsReady);
-//                    server.start();
-//                    messenger = server;
-//                    if(messenger != null) {
-//                        socketIsReady.setValue(true);
-//                    }
-//                    Server2 server = new Server2(ConnectionPeerToPeerViewModel.this, socketIsReady);
-//                    server.start();
-//                    messenger = server;
-//                    if(messenger != null) {
-//                        socketIsReady.setValue(true);
-//                    }
+
                     if(simpleMessenger == null) {
-                        Server3 server = new Server3();
+                        Server3 server = new Server3(ConnectionPeerToPeerViewModel.this);
                         server.start();
                         simpleMessenger = server;
                         if(simpleMessenger != null) {

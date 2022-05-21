@@ -36,14 +36,17 @@ import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
 import pe.edu.upc.wallpapeer.utils.PaletteState;
+import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 
 public class ClientTask implements Runnable {
-    private final Socket clientSocket;
+    private Socket clientSocket;
     public List<ClientTask> clientTasks;
+    private ConnectionPeerToPeerViewModel model;
 
-    ClientTask(Socket clientSocket, List<ClientTask> clientTasks) {
+    ClientTask(Socket clientSocket, List<ClientTask> clientTasks, ConnectionPeerToPeerViewModel model) {
         this.clientSocket = clientSocket;
         this.clientTasks = clientTasks;
+        this.model = model;
     }
 
     @Override
@@ -74,8 +77,8 @@ public class ClientTask implements Runnable {
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             } catch (IOException e) {
-                // Si el socket está cerrado desde el otro lado, también cerramos la ventana de chat.
-//                model.closeChat();
+                // Si el socket está cerrado desde el otro lado, también cerramos la ventana de chat, pero cerramos de todos.
+                model.closeChat();
             }
         }
     }
@@ -106,13 +109,7 @@ public class ClientTask implements Runnable {
         if (clientSocket != null) {
             try {
                 clientSocket.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        if (clientSocket != null) {
-            try {
-                clientSocket.close();
+                clientSocket = null;
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -317,7 +314,7 @@ public class ClientTask implements Runnable {
                 if(LastProjectState.getInstance().getProjectId() == null){
                     return;
                 }
-                if(!addingPalette.getTargetDeviceName().equals(LastProjectState.getInstance().getDeviceName())){
+                if(!addingPalette.getTrueTargetDevice().equals(LastProjectState.getInstance().getDeviceName())){
                     return;
                 }
                 Palette palette = new Palette();

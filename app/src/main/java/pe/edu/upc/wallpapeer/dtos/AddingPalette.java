@@ -8,6 +8,7 @@ public class AddingPalette {
     private int selectedOption;
     private int subOption;
     private String originalSender;
+    private String trueTargetDevice;
 
     public AddingPalette(String a1_eventCode, String deviceName, String targetDeviceName, String macAddress, int selectedOption, int subOption) {
         this.a1_eventCode = a1_eventCode;
@@ -75,5 +76,13 @@ public class AddingPalette {
 
     public void setOriginalSender(String originalSender) {
         this.originalSender = originalSender;
+    }
+
+    public String getTrueTargetDevice() {
+        return trueTargetDevice;
+    }
+
+    public void setTrueTargetDevice(String trueTargetDevice) {
+        this.trueTargetDevice = trueTargetDevice;
     }
 }
