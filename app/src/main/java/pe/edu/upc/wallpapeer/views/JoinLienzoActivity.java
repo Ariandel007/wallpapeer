@@ -177,10 +177,16 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         //para probar
                         pinchScreen.setVisibility(View.VISIBLE);
                         if(!scanIsDone) {
-                            projetcId = sharedPreferences.getString("lastProjectId","");
-                            canvaId = sharedPreferences.getString("lastCanvaId","");
-                            LastProjectState.getInstance().setProjectId(projetcId);
-                            loadExistingProject(context);
+                            //MEJORAR EVENTO
+                            String jsonMyLastEngage = sharedPreferences.getString("sendMessagePinchLastproject","");
+                            if(!jsonMyLastEngage.equals("")) {
+                                scanIsDone = true;
+                                waitToJoinLienzo = true;
+                                EngagePinchEvent engagePinchEvent = JsonConverter.getGson().fromJson(jsonMyLastEngage, EngagePinchEvent.class);
+                                engagePinchEvent.setDatePinch(new Date());
+                                model.sendMessage(JsonConverter.getGson().toJson(engagePinchEvent));
+                            }
+
                         }
                     }
                 }
@@ -263,11 +269,6 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     //Traer data
                     LastProjectState.getInstance().setProjectId(projetcId);
 
-
-                    SharedPreferences.Editor editor = sharedPreferences.edit();
-                    editor.putString("lastProjectId", projetcId);
-                    editor.putString("lastCanvaId", canvaId);
-                    editor.apply();
 
                     loadExistingProject(context);
                 }
@@ -476,6 +477,12 @@ public class JoinLienzoActivity extends AppCompatActivity {
         targetDeviceName = "";
     }
 
+    private void storeMessage(String value) {
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("sendMessagePinchLastproject", value);
+        editor.apply();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
@@ -525,7 +532,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
-
+                    storeMessage(json);
 
                 } else {
                     Log.i("Se movio a la izquierda", "X: " + 0 + ", Y: "+ e2.getY());
@@ -545,7 +552,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
-
+                    storeMessage(json);
 
                 }
             }
@@ -570,6 +577,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
+                    storeMessage(json);
 
                 } else {
                     //UP
@@ -590,6 +598,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 
                     String json = JsonConverter.getGson().toJson(engagePinchEvent);
                     model.sendMessage(json);
+                    storeMessage(json);
 
                 }
 
