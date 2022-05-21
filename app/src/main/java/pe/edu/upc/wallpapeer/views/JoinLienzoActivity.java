@@ -84,7 +84,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
     private String lastTargetDeviceName = "";
 
     //para el pinch
-    private Boolean waitToJoinLienzo = true;
+    private Boolean waitToJoinLienzo = false;
 //    boolean isPinchActivate = true;
     SwipeListener swipeListener;
     CoordinatorLayout mainScreenJoinLienzo;
@@ -105,6 +105,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     lastTargetDeviceName = qrMessage.getOwnername();
                     trulyClientTargetDevice = qrMessage.getMyName();
                     scanIsDone = true;
+                    waitToJoinLienzo = true;
                     Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }

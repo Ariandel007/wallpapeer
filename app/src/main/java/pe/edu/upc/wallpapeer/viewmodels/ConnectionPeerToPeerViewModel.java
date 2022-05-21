@@ -138,6 +138,17 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         registerReceiver();
     }
 
+    public void startSocketManually() {
+        if(simpleMessenger == null) {
+            Server3 server = new Server3(ConnectionPeerToPeerViewModel.this);
+            server.start();
+            simpleMessenger = server;
+            if(simpleMessenger != null) {
+                socketIsReady.setValue(true);
+            }
+        }
+    }
+
     public void setAddressee(String addressee) {
         this.addressee = addressee;
 //        messageList = repository.getAllMessages(this.addressee);
