@@ -16,6 +16,7 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.net.Uri;
@@ -82,6 +83,10 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
     private String trulyClientTargetDevice = "";
 
+    private boolean scanIsDone = false;
+    private boolean sendFirstRequest = false;
+    SharedPreferences sharedPreferences;
+
 
     Button btnDecodes, btnColor;
     ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape, btnAddImage;
@@ -96,7 +101,11 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
                     targetDeviceName = qrMessage.getOwnername();
                     lastTarget = qrMessage.getOwnername();
                     trulyClientTargetDevice = qrMessage.getMyName();
-                    Toast.makeText(JoinPaletaActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("trulyClientTargetDevicePlatea", trulyClientTargetDevice);
+                    editor.apply();
+                    scanIsDone = true;
+//                    Toast.makeText(JoinPaletaActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
                 }
             });
@@ -132,6 +141,8 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
         editText = new EditText(this);
 
+        sharedPreferences = getPreferences(Context.MODE_PRIVATE);
+
         userDeviceName = Settings.Global.getString(getContentResolver(), Settings.Global.DEVICE_NAME);
         if (userDeviceName == null)
             userDeviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
@@ -160,11 +171,19 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
                         loadingScreen.setVisibility(View.GONE);
                         loadingPallete.setVisibility(View.VISIBLE);
                         isInNetwork = true;
+                        if(!scanIsDone && lastTarget.equals("")) {
+                            lastTarget = sharedPreferences.getString("lastTargetPaletaSended","");
+                            trulyClientTargetDevice = sharedPreferences.getString("trulyClientTargetDevicePlatea","");
+                        }
                         if(lastTarget.equals("")){
                             return;
                         }
-                        sendPaletteRequest();
-
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("lastTargetPaletaSended", lastTarget);
+                        editor.apply();
+                        if(!sendFirstRequest) {
+                            sendPaletteRequest();
+                        }
                     }
                 }
             });
@@ -450,15 +469,16 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
         String json = JsonConverter.getGson().toJson(addingPalette);
         model.sendMessage(json);
+        sendFirstRequest = true;
     }
 
     private void sendSelectedOption(int selectedOption, int subOption){
         if(CanvaStateForPalette.getInstance() == null){
             return;
         }
-        if(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice() == null){
-            return;
-        }
+//        if(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice() == null){
+//            return;
+//        }
         ChangingOption changingOption = new ChangingOption();
         changingOption.setA1_eventCode(CodeEvent.SELECT_OPTION_PALLETE);
         changingOption.setDeviceName(userDeviceName);
@@ -478,9 +498,9 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         if(CanvaStateForPalette.getInstance() == null){
             return;
         }
-        if(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice() == null){
-            return;
-        }
+//        if(CanvaStateForPalette.getInstance().getAcceptingPalette().getLinkedDevice() == null){
+//            return;
+//        }
         ChangingOption changingOption = new ChangingOption();
         changingOption.setA1_eventCode(CodeEvent.SELECT_OPTION_PALLETE);
         changingOption.setDeviceName(userDeviceName);

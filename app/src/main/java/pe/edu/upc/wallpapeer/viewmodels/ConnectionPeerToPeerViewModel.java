@@ -95,11 +95,13 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
                     }
 
                 } else {
-                    Client client = new Client(address.getHostAddress(), ConnectionPeerToPeerViewModel.this, socketIsReady);
-                    client.start();
-                    messenger = client;
-                    if(messenger != null) {
-                        socketIsReady.setValue(true);
+                    if(messenger == null) {
+                        Client client = new Client(address.getHostAddress(), ConnectionPeerToPeerViewModel.this, socketIsReady);
+                        client.start();
+                        messenger = client;
+//                        if(messenger != null) {
+//                            socketIsReady.setValue(true);
+//                        }
                     }
                 }
                 Toast.makeText(application, "Se ha establecido la conexión con el dispositivo", Toast.LENGTH_SHORT).show();
@@ -136,6 +138,17 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         circleList = new MutableLiveData<>();
 
         registerReceiver();
+    }
+
+    public void startSocketManually() {
+        if(simpleMessenger == null) {
+            Server3 server = new Server3(ConnectionPeerToPeerViewModel.this);
+            server.start();
+            simpleMessenger = server;
+            if(simpleMessenger != null) {
+                socketIsReady.setValue(true);
+            }
+        }
     }
 
     public void setAddressee(String addressee) {
