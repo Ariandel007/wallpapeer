@@ -408,10 +408,6 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         shapesDialog.show(getSupportFragmentManager(), "shape");
     }
 
-    public void openImagesDialog(){
-        ImagesDialog imagesDialog = new ImagesDialog();
-        imagesDialog.show(getSupportFragmentManager(), "image");
-    }
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
@@ -492,6 +488,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         changingOption.setMacAddress("");
         changingOption.setSelectedOption(selectedOption);
         changingOption.setSubOption(subOption);
+        changingOption.setColor(defaultColor);
         changingOption.setTextToInsert(textToInsert);
         changingOption.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 

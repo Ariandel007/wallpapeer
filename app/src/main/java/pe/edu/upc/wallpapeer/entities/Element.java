@@ -72,10 +72,10 @@ public class Element {
     @ColumnInfo(name = "color")
     public String color;
 
-    @ColumnInfo(name= "source")
-    public byte[] source;
+    @ColumnInfo(name= "image_name")
+    public String source;
 
-    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color, byte[] source) {
+    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color, String source) {
         this.id = id;
         this.typeElement = typeElement;
         this.widthElement = widthElement;
@@ -213,11 +213,11 @@ public class Element {
         this.posyElement2 = posyElement2;
     }
 
-    public byte[] getSource() {
+    public String getSource() {
         return source;
     }
 
-    public void setSource(byte[] source) {
+    public void setSource(String source) {
         this.source = source;
     }
 }

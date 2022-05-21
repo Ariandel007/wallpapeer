@@ -4,11 +4,13 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -42,6 +44,7 @@ import pe.edu.upc.wallpapeer.entities.Project;
 import pe.edu.upc.wallpapeer.model.figures.Circle;
 import pe.edu.upc.wallpapeer.utils.AppDatabase;
 import pe.edu.upc.wallpapeer.utils.CodeEvent;
+import pe.edu.upc.wallpapeer.utils.GalleryMap;
 import pe.edu.upc.wallpapeer.utils.JsonConverter;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.utils.MyLastPinch;
@@ -196,6 +199,40 @@ public class CanvasView  extends View {
                     canvas.restore();
                 }
             }
+            if(element.getTypeElement().equals("image")) {
+                posYelement = element.getPosyElement() - currentCanvaEntity.getPosY();
+                posXelement = element.getPosxElement() - currentCanvaEntity.getPosX();
+                /*
+                mPaint = new Paint();
+                mPaint.setStyle(Paint.Style.FILL);
+                if(element.getColor() == null) {
+                    mPaint.setColor(Color.BLUE);
+                } else {
+                    mPaint.setColor(Integer.parseInt(element.getColor()));
+                }
+                */
+                mPaint = new Paint();
+                if(element.getRotation() != 0) {
+                    canvas.save();
+                    canvas.rotate(element.getRotation(), posXelement, posYelement);
+                }
+                //drawTriangle(posXelement, posYelement, element.getWidthElement(), canvas, mPaint);
+                int drawableResourceId = canvasContext.getResources().getIdentifier(element.getSource(), "drawable", canvasContext.getPackageName());
+                Resources res = getResources();
+                Bitmap bitmap = BitmapFactory.decodeResource(res, drawableResourceId);
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) element.getWidthElement(), (int) element.getHeightElement(), true);
+                canvas.drawBitmap(resizedBitmap, posXelement, posYelement, mPaint);
+                /*canvas.drawBitmap(bitmap,
+                        new Rect( (int) posXelement, (int) posYelement, (int) element.getWidthElement(), (int) element.getHeightElement()),
+                        new RectF( (int) posXelement, (int) posYelement, (int) element.getWidthElement(), (int) element.getHeightElement()),
+                        new Paint());
+
+                 */
+                if(element.getRotation() != 0) {
+                    canvas.restore();
+                }
+
+            }
         }
 
     }
@@ -238,12 +275,22 @@ public class CanvasView  extends View {
     public List<Element> filterElementsInsidePoint(float posX, float posY, List<Element> allElements) {
         List<Element> fileteredElements =new ArrayList<>();
         for (Element element : allElements) {
-            int yPosEle = (int) (element.getPosyElement()) - (int) element.getHeightElement()/2;
-            int xPosEle = (int) (element.getPosxElement()) - (int) element.getWidthElement()/2;
-            int yPosEleFinal = (int) (element.getPosyElement()) + (int) element.getHeightElement()/2;
-            int xPosEleFinal = (int) (element.getPosxElement()) + (int) element.getWidthElement()/2;
-            if(checkIfPointIsInside(xPosEle, yPosEle, xPosEleFinal, yPosEleFinal,(int) posX, (int)posY)) {
-                fileteredElements.add(element);
+            if(element.getTypeElement().equals("image")){
+                int yPosEle = (int) (element.getPosyElement());
+                int xPosEle = (int) (element.getPosxElement());
+                int yPosEleFinal = (int) (element.getPosyElement()) + (int) element.getHeightElement();
+                int xPosEleFinal = (int) (element.getPosxElement()) + (int) element.getWidthElement();
+                if(checkIfPointIsInside(xPosEle, yPosEle, xPosEleFinal, yPosEleFinal,(int) posX, (int)posY)) {
+                    fileteredElements.add(element);
+                }
+            } else {
+                int yPosEle = (int) (element.getPosyElement()) - (int) element.getHeightElement()/2;
+                int xPosEle = (int) (element.getPosxElement()) - (int) element.getWidthElement()/2;
+                int yPosEleFinal = (int) (element.getPosyElement()) + (int) element.getHeightElement()/2;
+                int xPosEleFinal = (int) (element.getPosxElement()) + (int) element.getWidthElement()/2;
+                if(checkIfPointIsInside(xPosEle, yPosEle, xPosEleFinal, yPosEleFinal,(int) posX, (int)posY)) {
+                    fileteredElements.add(element);
+                }
             }
         }
         return fileteredElements;
@@ -487,19 +534,14 @@ public class CanvasView  extends View {
                             newElement.setTypeElement("image");
                             newElement.setRotation(0);
                             newElement.setzIndex(0);
-                            newElement.setHeightElement(200);
-                            newElement.setWidthElement(200);
+                            newElement.setHeightElement(400);
+                            newElement.setWidthElement(400);
                             newElement.setPosxElement(posX);
                             newElement.setPosyElement(posY);
-                            newElement.setColor(String.valueOf(-0));
+                            //newElement.setColor(String.valueOf(-0));
                             newElement.setDateCreation(new Date());
                             newElement.setId_project(currentProjectEntity.id);
-                            Drawable d = ContextCompat.getDrawable(canvasContext, values[PaletteState.getInstance().getSubOption()]);
-                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
-                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-                            byte[] bitmapdata = stream.toByteArray();
-                            newElement.setSource(bitmapdata);
+                            newElement.setSource(GalleryMap.getInstance().getGalleryHashSet().get(PaletteState.getInstance().getSubOption()));
                         }
                     }
                     break;
@@ -723,6 +765,9 @@ public class CanvasView  extends View {
                         newElement.setWidthElement(newElement.getWidthElement() + plus);
                         newElement.setHeightElement(newElement.getHeightElement() + plus);
                     }
+                    if(newElement.getTypeElement().equals("image")) {
+                        newElement.setWidthElement(newElement.getWidthElement() + plus);
+                    }
                 } else {
                     if(absY == 0 || absY == 0.0) {
                         return true;
@@ -741,15 +786,18 @@ public class CanvasView  extends View {
                         newElement.setWidthElement(newElement.getWidthElement() + plus);
                         newElement.setHeightElement(newElement.getHeightElement() + plus);
                     }
+                    if(newElement.getTypeElement().equals("image")) {
+                        newElement.setHeightElement(newElement.getHeightElement() + plus);
+                    }
                 }
 
-                if(newElement.getWidthElement() < 30 || newElement.getHeightElement() < 30) {
+                /*if(newElement.getWidthElement() < 30 || newElement.getHeightElement() < 30) {
                     return true;
                 }
 
                 if(newElement.getWidthElement() > 200 || newElement.getHeightElement() > 200) {
                     return true;
-                }
+                }*/
 
                 if(newElement != null) {
                     ///Informamos a los dispositivos el cambio

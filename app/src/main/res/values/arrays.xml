@@ -28,7 +28,7 @@
     </array>
 
     <array name="images_array">
-        <item> R.drawable.ig_beaker</item>
+        <item> ig_beaker</item>
     </array>
 
     <array name="images_palette_array">

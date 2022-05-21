@@ -1,8 +1,8 @@
 {
   "formatVersion": 1,
   "database": {
-    "version": 14,
-    "identityHash": "5329d88d9a34b26ef254b8ce7f226d0d",
+    "version": 16,
+    "identityHash": "71a4ef074b14249ce96139d93ce1fa58",
     "entities": [
       {
         "tableName": "palette",
@@ -292,7 +292,7 @@
       },
       {
         "tableName": "element",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type_element` TEXT, `width_element` REAL NOT NULL, `height_element` REAL NOT NULL, `posx_element` REAL NOT NULL, `posy_element` REAL NOT NULL, `posx_element2` REAL NOT NULL, `posy_element2` REAL NOT NULL, `z_index` INTEGER NOT NULL, `opacity` REAL NOT NULL, `rotation` REAL NOT NULL, `date_creation` INTEGER, `id_project` TEXT, `text` TEXT, `color` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`id_project`) REFERENCES `project`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`id` TEXT NOT NULL, `type_element` TEXT, `width_element` REAL NOT NULL, `height_element` REAL NOT NULL, `posx_element` REAL NOT NULL, `posy_element` REAL NOT NULL, `posx_element2` REAL NOT NULL, `posy_element2` REAL NOT NULL, `z_index` INTEGER NOT NULL, `opacity` REAL NOT NULL, `rotation` REAL NOT NULL, `date_creation` INTEGER, `id_project` TEXT, `text` TEXT, `color` TEXT, `image_name` TEXT, PRIMARY KEY(`id`), FOREIGN KEY(`id_project`) REFERENCES `project`(`id`) ON UPDATE CASCADE ON DELETE CASCADE )",
         "fields": [
           {
             "fieldPath": "id",
@@ -381,6 +381,12 @@
           {
             "fieldPath": "color",
             "columnName": "color",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "source",
+            "columnName": "image_name",
             "affinity": "TEXT",
             "notNull": false
           }
@@ -548,7 +554,7 @@
     "views": [],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '5329d88d9a34b26ef254b8ce7f226d0d')"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '71a4ef074b14249ce96139d93ce1fa58')"
     ]
   }
 }
