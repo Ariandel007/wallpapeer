@@ -106,7 +106,10 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     trulyClientTargetDevice = qrMessage.getMyName();
                     scanIsDone = true;
                     waitToJoinLienzo = true;
-                    Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+//                    Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
+                    SharedPreferences.Editor editor = sharedPreferences.edit();
+                    editor.putString("trulyClientTargetDeviceLastproject", trulyClientTargetDevice);
+                    editor.apply();
                     connectionToDevice();
                 }
             });
@@ -179,6 +182,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
                         if(!scanIsDone) {
                             //MEJORAR EVENTO
                             String jsonMyLastEngage = sharedPreferences.getString("sendMessagePinchLastproject","");
+                            trulyClientTargetDevice = sharedPreferences.getString("trulyClientTargetDeviceLastproject","");
                             if(!jsonMyLastEngage.equals("")) {
                                 scanIsDone = true;
                                 waitToJoinLienzo = true;
