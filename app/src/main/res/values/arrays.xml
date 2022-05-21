@@ -27,4 +27,14 @@
         //YELLOW    <item>-256</item>
     </array>
 
+    <array name="images_array">
+        <item> R.drawable.ig_beaker</item>
+    </array>
+
+    <array name="images_palette_array">
+        <item> @drawable/ig_beaker</item>
+        <item> @drawable/ig_beaker</item>
+        <item> @drawable/ig_beaker</item>
+    </array>
+
 </resources>

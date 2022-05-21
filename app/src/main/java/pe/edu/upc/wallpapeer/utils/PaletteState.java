@@ -8,14 +8,6 @@ public class PaletteState {
     private String textToPrint;
     private Integer color = -16776961;
 
-    public static PaletteState getINSTANCE() {
-        return INSTANCE;
-    }
-
-    public static void setINSTANCE(PaletteState INSTANCE) {
-        PaletteState.INSTANCE = INSTANCE;
-    }
-
     public String getTextToPrint() {
         return textToPrint;
     }

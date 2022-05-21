@@ -3,11 +3,14 @@ package pe.edu.upc.wallpapeer.views.custom;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.GestureDetector;
@@ -17,9 +20,11 @@ import android.view.View;
 
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.ScaleGestureDetectorCompat;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -27,6 +32,7 @@ import java.util.UUID;
 
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import pe.edu.upc.wallpapeer.R;
 import pe.edu.upc.wallpapeer.dtos.EngagePinchEvent;
 import pe.edu.upc.wallpapeer.dtos.NewElementInserted;
 import pe.edu.upc.wallpapeer.entities.Canva;
@@ -387,6 +393,7 @@ public class CanvasView  extends View {
 
     List<Element> listFiltered;
     Element newElement;
+    final int[] values = getResources().getIntArray(R.array.images_array);
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
         private static final String DEBUG_TAG = "Gestures";
@@ -473,6 +480,26 @@ public class CanvasView  extends View {
                             newElement.setColor(PaletteState.getInstance().getColor().toString());
                             newElement.setDateCreation(new Date());
                             newElement.setId_project(currentProjectEntity.id);
+                        }
+                        if(PaletteOption.IMAGE == PaletteState.getInstance().getSelectedOption()) {
+                            newElement = new Element();
+                            newElement.setId(UUID.randomUUID().toString());
+                            newElement.setTypeElement("image");
+                            newElement.setRotation(0);
+                            newElement.setzIndex(0);
+                            newElement.setHeightElement(200);
+                            newElement.setWidthElement(200);
+                            newElement.setPosxElement(posX);
+                            newElement.setPosyElement(posY);
+                            newElement.setColor(String.valueOf(-0));
+                            newElement.setDateCreation(new Date());
+                            newElement.setId_project(currentProjectEntity.id);
+                            Drawable d = ContextCompat.getDrawable(canvasContext, values[PaletteState.getInstance().getSubOption()]);
+                            Bitmap bitmap = ((BitmapDrawable)d).getBitmap();
+                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+                            byte[] bitmapdata = stream.toByteArray();
+                            newElement.setSource(bitmapdata);
                         }
                     }
                     break;

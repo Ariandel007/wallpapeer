@@ -22,7 +22,7 @@ public class ImagesDialog extends AppCompatDialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         builder.setTitle("Seleccione su opción")
-                .setItems(R.array.shapes_array, new DialogInterface.OnClickListener() {
+                .setItems(R.array.images_palette_array, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                         // The 'which' argument contains the index position
                         // of the selected item
