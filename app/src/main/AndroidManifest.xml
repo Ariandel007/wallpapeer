@@ -59,6 +59,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".views.ImageListActivity"
+            android:theme="@android:style/Theme.Holo.Light.Dialog"
+            android:noHistory="true"
+            android:label="Seleccione la imagen">
+        </activity>
+
     </application>
 
 </manifest>

@@ -24,6 +24,7 @@ import java.util.Objects;
 import pe.edu.upc.wallpapeer.R;
 import pe.edu.upc.wallpapeer.databinding.ActivityMainBinding;
 import pe.edu.upc.wallpapeer.model.User;
+import pe.edu.upc.wallpapeer.utils.GalleryMap;
 import pe.edu.upc.wallpapeer.utils.LastProjectState;
 import pe.edu.upc.wallpapeer.viewmodels.LoginViewModel;
 import pe.edu.upc.wallpapeer.viewmodels.factory.LoginViewModelFactory;
@@ -55,6 +56,7 @@ public class LoginActivity extends AppCompatActivity {
             deviceName = Settings.Secure.getString(getContentResolver(), "bluetooth_name");
         LastProjectState.getInstance().setDeviceName(deviceName);
 
+        GalleryMap.getInstance();
     }
 
 //    private void setUpViewModel() {

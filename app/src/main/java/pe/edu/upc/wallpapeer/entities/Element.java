@@ -1,5 +1,8 @@
 package pe.edu.upc.wallpapeer.entities;
 
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -69,14 +72,16 @@ public class Element {
     @ColumnInfo(name = "color")
     public String color;
 
-    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color) {
+    @ColumnInfo(name= "image_name")
+    public String source;
+
+    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color, String source) {
         this.id = id;
         this.typeElement = typeElement;
         this.widthElement = widthElement;
         this.heightElement = heightElement;
         this.posxElement = posxElement;
         this.posyElement = posyElement;
-
         this.zIndex = zIndex;
         this.opacity = opacity;
         this.rotation = rotation;
@@ -84,6 +89,7 @@ public class Element {
         this.id_project = id_project;
         this.text = text;
         this.color = color;
+        this.source = source;
     }
 
     public Element() {}
@@ -205,5 +211,13 @@ public class Element {
 
     public void setPosyElement2(float posyElement2) {
         this.posyElement2 = posyElement2;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
     }
 }

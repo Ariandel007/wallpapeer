@@ -16,5 +16,7 @@ public final class  PaletteOption {
 
     public static final int COLOR = 6;
 
+    public static final int IMAGE = 7;
+
 
 }

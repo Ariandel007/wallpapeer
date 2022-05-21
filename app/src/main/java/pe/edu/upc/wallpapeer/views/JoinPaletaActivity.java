@@ -1,6 +1,8 @@
 package pe.edu.upc.wallpapeer.views;
 
+import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,12 +11,15 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.net.Uri;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.os.Looper;
@@ -35,6 +40,7 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dialogs.ImagesDialog;
 import pe.edu.upc.wallpapeer.dialogs.LayersDialog;
 import pe.edu.upc.wallpapeer.dialogs.ShapesDialog;
 import pe.edu.upc.wallpapeer.dialogs.TextDialog;
@@ -83,7 +89,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
 
     Button btnDecodes, btnColor;
-    ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape;
+    ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape, btnAddImage;
     EditText editText;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -101,6 +107,14 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
                     scanIsDone = true;
 //                    Toast.makeText(JoinPaletaActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     connectionToDevice();
+                }
+            });
+
+    ActivityResultLauncher<String> mGetcontent = registerForActivityResult(new ActivityResultContracts.GetContent(),
+            new ActivityResultCallback<Uri>() {
+                @Override
+                public void onActivityResult(Uri result) {
+
                 }
             });
 
@@ -123,6 +137,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         btnRotate = findViewById(R.id.btnRotate);
         btnUndo = findViewById(R.id.btnUndo);
         btnColor = findViewById(R.id.btnColor);
+        btnAddImage = findViewById(R.id.btnAddImage);
 
         editText = new EditText(this);
 
@@ -343,6 +358,16 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             }
         });
 
+        final Intent intent = new Intent(this, ImageListActivity.class);
+
+        btnAddImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 7;
+                startActivityForResult(intent, 1);
+            }
+        });
+
 
 
 //        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
@@ -356,6 +381,17 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 //                }
 //            }
 //        });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == 1 && resultCode == Activity.RESULT_OK){
+            int subOption = data.getIntExtra(ImageListActivity.RESULT_POSITION, 0);
+            pSubOption = subOption;
+            Toast.makeText(this, "Escogiste la imagen número: " + subOption, Toast.LENGTH_SHORT).show();
+            sendSelectedOption(pSelectedOption, pSubOption);
+        }
     }
 
     private void openColorPicker() {
@@ -390,6 +426,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         ShapesDialog shapesDialog = new ShapesDialog();
         shapesDialog.show(getSupportFragmentManager(), "shape");
     }
+
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
@@ -471,6 +508,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         changingOption.setMacAddress("");
         changingOption.setSelectedOption(selectedOption);
         changingOption.setSubOption(subOption);
+        changingOption.setColor(defaultColor);
         changingOption.setTextToInsert(textToInsert);
         changingOption.setOriginalSender(LastProjectState.getInstance().getDeviceName());
 
