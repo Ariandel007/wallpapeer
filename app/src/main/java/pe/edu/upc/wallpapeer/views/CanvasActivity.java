@@ -231,6 +231,10 @@ public class CanvasActivity extends AppCompatActivity {
                         //Se inicia la busqueda de pares
                         initializaPeerSearch();
 
+
+                        //Incio el Socket al cargar un canvas
+                        model.startSocketManually();
+
                         startPaletteObservable(contextCanvas);
                         // Se inicializa observable del proyecto
                         startElementObservable(contextCanvas);

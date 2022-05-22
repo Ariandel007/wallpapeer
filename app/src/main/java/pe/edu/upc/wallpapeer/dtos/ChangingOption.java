@@ -7,7 +7,7 @@ public class ChangingOption {
     private String macAddress;
     private int selectedOption;
     private int subOption;
-    private String textToInsert;
+    private String textToInsert = "";
     private Integer color;
     private String originalSender;
 

@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -216,25 +217,32 @@ public class CanvasView  extends View {
                 }
                 */
                 mPaint = new Paint();
-                if(element.getRotation() != 0) {
-                    canvas.save();
-                    canvas.rotate(element.getRotation(), posXelement, posYelement);
-                }
+//                if(element.getRotation() != 0) {
+//                    canvas.save();
+//                    canvas.rotate(element.getRotation(), posXelement, posYelement);
+//                }
                 //drawTriangle(posXelement, posYelement, element.getWidthElement(), canvas, mPaint);
                 int drawableResourceId = canvasContext.getResources().getIdentifier(element.getSource(), "drawable", canvasContext.getPackageName());
                 Resources res = getResources();
                 Bitmap bitmap = BitmapFactory.decodeResource(res, drawableResourceId);
                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) element.getWidthElement(), (int) element.getHeightElement(), true);
-                canvas.drawBitmap(resizedBitmap, posXelement, posYelement, mPaint);
+                if(element.getRotation() != 0) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(element.getRotation());
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight(), matrix, true);
+                    canvas.drawBitmap(rotatedBitmap, posXelement, posYelement, mPaint);
+                } else {
+                    canvas.drawBitmap(resizedBitmap, posXelement, posYelement, mPaint);
+                }
                 /*canvas.drawBitmap(bitmap,
                         new Rect( (int) posXelement, (int) posYelement, (int) element.getWidthElement(), (int) element.getHeightElement()),
                         new RectF( (int) posXelement, (int) posYelement, (int) element.getWidthElement(), (int) element.getHeightElement()),
                         new Paint());
 
                  */
-                if(element.getRotation() != 0) {
-                    canvas.restore();
-                }
+//                if(element.getRotation() != 0) {
+//                    canvas.restore();
+//                }
 
             }
         }
@@ -668,8 +676,13 @@ public class CanvasView  extends View {
                     float yMoved = e2.getY() + getCurrentCanvaEntity().getPosY();
                     if (listFiltered.size() > 0){
                         newElement = listFiltered.get(listFiltered.size()-1);
-                        newElement.setPosxElement(xMoved);
-                        newElement.setPosyElement(yMoved);
+                        if(newElement.getTypeElement().equals("image")) {
+                            newElement.setPosxElement(xMoved-newElement.getWidthElement()/2);
+                            newElement.setPosyElement(yMoved-newElement.getHeightElement()/2);
+                        } else {
+                            newElement.setPosxElement(xMoved);
+                            newElement.setPosyElement(yMoved);
+                        }
 
                         if(newElement != null) {
                             ///Informamos a los dispositivos el cambio
