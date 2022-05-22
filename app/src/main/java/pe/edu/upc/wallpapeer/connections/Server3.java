@@ -35,7 +35,7 @@ public class Server3 extends SimpleMessenger{
                         Socket clientSocket = serverSocket.accept();
                         ClientTask clientTask = new ClientTask(clientSocket, clientTasks, model);
                         String fullAddress = clientSocket.getRemoteSocketAddress().toString();
-                        String ipSocket = fullAddress.substring(0,fullAddress.indexOf(":")-1);
+                        String ipSocket = fullAddress.substring(0,fullAddress.indexOf(":"));
                         if(!RememberSocketsAddress.getInstance().getSocketsAddress().contains(ipSocket)) {
                             clientTasks.add(clientTask);
                             RememberSocketsAddress.getInstance().addAddressToSet(ipSocket);
@@ -65,6 +65,8 @@ public class Server3 extends SimpleMessenger{
         for (ClientTask clientTask : clientTasks ) {
             clientTask.DestroySocket();
         }
+        RememberSocketsAddress.getInstance().getSocketsAddress().clear();
+        RememberSocketsAddress.getInstance().getClientTasks().clear();
         if (serverSocket != null) {
             try {
                 serverSocket.close();
