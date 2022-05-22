@@ -28,7 +28,8 @@ import java.util.List;
 import pe.edu.upc.wallpapeer.WiFiDirectBroadcastReceiver;
 import pe.edu.upc.wallpapeer.connections.Client;
 import pe.edu.upc.wallpapeer.connections.IMessenger;
-import pe.edu.upc.wallpapeer.connections.Server;
+import pe.edu.upc.wallpapeer.connections.Server3;
+import pe.edu.upc.wallpapeer.connections.SimpleMessenger;
 import pe.edu.upc.wallpapeer.connections.WIFIDirectConnections;
 import pe.edu.upc.wallpapeer.model.figures.Circle;
 
@@ -41,6 +42,7 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
     private IntentFilter intentFilter;
     private WIFIDirectConnections connections;
     private IMessenger messenger;
+    private SimpleMessenger simpleMessenger;
     private String addressee;
 
 //    private MessageRepository repository;
@@ -55,9 +57,11 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
 
     private MutableLiveData<Boolean> chatClosed;
 
-//    private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
+//  private MutableLiveData<Boolean> onSucessConnection = new MutableLiveData<Boolean>(false);
 
     private boolean isConnected = false;
+
+    public boolean isMainCanvas = false;
 //
     public final ObservableInt backgroundFill = new ObservableInt();
     @Bindable
@@ -69,6 +73,7 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         app = application;
         wifiP2pManager = (WifiP2pManager) app.getApplicationContext().getSystemService(Context.WIFI_P2P_SERVICE);
         channel = wifiP2pManager.initialize(app.getApplicationContext(), app.getMainLooper(), null);
+
         WifiP2pManager.ConnectionInfoListener connectionInfoListener = new WifiP2pManager.ConnectionInfoListener() {
             @Override
             public void onConnectionInfoAvailable(WifiP2pInfo info) {
@@ -79,18 +84,24 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
                 Log.d("new connection", info.toString());
                 final InetAddress address = info.groupOwnerAddress;
                 if (info.isGroupOwner) {
-                    Server server = new Server(ConnectionPeerToPeerViewModel.this, socketIsReady);
-                    server.start();
-                    messenger = server;
-                    if(messenger != null) {
-                        socketIsReady.setValue(true);
+
+                    if(simpleMessenger == null) {
+                        Server3 server = new Server3(ConnectionPeerToPeerViewModel.this);
+                        server.start();
+                        simpleMessenger = server;
+                        if(simpleMessenger != null) {
+                            socketIsReady.setValue(true);
+                        }
                     }
+
                 } else {
-                    Client client = new Client(address.getHostAddress(), ConnectionPeerToPeerViewModel.this, socketIsReady);
-                    client.start();
-                    messenger = client;
-                    if(messenger != null) {
-                        socketIsReady.setValue(true);
+                    if(messenger == null) {
+                        Client client = new Client(address.getHostAddress(), ConnectionPeerToPeerViewModel.this, socketIsReady);
+                        client.start();
+                        messenger = client;
+//                        if(messenger != null) {
+//                            socketIsReady.setValue(true);
+//                        }
                     }
                 }
                 Toast.makeText(application, "Se ha establecido la conexión con el dispositivo", Toast.LENGTH_SHORT).show();
@@ -129,6 +140,17 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         registerReceiver();
     }
 
+    public void startSocketManually() {
+        if(simpleMessenger == null) {
+            Server3 server = new Server3(ConnectionPeerToPeerViewModel.this);
+            server.start();
+            simpleMessenger = server;
+            if(simpleMessenger != null) {
+                socketIsReady.setValue(true);
+            }
+        }
+    }
+
     public void setAddressee(String addressee) {
         this.addressee = addressee;
 //        messageList = repository.getAllMessages(this.addressee);
@@ -158,6 +180,8 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
     public void registerReceiver() {
         app.getApplicationContext().registerReceiver(broadcastReceiver, intentFilter);
     }
+
+
 
 
     public void unregisterBroadcast() {
@@ -202,6 +226,11 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+        if(isMainCanvas) {
+            config.groupOwnerIntent = 15;
+        } else {
+            config.groupOwnerIntent = 0;
+        }
         wifiP2pManager.connect(channel, config, new WifiP2pManager.ActionListener() {
             @Override
             public void onSuccess() {
@@ -217,7 +246,13 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
     }
 
     public void sendMessage(String text) {
-        messenger.send(text, true);
+        if(messenger != null){
+            messenger.send(text, true);
+        }
+        if(simpleMessenger != null) {
+            simpleMessenger.send(text, true);
+        }
+
     }
 
     //El propietario del grupo elimina el grupo. Cierra el socket
@@ -259,6 +294,11 @@ public class ConnectionPeerToPeerViewModel extends AndroidViewModel implements O
         if (messenger != null) {
             messenger.DestroySocket();
         }
+
+        if (simpleMessenger != null) {
+            simpleMessenger.DestroySocket();
+        }
+
         if(isConnected)
             chatClosed.postValue(true);
     }

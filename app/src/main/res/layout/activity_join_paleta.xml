@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <layout xmlns:tools="http://schemas.android.com/tools"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
+
     <data>
         <variable
             name="ConnectionPeerToPeerViewModel"
             type="pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel" />
     </data>
     <androidx.constraintlayout.widget.ConstraintLayout
+
         android:id="@+id/mainScreenJoinPaleta"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        //LoadingScreen
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingScreen"
             android:layout_width="match_parent"
@@ -65,18 +69,18 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-
+        //JoinScreen
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/loadingPallete"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <ImageView
                 android:id="@+id/imageView"
                 android:layout_width="344dp"
                 android:layout_height="324dp"
-                android:tint="#8363AC"
+                app:tint="#8363AC"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.492"
@@ -104,6 +108,159 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        //PaletteScreen
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/paletteSelector"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="visible"><![CDATA[
+
+            " />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            ]]>
+
+            <ImageButton
+                android:id="@+id/btnAddImage"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="24dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ig_beaker"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnRotate" />
+
+            <ImageButton
+                android:id="@+id/btnAddFilter"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginTop="24dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/filter"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.087"
+                app:layout_constraintStart_toEndOf="@+id/btnAddImage"
+                app:layout_constraintTop_toBottomOf="@+id/btnAddShape" />
+
+            <ImageButton
+                android:id="@+id/btnAddShape"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="24dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_mono_ungroup_stencils"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/btnRotate"
+                app:layout_constraintTop_toBottomOf="@+id/btnAddText" />
+
+
+            <TextView
+                android:id="@+id/textPaletteSelector"
+                android:layout_width="282dp"
+                android:layout_height="34dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="8dp"
+                android:text="Paleta"
+                android:textColor="#767BBF"
+                android:textSize="26sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.601"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintRight_toRightOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btnPencil"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="28dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_baseline_edit_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/textPaletteSelector" />
+
+            <ImageButton
+                android:id="@+id/btnUndo"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="28dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_baseline_undo_24"
+                app:layout_constraintStart_toEndOf="@+id/btnPencil"
+                app:layout_constraintTop_toBottomOf="@+id/textPaletteSelector" />
+
+            <ImageButton
+                android:id="@+id/btnLayers"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="36dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_baseline_layers_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnPencil" />
+
+            <ImageButton
+                android:id="@+id/btnAddText"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="36dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_baseline_text_fields_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toEndOf="@+id/btnLayers"
+                app:layout_constraintTop_toBottomOf="@+id/btnUndo" />
+
+            <ImageButton
+                android:id="@+id/btnRotate"
+                android:layout_width="149dp"
+                android:layout_height="86dp"
+                android:layout_marginStart="56dp"
+                android:layout_marginTop="24dp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/ic_baseline_rotate_right_24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnLayers" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnColor"
+                android:layout_width="60dp"
+                android:layout_height="40dp"
+                android:layout_marginTop="26dp"
+                android:layout_marginEnd="52dp"
+                android:background="@color/blue"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/btnAddFilter" />
+            " />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
