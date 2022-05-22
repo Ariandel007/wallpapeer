@@ -21,13 +21,14 @@ import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 
+
+
 import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.ScaleGestureDetectorCompat;
 
-import com.jhlabs.image.GrayscaleFilter;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
@@ -35,8 +36,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import Catalano.Imaging.FastBitmap;
-import Catalano.Imaging.Filters.Sepia;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.R;
@@ -227,10 +226,20 @@ public class CanvasView  extends View {
                 Bitmap bitmap = BitmapFactory.decodeResource(res, drawableResourceId);
                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) element.getWidthElement(), (int) element.getHeightElement(), true);
                 if(element.getRotation() != 0) {
-                    Matrix matrix = new Matrix();
-                    matrix.postRotate(element.getRotation());
-                    Bitmap rotatedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight(), matrix, true);
-                    canvas.drawBitmap(rotatedBitmap, posXelement, posYelement, mPaint);
+                    if(element.getFilter() == 0) {
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(element.getRotation());
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight(), matrix, true);
+                        canvas.drawBitmap(rotatedBitmap, posXelement, posYelement, mPaint);
+                    } else if (element.getFilter() == 1){
+                        Matrix matrix = new Matrix();
+                        matrix.postRotate(element.getRotation());
+                        Bitmap rotatedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight(), matrix, true);
+                        canvas.drawBitmap(rotatedBitmap, posXelement, posYelement, mPaint);
+                    } else if (element.getFilter() == 2){
+                        Bitmap sepiaBitmap = toSepiaNice(resizedBitmap);
+                        canvas.drawBitmap(sepiaBitmap, posXelement, posYelement, mPaint);
+                    }
                 } else {
                     canvas.drawBitmap(resizedBitmap, posXelement, posYelement, mPaint);
                 }
@@ -635,14 +644,10 @@ public class CanvasView  extends View {
                     if(getElementListCanvas().size() > 0){
                         switch (PaletteState.getInstance().getSubOption()) {
                             case PaletteOption.FILTER_GRAY_SCALE:
-                                int drawableResourceId = canvasContext.getResources().getIdentifier(element.getSource(), "drawable", canvasContext.getPackageName());
-                                Resources res = getResources();
-                                Bitmap bitmap = BitmapFactory.decodeResource(res, drawableResourceId);
-                                GrayscaleFilter filter = new GrayscaleFilter();
-                                filter.setDimensions((int) element.getWidthElement(), (int) element.getHeightElement());
-                                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) element.getWidthElement(), (int) element.getHeightElement(), true);
+                                element.setFilter(1);
                                 break;
                             case PaletteOption.FILTER_SEPIA:
+                                element.setFilter(2);
                                 break;
                         }
                         getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element, LastProjectState.getInstance().getDeviceName())));
@@ -856,6 +861,38 @@ public class CanvasView  extends View {
             return true;
         }
 
+    }
+
+    public Bitmap toSepiaNice(Bitmap color) {
+        int red, green, blue, pixel, gry;
+        int height = color.getHeight();
+        int width = color.getWidth();
+        int depth = 20;
+
+        Bitmap sepia = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+
+        int[] pixels = new int[width * height];
+        color.getPixels(pixels, 0, width, 0, 0, width, height);
+        for (int i = 0; i < pixels.length; i++) {
+            pixel = pixels[i];
+
+            red = (pixel >> 16) & 0xFF;
+            green = (pixel >> 8) & 0xFF;
+            blue = pixel & 0xFF;
+
+            red = green = blue = (red + green + blue) / 3;
+
+            red += (depth * 2);
+            green += depth;
+
+            if (red > 255)
+                red = 255;
+            if (green > 255)
+                green = 255;
+            pixels[i] = (0xFF << 24) | (red << 16) | (green << 8) | blue;
+        }
+        sepia.setPixels(pixels, 0, width, 0, 0, width, height);
+        return sepia;
     }
 
 }

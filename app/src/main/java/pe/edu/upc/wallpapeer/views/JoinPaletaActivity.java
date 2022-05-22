@@ -40,6 +40,7 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dialogs.FiltersDialog;
 import pe.edu.upc.wallpapeer.dialogs.ImagesDialog;
 import pe.edu.upc.wallpapeer.dialogs.LayersDialog;
 import pe.edu.upc.wallpapeer.dialogs.ShapesDialog;
@@ -89,7 +90,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
 
     Button btnDecodes, btnColor;
-    ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape, btnAddImage;
+    ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape, btnAddImage, btnAddFilter;
     EditText editText;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -138,6 +139,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         btnUndo = findViewById(R.id.btnUndo);
         btnColor = findViewById(R.id.btnColor);
         btnAddImage = findViewById(R.id.btnAddImage);
+        btnAddFilter = findViewById(R.id.btnAddFilter);
 
         editText = new EditText(this);
 
@@ -368,6 +370,14 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             }
         });
 
+        btnAddFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 8;
+                openFiltersDialog();
+            }
+        });
+
 
 
 //        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
@@ -427,6 +437,10 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         shapesDialog.show(getSupportFragmentManager(), "shape");
     }
 
+    public void openFiltersDialog(){
+        FiltersDialog filtersDialog = new FiltersDialog();
+        filtersDialog.show(getSupportFragmentManager(), "filter");
+    }
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();
