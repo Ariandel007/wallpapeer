@@ -18,5 +18,9 @@ public final class  PaletteOption {
 
     public static final int IMAGE = 7;
 
+    public static final int FILTER = 8;
+    public static final int FILTER_GRAY_SCALE = 0;
+    public static final int FILTER_SEPIA = 1;
+
 
 }

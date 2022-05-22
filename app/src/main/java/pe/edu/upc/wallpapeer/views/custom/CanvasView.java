@@ -26,12 +26,16 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GestureDetectorCompat;
 import androidx.core.view.ScaleGestureDetectorCompat;
 
+import com.jhlabs.image.GrayscaleFilter;
+
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import Catalano.Imaging.FastBitmap;
+import Catalano.Imaging.Filters.Sepia;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import pe.edu.upc.wallpapeer.R;
@@ -605,6 +609,32 @@ public class CanvasView  extends View {
                                 break;
                             case PaletteOption.LAYERS_SEND_TO_THE_BACK:
                                 element.setzIndex(getElementListCanvas().get(0).getzIndex() - 1);
+                                break;
+                        }
+                        getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element, LastProjectState.getInstance().getDeviceName())));
+                        AppDatabase.getInstance().elementDAO().insert(element).subscribeOn(Schedulers.io())
+                                .observeOn(AndroidSchedulers.mainThread()).subscribe(() -> {
+                            Log.i("Se creo","Se creo con exito");
+                        }, throwable -> {
+                            Log.e("Error","Error al crear");
+                        });
+                    }
+                }
+            }
+            if(PaletteOption.FILTER == PaletteState.getInstance().getSelectedOption() && move == 1){
+                if(listFiltered.size() > 0){
+                    Element element = listFiltered.get(listFiltered.size() - 1);
+                    if(getElementListCanvas().size() > 0){
+                        switch (PaletteState.getInstance().getSubOption()) {
+                            case PaletteOption.FILTER_GRAY_SCALE:
+                                int drawableResourceId = canvasContext.getResources().getIdentifier(element.getSource(), "drawable", canvasContext.getPackageName());
+                                Resources res = getResources();
+                                Bitmap bitmap = BitmapFactory.decodeResource(res, drawableResourceId);
+                                GrayscaleFilter filter = new GrayscaleFilter();
+                                filter.setDimensions((int) element.getWidthElement(), (int) element.getHeightElement());
+                                Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) element.getWidthElement(), (int) element.getHeightElement(), true);
+                                break;
+                            case PaletteOption.FILTER_SEPIA:
                                 break;
                         }
                         getModel().sendMessage(JsonConverter.getGson().toJson(new NewElementInserted(CodeEvent.INSERT_NEW_ELEMENT, element, LastProjectState.getInstance().getDeviceName())));
