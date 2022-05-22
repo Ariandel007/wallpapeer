@@ -59,7 +59,7 @@ import pe.edu.upc.wallpapeer.utils.QrMessage;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class JoinPaletaActivity extends AppCompatActivity implements LayersDialog.LayersDialogListener, TextDialog.TextDialogListener, ShapesDialog.ShapesDialogListener {
+public class JoinPaletaActivity extends AppCompatActivity implements LayersDialog.LayersDialogListener, TextDialog.TextDialogListener, ShapesDialog.ShapesDialogListener, FiltersDialog.FiltersDialogListener {
 
     private String addressee;
     private String startDate;
@@ -256,6 +256,14 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
     @Override
     public void applyShapeOption(int option) {
+        pSubOption = option;
+        PaletteState.getInstance().setSubOption(pSubOption);
+        PaletteState.getInstance().setSelectedOption(pSelectedOption);
+        sendSelectedOption(pSelectedOption, pSubOption);
+    }
+
+    @Override
+    public void applyFilterOption(int option) {
         pSubOption = option;
         PaletteState.getInstance().setSubOption(pSubOption);
         PaletteState.getInstance().setSelectedOption(pSelectedOption);

@@ -7,6 +7,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.ColorMatrix;
+import android.graphics.ColorMatrixColorFilter;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -226,22 +228,28 @@ public class CanvasView  extends View {
                 Bitmap bitmap = BitmapFactory.decodeResource(res, drawableResourceId);
                 Bitmap resizedBitmap = Bitmap.createScaledBitmap(bitmap, (int) element.getWidthElement(), (int) element.getHeightElement(), true);
                 if(element.getRotation() != 0) {
+                    Matrix matrix = new Matrix();
+                    matrix.postRotate(element.getRotation());
+                    Bitmap rotatedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight(), matrix, true);
                     if(element.getFilter() == 0) {
-                        Matrix matrix = new Matrix();
-                        matrix.postRotate(element.getRotation());
-                        Bitmap rotatedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight(), matrix, true);
                         canvas.drawBitmap(rotatedBitmap, posXelement, posYelement, mPaint);
                     } else if (element.getFilter() == 1){
-                        Matrix matrix = new Matrix();
-                        matrix.postRotate(element.getRotation());
-                        Bitmap rotatedBitmap = Bitmap.createBitmap(resizedBitmap, 0, 0, resizedBitmap.getWidth(), resizedBitmap.getHeight(), matrix, true);
-                        canvas.drawBitmap(rotatedBitmap, posXelement, posYelement, mPaint);
+                        Bitmap bwBitmap = toGrayscale(resizedBitmap);
+                        canvas.drawBitmap(bwBitmap, posXelement, posYelement, mPaint);
+                    } else if (element.getFilter() == 2){
+                        Bitmap sepiaBitmap = toSepiaNice(rotatedBitmap);
+                        canvas.drawBitmap(sepiaBitmap, posXelement, posYelement, mPaint);
+                    }
+                } else {
+                    if(element.getFilter() == 0) {
+                        canvas.drawBitmap(resizedBitmap, posXelement, posYelement, mPaint);
+                    } else if (element.getFilter() == 1){
+                        Bitmap bwBitmap = toGrayscale(resizedBitmap);
+                        canvas.drawBitmap(bwBitmap, posXelement, posYelement, mPaint);
                     } else if (element.getFilter() == 2){
                         Bitmap sepiaBitmap = toSepiaNice(resizedBitmap);
                         canvas.drawBitmap(sepiaBitmap, posXelement, posYelement, mPaint);
                     }
-                } else {
-                    canvas.drawBitmap(resizedBitmap, posXelement, posYelement, mPaint);
                 }
                 /*canvas.drawBitmap(bitmap,
                         new Rect( (int) posXelement, (int) posYelement, (int) element.getWidthElement(), (int) element.getHeightElement()),
@@ -893,6 +901,23 @@ public class CanvasView  extends View {
         }
         sepia.setPixels(pixels, 0, width, 0, 0, width, height);
         return sepia;
+    }
+
+    public Bitmap toGrayscale(Bitmap bmpOriginal)
+    {
+        int width, height;
+        height = bmpOriginal.getHeight();
+        width = bmpOriginal.getWidth();
+
+        Bitmap bmpGrayscale = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bmpGrayscale);
+        Paint paint = new Paint();
+        ColorMatrix cm = new ColorMatrix();
+        cm.setSaturation(0);
+        ColorMatrixColorFilter f = new ColorMatrixColorFilter(cm);
+        paint.setColorFilter(f);
+        c.drawBitmap(bmpOriginal, 0, 0, paint);
+        return bmpGrayscale;
     }
 
 }

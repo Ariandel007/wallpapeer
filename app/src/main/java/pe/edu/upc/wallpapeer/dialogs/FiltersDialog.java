@@ -14,7 +14,7 @@ import pe.edu.upc.wallpapeer.R;
 
 public class FiltersDialog extends AppCompatDialogFragment {
 
-    private FiltersDialog.FiltersDialogListener listener;
+    private FiltersDialogListener listener;
 
     @NonNull
     @Override
@@ -37,7 +37,7 @@ public class FiltersDialog extends AppCompatDialogFragment {
         super.onAttach(context);
 
         try {
-            listener = (FiltersDialog.FiltersDialogListener) context;
+            listener = (FiltersDialogListener) context;
         } catch (ClassCastException e) {
             throw new ClassCastException(context.toString());
         }
