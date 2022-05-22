@@ -14,10 +14,23 @@
         tools:context=".views.ProjectListActivity">
 
         <TextView
+            android:id="@+id/tvHola"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="68dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="32dp"
+            android:text="Hola, "
+            android:textColor="#767BBF"
+            android:textSize="34sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
             android:id="@+id/tvProjectUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="20dp"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="16dp"
             android:text="@={loginViewModel.username}"
             android:textColor="#767BBF"
@@ -27,53 +40,42 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/tvHola"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="68dp"
-            android:layout_marginTop="16dp"
-            android:text="Hola, "
-            android:textColor="#767BBF"
-            android:textSize="34sp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <TextView
             android:id="@+id/tvDescriptionProjectList"
-            android:layout_width="272dp"
-            android:layout_height="49sp"
-            android:layout_marginTop="24dp"
+            android:layout_width="304dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
             android:text="Estos son los proyectos que tiene disponibles"
+            android:textAlignment="center"
             android:textColor="#767BBF"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.489"
+            app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tvHola" />
 
         <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btnGetSelected"
-            android:layout_width="145dp"
-            android:layout_height="48dp"
+            android:layout_width="144dp"
+            android:layout_height="35dp"
             android:layout_gravity="center"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="8dp"
             android:background="#651FFF"
             android:text="Abrir proyecto"
             android:textColor="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.498"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvDescriptionProjectList" />
+            app:layout_constraintTop_toBottomOf="@+id/rvProjects" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvProjects"
-            android:layout_width="304dp"
-            android:layout_height="482dp"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_width="311dp"
+            android:layout_height="384dp"
+            android:layout_marginTop="20dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.495"
+            app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btnGetSelected"
-            app:layout_constraintVertical_bias="0.578" />
+            app:layout_constraintTop_toBottomOf="@+id/tvDescriptionProjectList" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -17,13 +17,14 @@
             android:id="@+id/tvBienvenido"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
             android:layout_marginBottom="64dp"
             android:text="Bienvenido, "
             android:textColor="#767BBF"
             android:textSize="18dp"
             app:layout_constraintBottom_toTopOf="@+id/tilboxProfile1"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.088"
+            app:layout_constraintHorizontal_bias="0.177"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="1.0" />
@@ -32,7 +33,7 @@
             android:id="@+id/tvUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
+            android:layout_marginStart="4dp"
             android:layout_marginTop="20dp"
             android:text="@={loginViewModel.username}"
             android:textColor="#767BBF"
@@ -74,7 +75,7 @@
             android:id="@+id/tilboxProfile2"
             android:layout_width="298dp"
             android:layout_height="84dp"
-            android:layout_marginTop="32dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/menu_box"
             android:onClick="@{loginViewModel.irCrearProyecto}"
             app:layout_constraintEnd_toEndOf="parent"
@@ -100,6 +101,7 @@
             android:id="@+id/tilbox3"
             android:layout_width="298dp"
             android:layout_height="84dp"
+            android:layout_marginTop="20dp"
             android:background="@drawable/menu_box"
             android:onClick="@{loginViewModel.irUnirseProyecto}"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -107,7 +109,7 @@
             app:layout_constraintHorizontal_bias="0.495"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tilboxProfile2"
-            app:layout_constraintVertical_bias="0.057">
+            app:layout_constraintVertical_bias="0.018">
 
             <TextView
                 android:id="@+id/tilTvUnirmeProyecto"
@@ -127,17 +129,18 @@
             android:id="@+id/tvTextoCambiarContrasena"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="54dp"
+            android:layout_marginTop="20dp"
+
             android:onClick="@{loginViewModel.irCambioContrasena}"
             android:text="Cambiar Contraseña"
             android:textColor="#767BBF"
             android:textSize="18dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.502"
+            app:layout_constraintHorizontal_bias="0.797"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/tilbox3"
-            app:layout_constraintVertical_bias="0.0" />
+            app:layout_constraintVertical_bias="0.064" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
