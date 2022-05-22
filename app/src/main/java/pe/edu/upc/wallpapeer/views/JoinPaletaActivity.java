@@ -40,6 +40,7 @@ import java.util.List;
 
 import pe.edu.upc.wallpapeer.Constants;
 import pe.edu.upc.wallpapeer.R;
+import pe.edu.upc.wallpapeer.dialogs.FiltersDialog;
 import pe.edu.upc.wallpapeer.dialogs.ImagesDialog;
 import pe.edu.upc.wallpapeer.dialogs.LayersDialog;
 import pe.edu.upc.wallpapeer.dialogs.ShapesDialog;
@@ -58,7 +59,7 @@ import pe.edu.upc.wallpapeer.utils.QrMessage;
 import pe.edu.upc.wallpapeer.viewmodels.ConnectionPeerToPeerViewModel;
 import yuku.ambilwarna.AmbilWarnaDialog;
 
-public class JoinPaletaActivity extends AppCompatActivity implements LayersDialog.LayersDialogListener, TextDialog.TextDialogListener, ShapesDialog.ShapesDialogListener {
+public class JoinPaletaActivity extends AppCompatActivity implements LayersDialog.LayersDialogListener, TextDialog.TextDialogListener, ShapesDialog.ShapesDialogListener, FiltersDialog.FiltersDialogListener {
 
     private String addressee;
     private String startDate;
@@ -89,7 +90,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
 
 
     Button btnDecodes, btnColor;
-    ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape, btnAddImage;
+    ImageButton btnPencil, btnUndo, btnLayers, btnAddText, btnRotate, btnAddShape, btnAddImage, btnAddFilter;
     EditText editText;
 
     private final ActivityResultLauncher<ScanOptions> barcodeLauncher = registerForActivityResult(new ScanContract(),
@@ -138,6 +139,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         btnUndo = findViewById(R.id.btnUndo);
         btnColor = findViewById(R.id.btnColor);
         btnAddImage = findViewById(R.id.btnAddImage);
+        btnAddFilter = findViewById(R.id.btnAddFilter);
 
         editText = new EditText(this);
 
@@ -260,6 +262,14 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         sendSelectedOption(pSelectedOption, pSubOption);
     }
 
+    @Override
+    public void applyFilterOption(int option) {
+        pSubOption = option;
+        PaletteState.getInstance().setSubOption(pSubOption);
+        PaletteState.getInstance().setSelectedOption(pSelectedOption);
+        sendSelectedOption(pSelectedOption, pSubOption);
+    }
+
     private void initConnection() {
         loadingScreen = findViewById(R.id.loadingScreen);
         loadingScreen.setVisibility(View.GONE);
@@ -368,6 +378,14 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             }
         });
 
+        btnAddFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                pSelectedOption = 8;
+                openFiltersDialog();
+            }
+        });
+
 
 
 //        this.model.getOnSucessConnection().observe(this, new Observer<Boolean>() {
@@ -427,6 +445,10 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
         shapesDialog.show(getSupportFragmentManager(), "shape");
     }
 
+    public void openFiltersDialog(){
+        FiltersDialog filtersDialog = new FiltersDialog();
+        filtersDialog.show(getSupportFragmentManager(), "filter");
+    }
 
     public void connectionToDevice() {
         List<WifiP2pDevice> wifiP2pDevices = this.model.getPeerList().getValue();

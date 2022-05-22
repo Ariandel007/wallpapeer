@@ -355,6 +355,10 @@ public class CanvasActivity extends AppCompatActivity {
                             Toast.makeText(context1, "Se recibió la opción de añadir imagen", Toast.LENGTH_SHORT).show();
                             Log.i("Shape Button", "Se recibió la opción de añadir imagen\"");
                             break;
+                        case PaletteOption.FILTER:
+                            Toast.makeText(context1, "Se recibió la opción de añadir filtro", Toast.LENGTH_SHORT).show();
+                            Log.i("Shape Button", "Se recibió la opción de añadir filtro\"");
+                            break;
                     }
                 }
             }

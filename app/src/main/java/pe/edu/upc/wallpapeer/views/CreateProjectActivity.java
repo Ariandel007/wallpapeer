@@ -31,7 +31,7 @@ import pe.edu.upc.wallpapeer.utils.LastProjectState;
 public class CreateProjectActivity extends AppCompatActivity implements View.OnClickListener {
 
     Button btnCreateProject;
-    EditText etName, etAlto, etAncho;
+    EditText etName;
     Project proyecto;
 
 
@@ -45,8 +45,6 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
         btnCreateProject.setOnClickListener(this);
 
         etName = findViewById(R.id.etNombreProyecto);
-        etAlto = findViewById(R.id.etAltoLienzo);
-        etAncho = findViewById(R.id.etAnchoLienzo);
 
 
 
@@ -60,8 +58,8 @@ public class CreateProjectActivity extends AppCompatActivity implements View.OnC
                 String idMPRoject = UUID.randomUUID().toString();
                 Date dateM = Calendar.getInstance().getTime();
                 String nameM = etName.getText().toString();
-                Float altoM = Float.parseFloat(etAlto.getText().toString());
-                Float anchoM = Float.parseFloat(etAncho.getText().toString());
+                Float altoM = 0.0f;
+                Float anchoM = 0.0f;
                 proyecto = new Project(idMPRoject, nameM, dateM, altoM, anchoM);
                 Context context = this;
 

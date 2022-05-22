@@ -72,10 +72,13 @@ public class Element {
     @ColumnInfo(name = "color")
     public String color;
 
-    @ColumnInfo(name= "image_name")
+    @ColumnInfo(name = "image_name")
     public String source;
 
-    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color, String source) {
+    @ColumnInfo(name = "filter")
+    public int filter;
+
+    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color, String source, int filter) {
         this.id = id;
         this.typeElement = typeElement;
         this.widthElement = widthElement;
@@ -90,6 +93,7 @@ public class Element {
         this.text = text;
         this.color = color;
         this.source = source;
+        this.filter = filter;
     }
 
     public Element() {}
@@ -219,5 +223,13 @@ public class Element {
 
     public void setSource(String source) {
         this.source = source;
+    }
+
+    public int getFilter() {
+        return filter;
+    }
+
+    public void setFilter(int filter) {
+        this.filter = filter;
     }
 }
