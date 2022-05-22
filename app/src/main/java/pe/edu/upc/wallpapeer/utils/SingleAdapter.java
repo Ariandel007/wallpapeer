@@ -103,7 +103,9 @@ public class SingleAdapter extends RecyclerView.Adapter<SingleAdapter.SingleView
                     ivProject.setVisibility(View.GONE);
                 }
             }
-            ultEdicion.setText(project.getDateCreation().toString());
+            String date = project.formatDate(project.getDateCreation());
+            ultEdicion.setText("Ult Edición: " + date);
+            //ultEdicion.setText(project.getDateCreation().toString());
             nombreProyecto.setText(project.getName());
 
             itemView.setOnClickListener(new View.OnClickListener() {

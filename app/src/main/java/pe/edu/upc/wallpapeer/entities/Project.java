@@ -6,7 +6,10 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.time.*;
+import java.util.logging.SimpleFormatter;
 
 
 import pe.edu.upc.wallpapeer.converters.DateConverter;
@@ -52,6 +55,13 @@ public class Project {
     public Date getDateCreation() {
         return dateCreation;
     }
+
+    public String formatDate(Date dateToFormat){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy hh:mm");
+
+        return dateFormat.format(dateToFormat);
+    }
+
 
     public void setDateCreation(Date dateCreation) {
         this.dateCreation = dateCreation;

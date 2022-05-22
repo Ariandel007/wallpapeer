@@ -5,6 +5,7 @@ import androidx.room.Insert;
 import androidx.room.OnConflictStrategy;
 import androidx.room.Query;
 import androidx.room.Transaction;
+import androidx.room.Update;
 
 import java.util.List;
 
@@ -19,7 +20,10 @@ public interface DeviceDAO {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     Completable insert(Device device);
 
-//    @Transaction
+    @Update
+    Completable update(Device device);
+
+    //    @Transaction
 //    @Query("SELECT * FROM Device")
 //    public List<PaletteDevice> getPalettesDevices();
     @Transaction

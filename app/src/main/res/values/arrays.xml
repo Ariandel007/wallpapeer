@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="layers_array">
+        <item>Traer adelante</item>
+        <item>Enviar atrás</item>
+        <item>Traer al frente</item>
+        <item>Enviar al fondo</item>
+    </string-array>
+    <string-array name="shapes_array">
+        <item>Circulo</item>
+        <item>Cuadrado</item>
+        <item>Triangulo</item>
+    </string-array>
+
+    <string-array name="filters_array">
+        <item>Blanco y negro</item>
+        <item>Sepia</item>
+    </string-array>
+    <array name="colors_array">
+        //BLACK     <item>-16777216</item>
+        //BLUE      <item>-16776961</item>
+        //CYAN      <item>-16711681</item>
+        //DKGray    <item>-12303292</item>
+        //GRAY      <item>-7829368</item>
+        //GREEN     <item>-16711936</item>
+        //LTGRAY    <item>-3355444</item>
+        //MAGENTA   <item>-65281</item>
+        //RED       <item>-65536</item>
+        //TRANSPARENT<item>-0</item>
+        //WHITE     <item>-1</item>
+        //YELLOW    <item>-256</item>
+    </array>
+
+    <array name="images_array">
+        <item> ig_atom</item>
+        <item> ig_beaker</item>
+        <item> ig_bell</item>
+        <item> ig_board</item>
+        <item> ig_boardandteacher</item>
+        <item> ig_book</item>
+        <item> ig_booksandapple</item>
+        <item> ig_briefcase</item>
+        <item> ig_bus</item>
+        <item> ig_certificate</item>
+        <item> ig_circlebell</item>
+        <item> ig_circlebooksandapple</item>
+        <item> ig_circlebriefcase</item>
+        <item> ig_circlebuilding</item>
+        <item> ig_circlecoach</item>
+        <item> ig_circlegraduation</item>
+        <item> ig_circlemonitor</item>
+        <item> ig_circlenotebook</item>
+        <item> ig_circlepresentation</item>
+        <item> ig_circlescience</item>
+        <item> ig_circleteacher</item>
+        <item> ig_eraser</item>
+        <item> ig_glasses</item>
+        <item> ig_globe</item>
+        <item> ig_graduation</item>
+        <item> ig_lightbulb</item>
+        <item> ig_microscope</item>
+        <item> ig_owl</item>
+        <item> ig_palette</item>
+        <item> ig_pencil</item>
+    </array>
+
+    <array name="images_palette_array">
+        <item> @drawable/ig_atom</item>
+        <item> @drawable/ig_beaker</item>
+        <item> @drawable/ig_bell</item>
+        <item> @drawable/ig_board</item>
+        <item> @drawable/ig_boardandteacher</item>
+        <item> @drawable/ig_book</item>
+        <item> @drawable/ig_booksandapple</item>
+        <item> @drawable/ig_briefcase</item>
+        <item> @drawable/ig_bus</item>
+        <item> @drawable/ig_certificate</item>
+        <item> @drawable/ig_circlebell</item>
+        <item> @drawable/ig_circlebooksandapple</item>
+        <item> @drawable/ig_circlebriefcase</item>
+        <item> @drawable/ig_circlebuilding</item>
+        <item> @drawable/ig_circlecoach</item>
+        <item> @drawable/ig_circlegraduation</item>
+        <item> @drawable/ig_circlemonitor</item>
+        <item> @drawable/ig_circlenotebook</item>
+        <item> @drawable/ig_circlepresentation</item>
+        <item> @drawable/ig_circlescience</item>
+        <item> @drawable/ig_circleteacher</item>
+        <item> @drawable/ig_eraser</item>
+        <item> @drawable/ig_glasses</item>
+        <item> @drawable/ig_globe</item>
+        <item> @drawable/ig_graduation</item>
+        <item> @drawable/ig_lightbulb</item>
+        <item> @drawable/ig_microscope</item>
+        <item> @drawable/ig_owl</item>
+        <item> @drawable/ig_palette</item>
+        <item> @drawable/ig_pencil</item>
+    </array>
+
+</resources>

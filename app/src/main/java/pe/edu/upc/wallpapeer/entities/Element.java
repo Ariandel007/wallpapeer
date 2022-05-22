@@ -1,5 +1,8 @@
 package pe.edu.upc.wallpapeer.entities;
 
+import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
+
 import androidx.annotation.NonNull;
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
@@ -41,6 +44,12 @@ public class Element {
     @ColumnInfo(name = "posy_element")
     public float posyElement;
 
+    @ColumnInfo(name = "posx_element2")
+    public float posxElement2;
+
+    @ColumnInfo(name = "posy_element2")
+    public float posyElement2;
+
     @ColumnInfo(name = "z_index")
     public int zIndex;
 
@@ -57,7 +66,19 @@ public class Element {
     @ColumnInfo(name = "id_project")
     public String id_project;
 
-    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project) {
+    @ColumnInfo(name = "text")
+    public String text;
+
+    @ColumnInfo(name = "color")
+    public String color;
+
+    @ColumnInfo(name = "image_name")
+    public String source;
+
+    @ColumnInfo(name = "filter")
+    public int filter;
+
+    public Element(@NonNull String id, String typeElement, float widthElement, float heightElement, float posxElement, float posyElement, int zIndex, float opacity, float rotation, Date dateCreation, String id_project, String text, String color, String source, int filter) {
         this.id = id;
         this.typeElement = typeElement;
         this.widthElement = widthElement;
@@ -69,7 +90,12 @@ public class Element {
         this.rotation = rotation;
         this.dateCreation = dateCreation;
         this.id_project = id_project;
+        this.text = text;
+        this.color = color;
+        this.source = source;
+        this.filter = filter;
     }
+
     public Element() {}
 
     @NonNull
@@ -159,5 +185,51 @@ public class Element {
 
     public void setId_project(String id_project) {
         this.id_project = id_project;
+    }
+
+    public String getText() {   return text; }
+
+    public void setText(String text) {
+        this.text = text;
+    }
+
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
+    public float getPosxElement2() {
+        return posxElement2;
+    }
+
+    public void setPosxElement2(float posxElement2) {
+        this.posxElement2 = posxElement2;
+    }
+
+    public float getPosyElement2() {
+        return posyElement2;
+    }
+
+    public void setPosyElement2(float posyElement2) {
+        this.posyElement2 = posyElement2;
+    }
+
+    public String getSource() {
+        return source;
+    }
+
+    public void setSource(String source) {
+        this.source = source;
+    }
+
+    public int getFilter() {
+        return filter;
+    }
+
+    public void setFilter(int filter) {
+        this.filter = filter;
     }
 }

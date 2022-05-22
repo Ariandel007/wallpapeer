@@ -2,4 +2,5 @@
     <string name="app_name">Wallpapeer</string>
     <string name="cancelButtonTitle">Cancelar</string>
     <string name="loading_connection">Cargando Conexión</string>
+    <string name ="dialog_title">Seleccione su opción</string>
 </resources>
