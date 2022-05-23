@@ -510,6 +510,7 @@ public class Client extends IMessenger {
                             .subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe((deviceInBD)->{
                         //QUE HACER SI YA EXISTE EL DEVICE
                         AppDatabase.getInstance().elementDAO().insertMany(elements).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
+                            canva.setId_device(deviceInBD.getId());
                             AppDatabase.getInstance().canvaDAO().insert(canva).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe(()->{
                                 LastProjectState.getInstance().setProjectId(project.getId());
                                 LastProjectState.getInstance().setCanvaId(canva.getId());

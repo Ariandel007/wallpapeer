@@ -109,6 +109,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
 //                    Toast.makeText(JoinLienzoActivity.this, "Scanned: " + result.getContents(), Toast.LENGTH_LONG).show();
                     SharedPreferences.Editor editor = sharedPreferences.edit();
                     editor.putString("trulyClientTargetDeviceLastproject", trulyClientTargetDevice);
+                    editor.putString("lastTargetDeviceNameproject", lastTargetDeviceName);
                     editor.apply();
                     connectionToDevice();
                 }
@@ -245,6 +246,9 @@ public class JoinLienzoActivity extends AppCompatActivity {
                     } else {
                         constraintLayout.setVisibility(View.VISIBLE);
                         //Enviar esto al json:
+                        if(lastTargetDeviceName.equals("")) {
+                            lastTargetDeviceName = sharedPreferences.getString("lastTargetDeviceNameproject","");
+                        }
                         QrMessage qrMessage = new QrMessage(lastTargetDeviceName, userDeviceName);
                         String qrMessageJson = JsonConverter.getGson().toJson(qrMessage);
                         BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
@@ -461,7 +465,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
         }
 
         if(targetDeviceName.equals("")) {
-            Toast.makeText(JoinLienzoActivity.this, "No se leyo a ningun dispòsitivo", Toast.LENGTH_LONG).show();
+            Toast.makeText(JoinLienzoActivity.this, "No se leyo a ningun dispositivo", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -472,7 +476,7 @@ public class JoinLienzoActivity extends AppCompatActivity {
             }
         }
         if(peersFindedWithTargetDeviceName.size() == 0) {
-            Toast.makeText(JoinLienzoActivity.this, "No se leyo a ningun dispòsitivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
+            Toast.makeText(JoinLienzoActivity.this, "No se leyo a ningun dispositivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
             return;
         }
         WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);

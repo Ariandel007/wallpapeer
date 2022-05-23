@@ -458,7 +458,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             return;
         }
         if(targetDeviceName.equals("")) {
-            Toast.makeText(JoinPaletaActivity.this, "No se leyo a ningun dispòsitivo", Toast.LENGTH_LONG).show();
+            Toast.makeText(JoinPaletaActivity.this, "No se leyo a ningun dispositivo", Toast.LENGTH_LONG).show();
             return;
         }
 
@@ -469,7 +469,7 @@ public class JoinPaletaActivity extends AppCompatActivity implements LayersDialo
             }
         }
         if(peersFindedWithTargetDeviceName.size() == 0) {
-            Toast.makeText(JoinPaletaActivity.this, "No se leyo a ningun dispòsitivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
+            Toast.makeText(JoinPaletaActivity.this, "No se leyo a ningun dispositivo dentro de la lista de pares", Toast.LENGTH_LONG).show();
             return;
         }
         WifiP2pDevice peerFindedInQR = peersFindedWithTargetDeviceName.get(0);
