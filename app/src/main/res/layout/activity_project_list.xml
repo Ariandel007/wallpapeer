@@ -21,7 +21,7 @@
             android:layout_marginTop="16dp"
             android:text="@={loginViewModel.username}"
             android:textColor="#767BBF"
-            android:textSize="34sp"
+            android:textSize="26sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/tvHola"
             app:layout_constraintTop_toTopOf="parent" />
@@ -34,7 +34,7 @@
             android:layout_marginTop="16dp"
             android:text="Hola, "
             android:textColor="#767BBF"
-            android:textSize="34sp"
+            android:textSize="26sp"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

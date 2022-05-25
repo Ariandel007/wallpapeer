@@ -20,7 +20,7 @@
             android:layout_marginBottom="64dp"
             android:text="Bienvenido, "
             android:textColor="#767BBF"
-            android:textSize="18dp"
+            android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/tilboxProfile1"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.088"
@@ -36,7 +36,7 @@
             android:layout_marginTop="20dp"
             android:text="@={loginViewModel.username}"
             android:textColor="#767BBF"
-            android:textSize="16dp"
+            android:textSize="16sp"
             android:textStyle="bold"
             app:layout_constraintStart_toEndOf="@+id/tvBienvenido"
             app:layout_constraintTop_toTopOf="parent" />
@@ -60,7 +60,7 @@
                 android:layout_marginStart="20dp"
                 android:text="Ver Proyectos"
                 android:textColor="#767BBF"
-                android:textSize="18dp" />
+                android:textSize="18sp" />
 
             <ImageView
                 android:id="@+id/tilImageView1"
@@ -92,7 +92,7 @@
                 android:text="Crear Proyecto"
                 android:textAlignment="center"
                 android:textColor="#767BBF"
-                android:textSize="18dp" />
+                android:textSize="18sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
@@ -119,19 +119,19 @@
                 android:text="Unirme a Proyecto"
                 android:textAlignment="center"
                 android:textColor="#767BBF"
-                android:textSize="18dp" />
+                android:textSize="18sp" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/tvTextoCambiarContrasena"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:layout_marginTop="54dp"
             android:onClick="@{loginViewModel.irCambioContrasena}"
             android:text="Cambiar Contraseña"
             android:textColor="#767BBF"
-            android:textSize="18dp"
+            android:textSize="18sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.502"
