@@ -29,6 +29,7 @@ import pe.edu.upc.wallpapeer.views.ChangePasswordActivity;
 import pe.edu.upc.wallpapeer.views.CreateProjectActivity;
 import pe.edu.upc.wallpapeer.views.JoinLienzoActivity;
 import pe.edu.upc.wallpapeer.views.JoinProjectActivity;
+import pe.edu.upc.wallpapeer.views.LoginActivity;
 import pe.edu.upc.wallpapeer.views.ProfileActivity;
 import pe.edu.upc.wallpapeer.views.ProjectListActivity;
 import pe.edu.upc.wallpapeer.views.RegistrarActivity;
@@ -132,7 +133,9 @@ public class LoginViewModel extends ViewModel implements Serializable {
                             try {
                                 String messageSucces = response.getString("message");
                                 Toast.makeText(context, messageSucces, Toast.LENGTH_SHORT).show();
-
+                                Intent intent = new Intent(context, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                context.startActivity(intent);
                             } catch (JSONException e) {
                                 Toast.makeText(context, "Error: "+e.getMessage(), Toast.LENGTH_SHORT).show();
                             }
